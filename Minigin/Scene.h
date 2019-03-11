@@ -10,7 +10,9 @@ namespace dae
 	public:
 		void Add(const std::shared_ptr<SceneObject>& object);
 
+		void FixedUpdate();
 		void Update();
+		void LateUpdate();
 		void Render() const;
 
 		~Scene();
@@ -23,7 +25,7 @@ namespace dae
 		explicit Scene(const std::string& name);
 
 		std::string mName{};
-		std::vector < std::shared_ptr<SceneObject>> mObjects{};
+		std::vector < std::shared_ptr<SceneObject>> m_Objects{};
 
 		static unsigned int idCounter; 
 	};

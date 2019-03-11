@@ -1,3 +1,5 @@
+
+
 #include "MiniginPCH.h"
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -29,6 +31,10 @@ void dae::TextObject::Update()
 		SDL_FreeSurface(surf);
 		mTexture = std::make_shared<Texture2D>(texture);
 	}
+}
+void dae::TextObject::LateUpdate()
+{
+
 }
 
 void dae::TextObject::Render() const

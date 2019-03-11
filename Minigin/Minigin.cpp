@@ -10,7 +10,7 @@
 #include "TextObject.h"
 #include "GameObject.h"
 #include "Scene.h"
-
+#include "GameTime.h"
 
 void dae::Minigin::Initialize()
 {
@@ -79,17 +79,38 @@ void dae::Minigin::Run()
 		auto& renderer = Renderer::GetInstance();
 		auto& sceneManager = SceneManager::GetInstance();
 		auto& input = InputManager::GetInstance();
+		auto& time = GameTime::GetInstance();
 
+		// GAME LOOP
 		bool doContinue = true;
 		while (doContinue)
 		{
+			// should we continue after this?
 			doContinue = input.ProcessInput();
+			
+			// process time
+			auto t2 = std::chrono::high_resolution_clock::now();
+			float deltaT{ std::chrono::duration<float>(t2 - t).count() };
+			t = t2;
 
+			// update the singleton
+			time.Update(deltaT);
+			
+			// first regular update
 			sceneManager.Update();
-			renderer.Render();
 
-			t += std::chrono::milliseconds(msPerFrame);
-			std::this_thread::sleep_until(t);
+			// do fixed update
+			static float accuSec{};
+			accuSec += deltaT;
+			while (accuSec >= msPerFrame)
+			{
+				accuSec -= msPerFrame;
+				sceneManager.FixedUpdate();
+			}
+
+			sceneManager.LateUpdate();
+			
+			renderer.Render();
 		}
 	}
 

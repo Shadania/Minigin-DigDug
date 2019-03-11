@@ -7,10 +7,11 @@ namespace dae
 	class Font;
 	class Texture2D;
 
-	class TextObject : public SceneObject
+	class TextObject final : public SceneObject
 	{
 	public:
 		void Update() override;
+		void LateUpdate() override;
 		void Render() const override;
 
 		void SetText(const std::string& text);
