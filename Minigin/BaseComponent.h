@@ -1,18 +1,27 @@
 #pragma once
-#include "GameObject.h"
 
 namespace dae
 {
+	class GameObject;
+
 	class BaseComponent
 	{
 	public:
-		BaseComponent(GameObject* pObj);
+		BaseComponent(std::shared_ptr<GameObject> pObj);
 		virtual ~BaseComponent() = default;
 		virtual void Update() = 0;
 
-		GameObject* GameObj() const;
+		std::shared_ptr<dae::GameObject> GameObj() const;
+		void SetGameObj(std::shared_ptr<GameObject> newObj);
+		std::string GetType() const;
 
-	private:
-		GameObject* m_MyObj;
+		BaseComponent(const BaseComponent&) = delete;
+		BaseComponent(BaseComponent&&) noexcept = delete;
+		BaseComponent& operator=(const BaseComponent&) = delete;
+		BaseComponent& operator=(BaseComponent&&) noexcept = delete;
+
+	protected:
+		std::weak_ptr<GameObject> m_spMyObj;
+		std::string m_Type;
 	};
 }

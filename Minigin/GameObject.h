@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-#include "Transform.h"
+#include "TransformComponent.h"
 #include "Texture2D.h"
 #include "SceneObject.h"
 
@@ -9,21 +9,27 @@
 namespace dae
 {
 	class BaseComponent;
+	class TextureComponent;
 
-	class GameObject final : public SceneObject
+	/*
+	GAMEOBJECT:
+	Basically a container of components
+	Initializes its own Transform Component
+	*/
+	class GameObject final : public SceneObject, public std::enable_shared_from_this<GameObject>
 	{
 	public:
 		void Update() override;
 		void LateUpdate() override;
 		void Render() const override;
 
-		void SetTexture(const std::string& filename);
-		void SetPosition(float x, float y);
+		void AddComponent(std::shared_ptr<BaseComponent> comp);
+		void AddComponentNeedRendering(std::shared_ptr<TextureComponent> comp);
 
-		void AddComponent(BaseComponent*comp);
+		std::shared_ptr<dae::TransformComponent> GetTransform();
+		void InitTransform(Float2 pos = { 0, 0 }, float rot = 0.0f, Float2 scale = { 1, 1 });
 
-
-		GameObject() = default;
+		GameObject();
 		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
@@ -31,8 +37,9 @@ namespace dae
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
-		Transform m_Transform;
-		std::shared_ptr<Texture2D> m_Texture;
-		std::vector<BaseComponent*> m_Components;
+		std::shared_ptr<TransformComponent> m_spTransformComponent;
+		// std::shared_ptr<Texture2D> m_Texture;
+		std::vector<std::shared_ptr<TextureComponent>> m_ComponentsNeedRendering;
+		std::vector<std::shared_ptr<BaseComponent>> m_Components;
 	};
 }

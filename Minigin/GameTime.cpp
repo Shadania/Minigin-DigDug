@@ -19,3 +19,9 @@ void dae::GameTime::Update(float deltaT)
 	m_DeltaT = deltaT;
 	m_totalSec += m_DeltaT;
 }
+
+
+int dae::GameTime::GetFPS() const
+{
+	return int(1.0f / m_DeltaT);
+}

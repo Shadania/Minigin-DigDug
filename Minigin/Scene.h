@@ -10,22 +10,26 @@ namespace dae
 	public:
 		void Add(const std::shared_ptr<SceneObject>& object);
 
-		void FixedUpdate();
-		void Update();
-		void LateUpdate();
-		void Render() const;
+		virtual void FixedUpdate();
+		virtual void Update();
+		virtual void LateUpdate();
+		virtual void Render() const;
 
-		~Scene();
+		virtual void Init();
+		virtual std::string GetName() const;
+
+		virtual ~Scene() = default;
 		Scene(const Scene& other) = delete;
 		Scene(Scene&& other) = delete;
 		Scene& operator=(const Scene& other) = delete;
 		Scene& operator=(Scene&& other) = delete;
 
-	private: 
+	protected:
 		explicit Scene(const std::string& name);
 
-		std::string mName{};
-		std::vector < std::shared_ptr<SceneObject>> m_Objects{};
+	private:
+		std::string m_Name{};
+		std::vector<std::shared_ptr<SceneObject>> m_Objects{};
 
 		static unsigned int idCounter; 
 	};

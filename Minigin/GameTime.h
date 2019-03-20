@@ -9,6 +9,7 @@ namespace dae
 		GameTime();
 		void Update(float deltaT);
 		float GetDeltaT() const;
+		int GetFPS() const;
 
 	private:
 		float m_DeltaT;

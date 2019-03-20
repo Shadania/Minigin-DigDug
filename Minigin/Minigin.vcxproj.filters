@@ -16,6 +16,12 @@
     <Filter Include="Content">
       <UniqueIdentifier>{ebe8045a-eb24-4d80-93bb-606c65890086}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TestScenes">
+      <UniqueIdentifier>{ea9df25c-be64-4f14-8c2c-955dbadf8ce3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneGraph">
+      <UniqueIdentifier>{98500834-db42-4304-91c8-3e0f473614fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -25,21 +31,6 @@
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Log.h">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="TextObject.h">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneObject.h">
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Minigin.h">
@@ -72,23 +63,41 @@
     <ClInclude Include="BaseComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="RenderComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="ControllableCharacterComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="ControllerComponents.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureComponents.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Structs.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSTestScene.h">
+      <Filter>TestScenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.h">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>SceneGraph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Transform.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>Base</Filter>
     </ClCompile>
@@ -99,12 +108,6 @@
       <Filter>Base</Filter>
     </ClCompile>
     <ClCompile Include="MiniginPCH.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="TextObject.cpp">
       <Filter>Base</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
@@ -131,14 +134,32 @@
     <ClCompile Include="BaseComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="RenderComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="ControllableCharacterComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="ControllerComponents.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureComponents.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPool.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSTestScene.cpp">
+      <Filter>TestScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>SceneGraph</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

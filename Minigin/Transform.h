@@ -4,6 +4,9 @@
 #include <glm/vec3.hpp>
 #pragma warning(pop)
 
+/*
+
+
 namespace dae
 {
 	class Transform final
@@ -13,4 +16,14 @@ namespace dae
 		const glm::vec3& GetPosition() const { return mPosition; }
 		void SetPosition(float x, float y, float z);
 	};
+
+	class TransformComponent final : public BaseComponent
+	{
+	public:
+
+	private:
+		
+	};
 }
+
+*/

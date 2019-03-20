@@ -1,6 +1,7 @@
 
-
 #include "MiniginPCH.h"
+/*
+
 #include <SDL.h>
 #include <SDL_ttf.h>
 
@@ -58,3 +59,4 @@ void dae::TextObject::SetPosition(const float x, const float y)
 }
 
 
+*/
