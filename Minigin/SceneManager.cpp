@@ -5,39 +5,19 @@
 
 void dae::SceneManager::FixedUpdate()
 {
-	// for (auto scene : m_Scenes)
-	// {
-	// 	scene->FixedUpdate();
-	// }
-
 	m_spActiveScene->FixedUpdate();
 }
 void dae::SceneManager::Update()
 {
-	// for(auto scene : m_Scenes)
-	// {
-	// 	scene->Update();
-	// }
-
 	m_spActiveScene->Update();
 }
 void dae::SceneManager::LateUpdate()
 {
-	// for (auto scene : m_Scenes)
-	// {
-	// 	scene->LateUpdate();
-	// }
-
 	m_spActiveScene->LateUpdate();
 }
 
 void dae::SceneManager::Render()
 {
-	// for (const auto scene : m_Scenes)
-	// {
-	// 	scene->Render();
-	// }
-
 	m_spActiveScene->Render();
 }
 

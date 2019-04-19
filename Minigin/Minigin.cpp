@@ -10,13 +10,34 @@
 #include "GameObject.h"
 #include "Scene.h"
 #include "GameTime.h"
+#include "ServiceLocator.h"
 
 
 #include "Log.h"
 
+#define TEST_SPRITE
 
-
+#ifdef TEST_FPS
 #include "FPSTestScene.h"
+#endif
+
+#ifdef TEST_SPRITE
+#include "SpriteTestScene.h"
+#endif
+
+void dae::Minigin::LoadGame() const
+{
+	std::shared_ptr<Scene> scene{};
+
+#ifdef TEST_FPS
+	scene = std::make_shared<FPSTestScene>();
+#endif
+#ifdef TEST_SPRITE
+	scene = std::make_shared<SpriteTestScene>();
+#endif
+	ServiceLocator::GetSceneManager()->AddScene(scene);
+	ServiceLocator::GetSceneManager()->SetActiveScene(scene->GetName());
+}
 
 void dae::Minigin::Initialize()
 {
@@ -38,22 +59,17 @@ void dae::Minigin::Initialize()
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
-	Renderer::GetInstance().Init(window);
+	ServiceLocator::InitResources();
+	
+
+	ServiceLocator::GetRenderer()->Init(window);
 }
 
-/**
- * Code constructing the scene world starts here
- */
-void dae::Minigin::LoadGame() const
-{	
-	auto scene{ std::make_shared<FPSTestScene>() };
-	SceneManager::GetInstance().AddScene(scene);
-	SceneManager::GetInstance().SetActiveScene(scene->GetName());
-}
 
 void dae::Minigin::Cleanup()
 {
-	Renderer::GetInstance().Destroy();
+	ServiceLocator::GetRenderer()->Destroy();
+	ServiceLocator::CleanupResources();
 	SDL_DestroyWindow(window);
 	window = nullptr;
 	SDL_Quit();
@@ -64,47 +80,50 @@ void dae::Minigin::Run()
 	Initialize();
 
 	// tell the resource manager where he can find the game data
-	ResourceManager::GetInstance().Init("../Data/");
+	ServiceLocator::GetResourceManager()->Init("../Data/");
 
 	LoadGame();
 
 	{
 		auto t = std::chrono::high_resolution_clock::now();
-		auto& renderer = Renderer::GetInstance();
-		auto& sceneManager = SceneManager::GetInstance();
-		auto& input = InputManager::GetInstance();
-		auto& time = GameTime::GetInstance();
+
+		// easy service access
+		auto renderer = ServiceLocator::GetRenderer();
+		auto scenes = ServiceLocator::GetSceneManager();
+		auto input = ServiceLocator::GetInputManager();
+		auto time = ServiceLocator::GetGameTime(); 
+
+		float accuSec{};
 
 		// GAME LOOP
 		bool doContinue = true;
 		while (doContinue)
 		{
-			// should we continue after this?
-			doContinue = input.ProcessInput();
-			
 			// process time
 			auto t2 = std::chrono::high_resolution_clock::now();
 			float deltaT{ std::chrono::duration<float>(t2 - t).count() };
 			t = t2;
 
+			// should we continue after this?
+			doContinue = input->ProcessInput();
+
 			// update the singleton
-			time.Update(deltaT);
+			time->Update(deltaT);
 			
 			// first regular update
-			sceneManager.Update();
+			scenes->Update();
 
 			// do fixed update
-			static float accuSec{};
 			accuSec += deltaT;
 			while (accuSec >= msPerFrame)
 			{
 				accuSec -= msPerFrame;
-				sceneManager.FixedUpdate();
+				scenes->FixedUpdate();
 			}
 
-			sceneManager.LateUpdate();
+			scenes->LateUpdate();
 			
-			renderer.Render();
+			renderer->Render();
 		}
 	}
 

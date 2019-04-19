@@ -4,6 +4,7 @@
 #include "SceneManager.h"
 #include "Texture2D.h"
 #include "Font.h"
+#include "ServiceLocator.h"
 
 
 dae::Renderer::Renderer()
@@ -27,7 +28,7 @@ void dae::Renderer::Render()
 {
 	SDL_RenderClear(mRenderer);
 
-	SceneManager::GetInstance().Render();
+	ServiceLocator::GetSceneManager()->Render();
 	
 	SDL_RenderPresent(mRenderer);
 }
@@ -58,6 +59,13 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	dst.w = static_cast<int>(width);
 	dst.h = static_cast<int>(height);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+}
+
+void dae::Renderer::RenderTexture(const Texture2D& tex, const Float4& destRect, const Float4& srcRect) const
+{
+	SDL_Rect destRectSDL{ (int)destRect.x, (int)destRect.y, (int)destRect.z, (int)destRect.w };
+	SDL_Rect srcRectSDL{ (int)srcRect.x, (int)srcRect.y, (int)srcRect.z, (int)srcRect.w };
+	SDL_RenderCopy(GetSDLRenderer(), tex.GetSDLTexture(), &srcRectSDL, &destRectSDL);
 }
 
 

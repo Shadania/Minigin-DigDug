@@ -15,7 +15,7 @@ namespace dae
 		virtual void LateUpdate();
 		virtual void Render() const;
 
-		virtual void Init();
+		virtual void Init() {};
 		virtual std::string GetName() const;
 
 		virtual ~Scene() = default;

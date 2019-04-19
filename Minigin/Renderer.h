@@ -1,5 +1,4 @@
 #pragma once
-#include "Singleton.h"
 #include "TextureComponents.h"
 #include "ObjectPool.h"
 
@@ -9,7 +8,7 @@ struct SDL_Renderer;
 namespace dae
 {
 	class Texture2D;
-	class Renderer final : public Singleton<Renderer>
+	class Renderer
 	{
 
 	public:
@@ -20,6 +19,7 @@ namespace dae
 
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
 		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
+		void RenderTexture(const Texture2D& tex, const Float4& destRect, const Float4& srcRect) const;
 
 		SDL_Renderer* GetSDLRenderer() const { return mRenderer; }
 

@@ -1,10 +1,9 @@
 #pragma once
-#include "Singleton.h"
 
 namespace dae
 {
 	class Scene;
-	class SceneManager final : public Singleton<SceneManager>
+	class SceneManager
 	{
 	public:
 		Scene & CreateScene(const std::string& name);

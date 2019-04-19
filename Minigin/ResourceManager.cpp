@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "Texture2D.h"
 #include "Font.h"
+#include "ServiceLocator.h"
 
 void dae::ResourceManager::Init(std::string&& dataPath)
 {
@@ -33,7 +34,7 @@ void dae::ResourceManager::Init(std::string&& dataPath)
 std::shared_ptr<dae::Texture2D> dae::ResourceManager::LoadTexture(const std::string& file)
 {
 	std::string fullPath = mDataPath + file;
-	SDL_Texture *texture = IMG_LoadTexture(Renderer::GetInstance().GetSDLRenderer(), fullPath.c_str());
+	SDL_Texture *texture = IMG_LoadTexture(ServiceLocator::GetRenderer()->GetSDLRenderer(), fullPath.c_str());
 	if (texture == nullptr) 
 	{
 		throw std::runtime_error(std::string("Failed to load texture: ") + SDL_GetError());

@@ -40,13 +40,6 @@ void dae::Scene::Render() const
 	}
 }
 
-
-void dae::Scene::Init()
-{
-
-}
-
-
 std::string dae::Scene::GetName() const
 {
 	return m_Name;

@@ -6,39 +6,39 @@
 #include "Renderer.h"
 #include "Font.h"
 #include "GameObject.h"
+#include "ServiceLocator.h"
 
 
 #pragma region TextureComponent
 
-dae::TextureComponent::TextureComponent(std::shared_ptr<GameObject> pObj, Float2 pos, float rot, Float2 scale)
-	:BaseComponent(pObj)
+dae::TextureComponent::TextureComponent(Float2 pos, float rot, Float2 scale)
+	:BaseComponent("TextureComponent")
 	, m_Pos{pos}
 	, m_Rot{rot}
 	, m_Scale{scale}
 {
-	m_Type = "TextureComponent";
 }
 
 void dae::TextureComponent::SetTexture(const std::string& fileName)
 {
-	m_spTexture = ResourceManager::GetInstance().LoadTexture(fileName);
+	m_spTexture = ServiceLocator::GetResourceManager()->LoadTexture(fileName);
 }
 
-void dae::TextureComponent::RenderTexture() 
+void dae::TextureComponent::Render() 
 {
 	Float2 finalPos{ m_spMyObj.lock()->GetTransform()->GetPos() };
 	finalPos.x += m_Pos.x;
 	finalPos.y += m_Pos.y;
-	Renderer::GetInstance().RenderTexture(*m_spTexture, finalPos.x, finalPos.y);
+	ServiceLocator::GetRenderer()->RenderTexture(*m_spTexture, finalPos.x, finalPos.y);
 }
 #pragma endregion TextureComponent
 
 
 
 #pragma region TextComponent
-dae::TextComponent::TextComponent(std::shared_ptr<GameObject> pObj, const std::string& text, const std::shared_ptr<Font> font, Float4 color, 
-	Float2 pos, float rot, Float2 scale)
-	:TextureComponent(pObj, pos, rot, scale )
+dae::TextComponent::TextComponent(const std::string& text, const std::shared_ptr<Font> font, 
+		Float4 color, Float2 pos, float rot, Float2 scale)
+	:TextureComponent(pos, rot, scale )
 	,m_Text{text}
 	,m_spFont{font}
 	,m_Color{color}
@@ -68,7 +68,7 @@ void dae::TextComponent::GenerateTexture()
 	{
 		throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
 	}
-	auto texture = SDL_CreateTextureFromSurface(Renderer::GetInstance().GetSDLRenderer(), surf);
+	auto texture = SDL_CreateTextureFromSurface(ServiceLocator::GetRenderer()->GetSDLRenderer(), surf);
 	if (texture == nullptr)
 	{
 		throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());

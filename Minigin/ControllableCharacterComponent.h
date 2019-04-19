@@ -7,7 +7,7 @@ namespace dae
 	class ControllableCharacterComponent final : public BaseComponent
 	{
 	public:
-		ControllableCharacterComponent(std::shared_ptr<GameObject> pObj);
+		ControllableCharacterComponent();
 
 		void SetController(ControllerComponent* pContr);
 

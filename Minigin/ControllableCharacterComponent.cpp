@@ -2,10 +2,9 @@
 #include "ControllableCharacterComponent.h"
 
 
-dae::ControllableCharacterComponent::ControllableCharacterComponent(std::shared_ptr<GameObject> pObj)
-	:BaseComponent(pObj)
+dae::ControllableCharacterComponent::ControllableCharacterComponent()
+	:BaseComponent("ControllableCharacterComponent")
 {
-	m_Type = "ControllableCharacterComponent";
 }
 
 void dae::ControllableCharacterComponent::SetController(ControllerComponent* pContr)

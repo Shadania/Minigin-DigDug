@@ -1,9 +1,8 @@
 #pragma once
-#include "Singleton.h"
 
 namespace dae
 {
-	class GameTime final : public Singleton<GameTime>
+	class GameTime
 	{
 	public:
 		GameTime();

@@ -10,7 +10,7 @@ namespace dae
 	class TransformComponent final : public BaseComponent
 	{
 	public:
-		TransformComponent(std::shared_ptr<GameObject> pObj);
+		TransformComponent();
 
 		virtual void Update() override {}
 

@@ -9,10 +9,10 @@ namespace dae
 	class TextureComponent : public BaseComponent
 	{
 	public:
-		TextureComponent(std::shared_ptr<GameObject> pObj, Float2 pos = { 0, 0 }, float rot = 0.0f, Float2 m_Scale = { 1, 1 });
+		TextureComponent(Float2 pos = { 0, 0 }, float rot = 0.0f, Float2 m_Scale = { 1, 1 });
 		
 		void SetTexture(const std::string& fileName);
-		void RenderTexture();
+		virtual void Render() override;
 
 		virtual void Update() override {}
 
@@ -35,7 +35,7 @@ namespace dae
 	class TextComponent final : public TextureComponent
 	{
 	public:
-		TextComponent(std::shared_ptr<GameObject> pObj, const std::string& text, const std::shared_ptr<Font> font, 
+		TextComponent(const std::string& text, const std::shared_ptr<Font> font, 
 			Float4 color = { 1, 1, 1, 1 }, Float2 pos = { 0, 0 }, float rot = 0.0f, Float2 m_Scale = { 1, 1 });
 
 		void SetText(const std::string& newText);

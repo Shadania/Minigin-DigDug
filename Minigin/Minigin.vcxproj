@@ -191,10 +191,13 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="2DCharacter.h" />
+    <ClInclude Include="Audio.h" />
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="ControllableCharacterComponent.h" />
     <ClInclude Include="ControllerComponents.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="FPSComponent.h" />
     <ClInclude Include="FPSTestScene.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameTime.h" />
@@ -203,6 +206,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="MiniginPCH.h" />
     <ClInclude Include="ObjectPool.h" />
+    <ClInclude Include="ServiceLocator.h" />
+    <ClInclude Include="SpriteComponent.h" />
+    <ClInclude Include="SpriteTestScene.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="TextureComponents.h" />
     <ClInclude Include="SceneObject.h" />
@@ -210,17 +216,18 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="Singleton.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture2D.h" />
-    <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="2DCharacter.cpp" />
+    <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="ControllableCharacterComponent.cpp" />
     <ClCompile Include="ControllerComponents.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="FPSComponent.cpp" />
     <ClCompile Include="FPSTestScene.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameTime.cpp" />
@@ -236,13 +243,15 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MiniginPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="ObjectPool.cpp" />
+    <ClCompile Include="ServiceLocator.cpp" />
+    <ClCompile Include="SpriteComponent.cpp" />
+    <ClCompile Include="SpriteTestScene.cpp" />
     <ClCompile Include="TextureComponents.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Texture2D.cpp" />
-    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

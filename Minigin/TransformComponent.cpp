@@ -3,8 +3,8 @@
 #include "GameObject.h"
 
 
-dae::TransformComponent::TransformComponent(std::shared_ptr<GameObject> pObj)
-	:BaseComponent(pObj)
+dae::TransformComponent::TransformComponent()
+	:BaseComponent()
 {
 	m_Type = "TransformComponent";
 }

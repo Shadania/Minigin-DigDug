@@ -7,12 +7,14 @@ namespace dae
 	class BaseComponent
 	{
 	public:
-		BaseComponent(std::shared_ptr<GameObject> pObj);
+		BaseComponent(const std::string& type = "BaseComponent");
 		virtual ~BaseComponent() = default;
-		virtual void Update() = 0;
+		virtual void Update() {};
+		virtual void LateUpdate() {};
+		virtual void Render() {};
 
 		std::shared_ptr<dae::GameObject> GameObj() const;
-		void SetGameObj(std::shared_ptr<GameObject> newObj);
+		virtual void SetGameObj(std::shared_ptr<GameObject> newObj);
 		std::string GetType() const;
 
 		BaseComponent(const BaseComponent&) = delete;

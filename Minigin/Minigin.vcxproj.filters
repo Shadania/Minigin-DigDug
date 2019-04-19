@@ -5,10 +5,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Singletons">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Components">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -21,6 +17,13 @@
     </Filter>
     <Filter Include="SceneGraph">
       <UniqueIdentifier>{98500834-db42-4304-91c8-3e0f473614fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Prefabs">
+      <UniqueIdentifier>{d963bbe1-60f9-457c-aa37-e07385728c9f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -37,22 +40,19 @@
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
-      <Filter>Singletons</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.h">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="GameTime.h">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
       <Filter>Content</Filter>
@@ -67,9 +67,6 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="ControllerComponents.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="TextureComponents.h">
@@ -96,6 +93,24 @@
     <ClInclude Include="GameObject.h">
       <Filter>SceneGraph</Filter>
     </ClInclude>
+    <ClInclude Include="ServiceLocator.h">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteTestScene.h">
+      <Filter>TestScenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="2DCharacter.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -111,19 +126,19 @@
       <Filter>Base</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClCompile>
     <ClCompile Include="GameTime.cpp">
-      <Filter>Singletons</Filter>
+      <Filter>Services</Filter>
     </ClCompile>
     <ClCompile Include="Font.cpp">
       <Filter>Content</Filter>
@@ -138,9 +153,6 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="ControllerComponents.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="TextureComponents.cpp">
@@ -160,6 +172,24 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="ServiceLocator.cpp">
+      <Filter>Services</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Services</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteTestScene.cpp">
+      <Filter>TestScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="2DCharacter.cpp">
+      <Filter>Prefabs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
