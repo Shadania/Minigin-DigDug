@@ -8,24 +8,25 @@ namespace dae
 	 * A "sprite" is a single sequence of images.
 	 * They are combined in the SpriteComponent.
 	 */
-	class Sprite
+	class Sequence
 	{
 	public:
-		Sprite(std::shared_ptr<Texture2D> tex, const std::string& name, size_t amtFrames);
+		Sequence(std::shared_ptr<Texture2D> tex, const std::string& name, size_t amtFrames);
 
 		// for conform timing
 		void SetSecPerFrame(float amt);
 		// for non conform timing on frames
 		void SetSecPerFrame(const std::vector<float> amts);
 		// check name
-		bool IsName(const std::string& name);
+		bool IsName(int nameHash);
 		
-		void Render();
+		void Render(const std::shared_ptr<GameObject>& go) const;
 		void Update();
 
 	private:
 		std::shared_ptr<Texture2D> m_spTex;
 		std::string m_Name;
+		int m_NameHash;
 		size_t m_AmtFrames;
 		std::vector<float> m_SecPerFrame;
 		bool m_UseUniformTiming;
@@ -40,17 +41,17 @@ namespace dae
 	class SpriteComponent final : public BaseComponent
 	{
 	public:
-		SpriteComponent(std::shared_ptr<Texture2D> tex);
+		SpriteComponent();
 		virtual void Update() override;
-		virtual void Render() override;
+		virtual void Render() const override;
 
-		void AddSprite(std::shared_ptr<Sprite> sprite);
+		void AddSprite(std::shared_ptr<Sequence> sprite);
 		void RemoveSprite(const std::string& name);
 		void SetActiveSprite(const std::string& name);
 
 	private:
-		std::vector<std::shared_ptr<Sprite>> m_Sprites;
-		std::shared_ptr<Sprite> m_ActiveSprite;
+		std::vector<std::shared_ptr<Sequence>> m_Sprites;
+		std::shared_ptr<Sequence> m_ActiveSprite;
 
 	};
 }

@@ -24,7 +24,7 @@ void dae::TextureComponent::SetTexture(const std::string& fileName)
 	m_spTexture = ServiceLocator::GetResourceManager()->LoadTexture(fileName);
 }
 
-void dae::TextureComponent::Render() 
+void dae::TextureComponent::Render() const
 {
 	Float2 finalPos{ m_spMyObj.lock()->GetTransform()->GetPos() };
 	finalPos.x += m_Pos.x;

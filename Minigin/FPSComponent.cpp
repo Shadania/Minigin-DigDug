@@ -34,7 +34,7 @@ void dae::FPSComponent::Update()
 	m_spText->GenerateTexture();
 }
 
-void dae::FPSComponent::Render()
+void dae::FPSComponent::Render() const
 {
 	m_spText->Render();
 }

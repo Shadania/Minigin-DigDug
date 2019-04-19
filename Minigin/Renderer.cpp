@@ -8,6 +8,7 @@
 
 
 dae::Renderer::Renderer()
+	:m_Scale{1.0f}
 	// : m_TextureComponentPool{20}
 	// , m_TextComponentPool{20}
 {
@@ -41,30 +42,31 @@ void dae::Renderer::Destroy()
 		mRenderer = nullptr;
 	}
 }
+void dae::Renderer::SetScale(float scale)
+{
+	m_Scale = scale;
+}
 
 void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
 {
-	SDL_Rect dst;
-	dst.x = static_cast<int>(x);
-	dst.y = static_cast<int>(y);
-	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
+	SDL_Rect dst{int(x), int(y), int(texture.GetWidth() * m_Scale), int(texture.GetHeight() * m_Scale)};
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
 void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
 {
-	SDL_Rect dst;
-	dst.x = static_cast<int>(x);
-	dst.y = static_cast<int>(y);
-	dst.w = static_cast<int>(width);
-	dst.h = static_cast<int>(height);
+	SDL_Rect dst{int(x), int(y), int(width * m_Scale), int (height * m_Scale)};
+	// dst.x = static_cast<int>(x);
+	// dst.y = static_cast<int>(y);
+	// dst.w = static_cast<int>(width);
+	// dst.h = static_cast<int>(height);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
 void dae::Renderer::RenderTexture(const Texture2D& tex, const Float4& destRect, const Float4& srcRect) const
 {
-	SDL_Rect destRectSDL{ (int)destRect.x, (int)destRect.y, (int)destRect.z, (int)destRect.w };
-	SDL_Rect srcRectSDL{ (int)srcRect.x, (int)srcRect.y, (int)srcRect.z, (int)srcRect.w };
+	SDL_Rect destRectSDL{ int(destRect.x), int(destRect.y), int(destRect.z * m_Scale), int(destRect.w * m_Scale) };
+	SDL_Rect srcRectSDL{ int(srcRect.x), int(srcRect.y), int(srcRect.z), int(srcRect.w) };
 	SDL_RenderCopy(GetSDLRenderer(), tex.GetSDLTexture(), &srcRectSDL, &destRectSDL);
 }
 

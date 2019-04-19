@@ -11,7 +11,7 @@ namespace dae
 		virtual ~BaseComponent() = default;
 		virtual void Update() {};
 		virtual void LateUpdate() {};
-		virtual void Render() {};
+		virtual void Render() const {};
 
 		std::shared_ptr<dae::GameObject> GameObj() const;
 		virtual void SetGameObj(std::shared_ptr<GameObject> newObj);

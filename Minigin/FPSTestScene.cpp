@@ -23,7 +23,7 @@ void dae::FPSTestScene::Init()
 	std::shared_ptr<TextureComponent> texComp{ std::make_shared<TextureComponent>() };
 	texComp->SetTexture("background.jpg");
 	go->AddComponentNeedRendering(texComp);
-	Add(go);
+	AddToScene(go);
 	
 	// logo
 	go = std::make_shared<GameObject>();
@@ -31,7 +31,7 @@ void dae::FPSTestScene::Init()
 	texComp->SetTexture("logo.png");
 	go->AddComponentNeedRendering(texComp);
 	go->GetTransform()->SetPos({ 216, 208 });
-	Add(go);
+	AddToScene(go);
 
 	// text
 	go = std::make_shared<GameObject>();
@@ -40,11 +40,11 @@ void dae::FPSTestScene::Init()
 	textComp->GenerateTexture();
 	go->AddComponentNeedRendering(textComp);
 	go->GetTransform()->SetPos({ 80, 20 });
-	Add(go);
+	AddToScene(go);
 
 	// FPS counter
 	go = std::make_shared<dae::GameObject>();
 	go->AddComponentNeedRendering(std::make_shared<dae::FPSComponent>(font, dae::Float4{1, 1, 0, 1}));
 	go->GetTransform()->SetPos({ 0, 60 });
-	Add(go);
+	AddToScene(go);
 }

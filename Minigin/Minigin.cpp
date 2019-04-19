@@ -105,7 +105,7 @@ void dae::Minigin::Run()
 			t = t2;
 
 			// should we continue after this?
-			doContinue = input->ProcessInput();
+			doContinue = input->Update();
 
 			// update the singleton
 			time->Update(deltaT);

@@ -15,15 +15,13 @@ namespace dae
 		Texture2D & operator= (const Texture2D &&) = delete;
 
 		SDL_Texture* GetSDLTexture() const;
-		Uint32 GetFormat() const;
-		int GetAccess() const;
 		int GetWidth() const;
 		int GetHeight() const;
 
 
 	private:
 		SDL_Texture* m_Tex;
-		Uint32 m_Format;
+		uint32_t m_Format;
 		int m_Access;
 		int m_Width;
 		int m_Height;

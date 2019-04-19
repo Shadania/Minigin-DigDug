@@ -12,17 +12,17 @@ namespace dae
 	public:
 		TransformComponent();
 
-		virtual void Update() override {}
-
-
-
 		void SetPos(Float2 newPos) { m_Pos = newPos; }
-		void SetRotEuler(float newRot) { m_RotEuler = newRot; }
+		void SetRotEuler(float newRot) { m_Angle = newRot; }
 		void SetScale(Float2 newScale) { m_Scale = newScale; }
 
 		Float2 GetPos() const { return m_Pos; }
-		float GetRotEuler() const { return m_RotEuler; }
+		float GetRotEuler() const { return m_Angle; }
 		Float2 GetScale() const { return m_Scale; }
+
+		void Translate(float x, float y);
+		void Rotate(float angle);
+		void Scale(float x, float y);
 
 
 		TransformComponent(const TransformComponent&) = delete;
@@ -32,8 +32,7 @@ namespace dae
 
 	private:
 		Float2 m_Pos;
-		float m_RotEuler;
+		float m_Angle;
 		Float2 m_Scale;
-
 	};
 }

@@ -16,6 +16,7 @@ namespace dae
 		void Init(SDL_Window* window);
 		void Render();
 		void Destroy();
+		void SetScale(float scale);
 
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
 		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
@@ -28,6 +29,7 @@ namespace dae
 
 	private:
 		SDL_Renderer* mRenderer = nullptr;
+		float m_Scale;
 		// ObjectPool<TextureComponent> m_TextureComponentPool;
 		// ObjectPool<TextComponent> m_TextComponentPool;
 	};

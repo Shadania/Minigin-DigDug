@@ -12,7 +12,7 @@ namespace dae
 		TextureComponent(Float2 pos = { 0, 0 }, float rot = 0.0f, Float2 m_Scale = { 1, 1 });
 		
 		void SetTexture(const std::string& fileName);
-		virtual void Render() override;
+		virtual void Render() const override;
 
 		virtual void Update() override {}
 

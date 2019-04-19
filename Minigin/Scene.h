@@ -8,7 +8,7 @@ namespace dae
 	{
 		friend Scene& SceneManager::CreateScene(const std::string& name);
 	public:
-		void Add(const std::shared_ptr<SceneObject>& object);
+		void AddToScene(const std::shared_ptr<SceneObject>& object);
 
 		virtual void FixedUpdate();
 		virtual void Update();

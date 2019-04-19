@@ -63,12 +63,6 @@
     <ClInclude Include="BaseComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="ControllableCharacterComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="ControllerComponents.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="TextureComponents.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -111,6 +105,9 @@
     <ClInclude Include="2DCharacter.h">
       <Filter>Prefabs</Filter>
     </ClInclude>
+    <ClInclude Include="InputControllerComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -149,12 +146,6 @@
     <ClCompile Include="BaseComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="ControllableCharacterComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="ControllerComponents.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="TextureComponents.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -190,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="2DCharacter.cpp">
       <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="InputControllerComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

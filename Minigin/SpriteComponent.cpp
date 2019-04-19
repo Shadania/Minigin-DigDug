@@ -8,36 +8,49 @@
 
 
 #pragma region Sprite
-dae::Sprite::Sprite(std::shared_ptr<Texture2D> tex, const std::string& name, size_t amtFrames)
+dae::Sequence::Sequence(std::shared_ptr<Texture2D> tex, const std::string& name, size_t amtFrames)
 	: m_spTex{ tex }
 	, m_Name{ name }
+	, m_NameHash{}
 	, m_AmtFrames{amtFrames}
 	, m_SecPerFrame{}
 	, m_UseUniformTiming{ true }
 	, m_AccuSec{0}
 	, m_CurrFrameIdx{0}
-{}
+{
+	std::hash<std::string> hasher;
+	m_NameHash = hasher(m_Name);
+}
 
-void dae::Sprite::SetSecPerFrame(float amt)
+void dae::Sequence::SetSecPerFrame(float amt)
 {
 	m_SecPerFrame.clear();
 	m_SecPerFrame.push_back(amt);
 	m_UseUniformTiming = true;
 }
-void dae::Sprite::SetSecPerFrame(const std::vector<float> amts)
+void dae::Sequence::SetSecPerFrame(const std::vector<float> amts)
 {
 	m_SecPerFrame = amts;
 	m_UseUniformTiming = false;
 }
 
-void dae::Sprite::Render()
+void dae::Sequence::Render(const std::shared_ptr<GameObject>& go) const
 {
-	m_spTex->GetSDLTexture()
+	Float4 destRect{}, srcRect{};
+	destRect.z = (float)(m_spTex->GetWidth() / (int)m_AmtFrames);
+	destRect.w = (float)m_spTex->GetHeight();
+	auto pos{go->GetTransform()->GetPos()};
+	destRect.x = pos.x - (destRect.z / 2);
+	destRect.y = pos.y - (destRect.w / 2);
 
+	srcRect.x = destRect.z * m_CurrFrameIdx;
+	srcRect.y = 0;
+	srcRect.z = destRect.z;
+	srcRect.w = destRect.w;
 
-	// ServiceLocator::GetRenderer()->RenderTexture(m_spTex->GetSDLTexture(), destrect srcrect);
+	ServiceLocator::GetRenderer()->RenderTexture(*m_spTex, destRect, srcRect);
 }
-void dae::Sprite::Update()
+void dae::Sequence::Update()
 {
 	m_AccuSec += ServiceLocator::GetGameTime()->GetDeltaT();
 
@@ -51,31 +64,34 @@ void dae::Sprite::Update()
 		m_CurrFrameIdx = (m_CurrFrameIdx + 1) % m_AmtFrames;
 	}
 }
-bool dae::Sprite::IsName(const std::string& name)
+bool dae::Sequence::IsName(int nameHash)
 {
-	std::hash<std::string> hasher;
-	return (hasher(name) == hasher(m_Name));
+	return (nameHash == m_NameHash);
 }
 #pragma endregion Sprite
 
 
 
 #pragma region SpriteComponent
-dae::SpriteComponent::SpriteComponent(std::shared_ptr<Texture2D> tex)
+dae::SpriteComponent::SpriteComponent()
 	:BaseComponent("SpriteComponent")
 {
 
 }
 
-void dae::SpriteComponent::AddSprite(std::shared_ptr<Sprite> sprite)
+void dae::SpriteComponent::AddSprite(std::shared_ptr<Sequence> sprite)
 {
 	m_Sprites.push_back(sprite);
 }
 void dae::SpriteComponent::RemoveSprite(const std::string& name)
 {
+	int nameHash{};
+	std::hash<std::string> hasher;
+	nameHash = hasher(name);
+
 	for (auto sprite : m_Sprites)
 	{
-		if (sprite->IsName(name))
+		if (sprite->IsName(nameHash))
 		{
 			m_Sprites.erase(std::remove(m_Sprites.begin(), m_Sprites.end(), sprite), m_Sprites.end());
 			return;
@@ -84,9 +100,12 @@ void dae::SpriteComponent::RemoveSprite(const std::string& name)
 }
 void dae::SpriteComponent::SetActiveSprite(const std::string& name)
 {
+	int nameHash{};
+	std::hash<std::string> hasher;
+	nameHash = hasher(name);
 	for (auto sprite : m_Sprites)
 	{
-		if (sprite->IsName(name))
+		if (sprite->IsName(nameHash))
 		{
 			m_ActiveSprite = sprite;
 			return;
@@ -97,9 +116,8 @@ void dae::SpriteComponent::Update()
 {
 	m_ActiveSprite->Update();
 }
-void dae::SpriteComponent::Render()
+void dae::SpriteComponent::Render() const
 {
-	m_ActiveSprite->Render();
-	// 
+	m_ActiveSprite->Render(m_spMyObj.lock());
 }
 #pragma endregion SpriteComponent

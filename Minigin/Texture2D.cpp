@@ -22,14 +22,6 @@ SDL_Texture* dae::Texture2D::GetSDLTexture() const
 {
 	return m_Tex;
 }
-Uint32 dae::Texture2D::GetFormat() const
-{
-	return m_Format;
-}
-int dae::Texture2D::GetAccess() const
-{
-	return m_Access;
-}
 int dae::Texture2D::GetWidth() const
 {
 	return m_Width;

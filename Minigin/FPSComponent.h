@@ -10,7 +10,7 @@ namespace dae
 	public:
 		FPSComponent(const std::shared_ptr<Font> font, const Float4& color);
 		virtual void Update() override;
-		virtual void Render() override;
+		virtual void Render() const override;
 		virtual void SetGameObj(std::shared_ptr<GameObject> newObj) override;
 
 		void SetColor(const Float4& newColor);
