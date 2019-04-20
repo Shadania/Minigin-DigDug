@@ -29,7 +29,6 @@ namespace dae
 		int m_NameHash;
 		size_t m_AmtFrames;
 		std::vector<float> m_SecPerFrame;
-		bool m_UseUniformTiming;
 
 		float m_AccuSec;
 		int m_CurrFrameIdx;

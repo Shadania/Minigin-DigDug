@@ -14,7 +14,6 @@ dae::Sequence::Sequence(std::shared_ptr<Texture2D> tex, const std::string& name,
 	, m_NameHash{}
 	, m_AmtFrames{amtFrames}
 	, m_SecPerFrame{}
-	, m_UseUniformTiming{ true }
 	, m_AccuSec{0}
 	, m_CurrFrameIdx{0}
 {
@@ -26,12 +25,10 @@ void dae::Sequence::SetSecPerFrame(float amt)
 {
 	m_SecPerFrame.clear();
 	m_SecPerFrame.push_back(amt);
-	m_UseUniformTiming = true;
 }
 void dae::Sequence::SetSecPerFrame(const std::vector<float> amts)
 {
 	m_SecPerFrame = amts;
-	m_UseUniformTiming = false;
 }
 
 void dae::Sequence::Render(const std::shared_ptr<GameObject>& go) const
@@ -55,7 +52,7 @@ void dae::Sequence::Update()
 	m_AccuSec += ServiceLocator::GetGameTime()->GetDeltaT();
 
 	float maxSec{ m_SecPerFrame.front() };
-	if (!m_UseUniformTiming)
+	if (m_SecPerFrame.size() > 1)
 		maxSec = m_SecPerFrame[m_CurrFrameIdx];
 
 	if (m_AccuSec >= maxSec)
