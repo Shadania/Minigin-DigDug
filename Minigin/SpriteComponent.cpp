@@ -7,15 +7,17 @@
 #include <algorithm>
 
 
-#pragma region Sprite
-dae::Sequence::Sequence(std::shared_ptr<Texture2D> tex, const std::string& name, size_t amtFrames)
+#pragma region Sequence
+dae::Sequence::Sequence(std::shared_ptr<Texture2D> tex, 
+	const std::string& name, size_t amtFrames,
+	bool resetDeltaOnActive, float secPerFrame)
 	: m_spTex{ tex }
 	, m_Name{ name }
 	, m_NameHash{}
 	, m_AmtFrames{amtFrames}
-	, m_SecPerFrame{}
-	, m_AccuSec{0}
+	, m_SecPerFrame{secPerFrame}
 	, m_CurrFrameIdx{0}
+	,m_ResetDeltaOnActive{resetDeltaOnActive}
 {
 	std::hash<std::string> hasher;
 	m_NameHash = hasher(m_Name);
@@ -47,17 +49,18 @@ void dae::Sequence::Render(const std::shared_ptr<GameObject>& go) const
 
 	ServiceLocator::GetRenderer()->RenderTexture(*m_spTex, destRect, srcRect);
 }
-void dae::Sequence::Update()
+void dae::Sequence::Update(float& accuSec)
 {
-	m_AccuSec += ServiceLocator::GetGameTime()->GetDeltaT();
+	if (m_SecPerFrame.front() < 0)
+		return;
 
 	float maxSec{ m_SecPerFrame.front() };
 	if (m_SecPerFrame.size() > 1)
 		maxSec = m_SecPerFrame[m_CurrFrameIdx];
 
-	if (m_AccuSec >= maxSec)
+	if (accuSec >= maxSec)
 	{
-		m_AccuSec -= maxSec;
+		accuSec -= maxSec;
 		m_CurrFrameIdx = (m_CurrFrameIdx + 1) % m_AmtFrames;
 	}
 }
@@ -65,18 +68,24 @@ bool dae::Sequence::IsName(int nameHash)
 {
 	return (nameHash == m_NameHash);
 }
-#pragma endregion Sprite
+void dae::Sequence::Freeze()
+{
+	m_CurrFrameIdx = 0;
+}
+#pragma endregion Sequence
 
 
 
 #pragma region SpriteComponent
 dae::SpriteComponent::SpriteComponent()
 	:BaseComponent("SpriteComponent")
+	,m_AccuSec{0.0f}
+	,m_Frozen{false}
 {
 
 }
 
-void dae::SpriteComponent::AddSprite(std::shared_ptr<Sequence> sprite)
+void dae::SpriteComponent::AddSequence(std::shared_ptr<Sequence> sprite)
 {
 	m_Sprites.push_back(sprite);
 }
@@ -100,21 +109,51 @@ void dae::SpriteComponent::SetActiveSprite(const std::string& name)
 	int nameHash{};
 	std::hash<std::string> hasher;
 	nameHash = hasher(name);
+	if (m_ActiveSprite)
+		if (m_ActiveSprite->IsName(nameHash))
+			return;
+
 	for (auto sprite : m_Sprites)
 	{
 		if (sprite->IsName(nameHash))
 		{
+			if (sprite->m_ResetDeltaOnActive)
+				m_AccuSec = 0.0f;
+
 			m_ActiveSprite = sprite;
 			return;
 		}
 	}
 }
+bool dae::SpriteComponent::IsActiveSprite(const std::string& name) const
+{
+	int nameHash{};
+	std::hash<std::string> hasher;
+	nameHash = hasher(name);
+	return m_ActiveSprite->IsName(nameHash);
+}
+
 void dae::SpriteComponent::Update()
 {
-	m_ActiveSprite->Update();
+	if (!m_Frozen)
+		m_AccuSec += ServiceLocator::GetGameTime()->GetDeltaT();
+
+	m_ActiveSprite->Update(m_AccuSec);
 }
 void dae::SpriteComponent::Render() const
 {
 	m_ActiveSprite->Render(m_spMyObj.lock());
+}
+
+void dae::SpriteComponent::Freeze(bool resetDelta)
+{
+	m_Frozen = true;
+	if (resetDelta)
+		m_AccuSec = 0.0f;
+	m_ActiveSprite->Freeze();
+}
+void dae::SpriteComponent::Unfreeze()
+{
+	m_Frozen = false;
 }
 #pragma endregion SpriteComponent

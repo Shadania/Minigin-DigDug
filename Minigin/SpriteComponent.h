@@ -7,11 +7,14 @@ namespace dae
 	/*
 	 * A "sprite" is a single sequence of images.
 	 * They are combined in the SpriteComponent.
+	 * Setting secperframe to less than zero freezes the frame
 	 */
 	class Sequence
 	{
 	public:
-		Sequence(std::shared_ptr<Texture2D> tex, const std::string& name, size_t amtFrames);
+		Sequence(std::shared_ptr<Texture2D> tex, 
+			const std::string& name, size_t amtFrames, 
+			bool resetDeltaOnActive = false, float secPerFrame = 0.2f);
 
 		// for conform timing
 		void SetSecPerFrame(float amt);
@@ -21,7 +24,11 @@ namespace dae
 		bool IsName(int nameHash);
 		
 		void Render(const std::shared_ptr<GameObject>& go) const;
-		void Update();
+		void Update(float& accuSec);
+		void Freeze();
+
+
+		bool m_ResetDeltaOnActive;
 
 	private:
 		std::shared_ptr<Texture2D> m_spTex;
@@ -30,7 +37,6 @@ namespace dae
 		size_t m_AmtFrames;
 		std::vector<float> m_SecPerFrame;
 
-		float m_AccuSec;
 		int m_CurrFrameIdx;
 	};
 
@@ -44,13 +50,18 @@ namespace dae
 		virtual void Update() override;
 		virtual void Render() const override;
 
-		void AddSprite(std::shared_ptr<Sequence> sprite);
+		void AddSequence(std::shared_ptr<Sequence> sprite);
 		void RemoveSprite(const std::string& name);
 		void SetActiveSprite(const std::string& name);
+		bool IsActiveSprite(const std::string& name) const;
+
+		void Freeze(bool resetDelta = false);
+		void Unfreeze();
 
 	private:
 		std::vector<std::shared_ptr<Sequence>> m_Sprites;
 		std::shared_ptr<Sequence> m_ActiveSprite;
-
+		float m_AccuSec;
+		bool m_Frozen;
 	};
 }

@@ -2,47 +2,6 @@
 #include "InputManager.h"
 #include <SDL.h>
 
-/*
-
-bool dae::InputManager::ProcessInput()
-{
-	ZeroMemory(&currentState, sizeof(XINPUT_STATE));
-	XInputGetState(0, &currentState);
-
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT) {
-			return false;
-		}
-		if (e.type == SDL_KEYDOWN) {
-			
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			
-		}
-	}
-
-	return true;
-}
-
-bool dae::InputManager::IsPressed(ControllerButton button) const
-{
-	switch (button)
-	{
-	case ControllerButton::ButtonA:
-		return currentState.Gamepad.wButtons & XINPUT_GAMEPAD_A;
-	case ControllerButton::ButtonB:
-		return currentState.Gamepad.wButtons & XINPUT_GAMEPAD_B;
-	case ControllerButton::ButtonX:
-		return currentState.Gamepad.wButtons & XINPUT_GAMEPAD_X;
-	case ControllerButton::ButtonY:
-		return currentState.Gamepad.wButtons & XINPUT_GAMEPAD_Y;
-	default: return false;
-	}
-}
-
-*/
-
 bool dae::InputManager::Update()
 {
 	for (auto cmd : m_Commands)
@@ -61,6 +20,7 @@ bool dae::InputManager::Update()
 		case SDL_QUIT:
 			return false;
 		case SDL_KEYDOWN:
+			// command buttons
 			for (std::pair<const std::string, Command>& cmd : m_Commands)
 			{
 				if (cmd.second.cmdKeycode == key)
@@ -73,6 +33,14 @@ bool dae::InputManager::Update()
 					break;
 				}
 			}
+			// axes
+			for (std::pair<const std::string, Axis>& axis : m_Axes)
+			{
+				if (axis.second.positiveButton == key)
+					axis.second.val = 1.0f;
+				else if (axis.second.negativeButton == key)
+					axis.second.val = -1.0f;
+			}
 			break;
 		case SDL_KEYUP:
 			for (std::pair<const std::string, Command>& cmd : m_Commands)
@@ -84,24 +52,38 @@ bool dae::InputManager::Update()
 					break;
 				}
 			}
+			for (std::pair<const std::string, Axis>& axis : m_Axes)
+			{
+				if (axis.second.positiveButton == key || axis.second.negativeButton == key)
+					axis.second.val = 0;
+			}
 			break;
 		}
 	}
 	return true;
 }
-bool dae::InputManager::Key(std::string action)
+bool dae::InputManager::Key(std::string&& action)
 {
-	return m_Commands[action].key;
+	return m_Commands[std::move(action)].key;
 }
-bool dae::InputManager::KeyDown(std::string action)
+bool dae::InputManager::KeyDown(std::string&& action)
 {
-	return m_Commands[action].keyDown;
+	return m_Commands[std::move(action)].keyDown;
 }
-bool dae::InputManager::KeyUp(std::string action)
+bool dae::InputManager::KeyUp(std::string&& action)
 {
-	return m_Commands[action].keyUp;
+	return m_Commands[std::move(action)].keyUp;
 }
+
 void dae::InputManager::AddCommand(const std::string& cmdName, SDL_Keycode cmdKey)
 {
 	m_Commands[cmdName] = Command(cmdKey);
+}
+void dae::InputManager::AddAxis(const std::string& axisName, SDL_Keycode posButton, SDL_Keycode negButton)
+{
+	m_Axes[axisName] = Axis(posButton, negButton);
+}
+float dae::InputManager::GetAxis(std::string&& axis)
+{
+	return m_Axes[std::move(axis)].val;
 }

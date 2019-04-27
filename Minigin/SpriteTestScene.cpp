@@ -17,6 +17,9 @@ dae::SpriteTestScene::SpriteTestScene()
 
 void dae::SpriteTestScene::Init()
 {
+	if (m_IsInitialized)
+		return;
+
 	// Animated sprite
 	m_SpriteObject = std::make_shared<GameObject>();
 	AddToScene(m_SpriteObject);
@@ -24,7 +27,7 @@ void dae::SpriteTestScene::Init()
 	auto tex = ServiceLocator::GetResourceManager()->LoadTexture("DigDugRun.png");
 	auto sequence = std::make_shared<Sequence>(tex, "run", 2);
 	sequence->SetSecPerFrame(0.2f);
-	spritecomp->AddSprite(sequence);
+	spritecomp->AddSequence(sequence);
 	spritecomp->SetActiveSprite("run");
 	m_SpriteObject->AddComponentNeedRendering(spritecomp);
 
@@ -34,6 +37,8 @@ void dae::SpriteTestScene::Init()
 	input->AddCommand("right", 'd');
 	input->AddCommand("up", 'w');
 	input->AddCommand("down", 's');
+
+	m_IsInitialized = true;
 }
 
 void dae::SpriteTestScene::Update()

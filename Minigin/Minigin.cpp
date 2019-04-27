@@ -15,7 +15,7 @@
 
 #include "Log.h"
 
-#define TEST_SPRITE
+#define TEST_TERRAIN
 
 #ifdef TEST_FPS
 #include "FPSTestScene.h"
@@ -23,6 +23,10 @@
 
 #ifdef TEST_SPRITE
 #include "SpriteTestScene.h"
+#endif
+
+#ifdef TEST_TERRAIN
+#include "TerrainTestScene.h"
 #endif
 
 void dae::Minigin::LoadGame() const
@@ -35,6 +39,12 @@ void dae::Minigin::LoadGame() const
 #ifdef TEST_SPRITE
 	scene = std::make_shared<SpriteTestScene>();
 #endif
+#ifdef TEST_TERRAIN
+	scene = std::make_shared<TerrainTestScene>();
+#endif
+
+
+
 	ServiceLocator::GetSceneManager()->AddScene(scene);
 	ServiceLocator::GetSceneManager()->SetActiveScene(scene->GetName());
 }

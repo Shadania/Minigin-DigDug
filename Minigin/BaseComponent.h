@@ -9,9 +9,10 @@ namespace dae
 	public:
 		BaseComponent(const std::string& type = "BaseComponent");
 		virtual ~BaseComponent() = default;
-		virtual void Update() {};
-		virtual void LateUpdate() {};
-		virtual void Render() const {};
+		virtual void FixedUpdate() {}
+		virtual void Update() {}
+		virtual void LateUpdate() {}
+		virtual void Render() const {}
 
 		std::shared_ptr<dae::GameObject> GameObj() const;
 		virtual void SetGameObj(std::shared_ptr<GameObject> newObj);

@@ -6,10 +6,14 @@
 #include <unordered_map>
 
 
-dae::GameObject::GameObject()
+dae::GameObject::GameObject(const Float2& pos, float rot, const Float2& scale)
 	:m_spTransformComponent{}
 {
-	InitTransform();
+	std::shared_ptr<TransformComponent> transform{ std::make_shared<TransformComponent>() };
+	transform->SetPos(pos);
+	transform->SetRotEuler(rot);
+	transform->SetScale(scale);
+	m_spTransformComponent = transform;
 }
 
 
@@ -33,6 +37,54 @@ dae::GameObject::~GameObject()
 	m_ComponentsNeedRendering.clear();
 }
 
+void dae::GameObject::RootFixedUpdate()
+{
+	FixedUpdate();
+
+	for (auto child : m_Children)
+	{
+		child->RootFixedUpdate();
+	}
+}
+void dae::GameObject::RootUpdate()
+{
+	Update();
+
+	for (auto child : m_Children)
+	{
+		child->RootUpdate();
+	}
+}
+void dae::GameObject::RootLateUpdate()
+{
+	LateUpdate();
+
+	for (auto child : m_Children)
+	{
+		child->RootLateUpdate();
+	}
+}
+void dae::GameObject::RootRender() const
+{
+	Render();
+
+	for (auto child : m_Children)
+	{
+		child->RootRender();
+	}
+}
+
+void dae::GameObject::FixedUpdate()
+{
+	for (auto comp : m_Components)
+	{
+		comp->FixedUpdate();
+	}
+	for (auto comp : m_ComponentsNeedRendering)
+	{
+		comp->FixedUpdate();
+	}
+}
 void dae::GameObject::Update()
 {
 	for (auto comp : m_Components)
@@ -44,7 +96,6 @@ void dae::GameObject::Update()
 		comp->Update();
 	}
 }
-
 void dae::GameObject::LateUpdate()
 {
 	for (auto comp : m_Components)
@@ -56,16 +107,6 @@ void dae::GameObject::LateUpdate()
 		comp->LateUpdate();
 	}
 }
-
-void dae::GameObject::InitTransform(Float2 pos, float rot, Float2 scale)
-{
-	std::shared_ptr<TransformComponent> transform{ std::make_shared<TransformComponent>() };
-	transform->SetPos(pos);
-	transform->SetRotEuler(rot);
-	transform->SetScale(scale);
-	m_spTransformComponent = transform;
-}
-
 void dae::GameObject::Render() const
 {
 	for (size_t i{}; i < m_ComponentsNeedRendering.size(); ++i)
@@ -74,6 +115,11 @@ void dae::GameObject::Render() const
 	}
 }
 
+
+void dae::GameObject::AddChild(std::shared_ptr<GameObject> child)
+{
+	m_Children.push_back(child);
+}
 void dae::GameObject::AddComponent(std::shared_ptr<BaseComponent> comp)
 {
 	m_Components.push_back(comp);
