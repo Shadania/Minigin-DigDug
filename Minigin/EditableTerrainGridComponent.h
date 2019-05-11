@@ -6,12 +6,10 @@ namespace dae
 	class TerrainCell
 	{
 	public:
-		void Init(float x, float y, float* width, float* height)
+		void Init(float x, float y)
 		{
 			m_BotLeft.x = x;
 			m_BotLeft.y = y;
-			m_pWidth = width;
-			m_pHeight = height;
 			m_Active = true;
 		}
 
@@ -31,10 +29,16 @@ namespace dae
 		{
 			return m_Active;
 		}
+
+		static void SetWidthHeight(float* newWidth, float* newHeight)
+		{
+			m_pWidth = newWidth;
+			m_pHeight = newHeight;
+		}
 	private:
 		Float2 m_BotLeft;
-		float* m_pWidth;
-		float* m_pHeight;
+		static float* m_pWidth;
+		static float* m_pHeight;
 		bool m_Active;
 	};
 
@@ -47,6 +51,7 @@ namespace dae
 		bool DoesCollide(Float4& shape);
 		void EraseTerrain(const Float4& shape);
 
+		void Render() const override;
 
 	private:
 		// DATA MEMBERS

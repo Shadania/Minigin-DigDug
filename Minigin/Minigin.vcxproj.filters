@@ -12,9 +12,6 @@
     <Filter Include="Content">
       <UniqueIdentifier>{ebe8045a-eb24-4d80-93bb-606c65890086}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TestScenes">
-      <UniqueIdentifier>{ea9df25c-be64-4f14-8c2c-955dbadf8ce3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SceneGraph">
       <UniqueIdentifier>{98500834-db42-4304-91c8-3e0f473614fb}</UniqueIdentifier>
     </Filter>
@@ -24,9 +21,6 @@
     </Filter>
     <Filter Include="Prefabs">
       <UniqueIdentifier>{d963bbe1-60f9-457c-aa37-e07385728c9f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DigDug">
-      <UniqueIdentifier>{dc5d7d1a-0a4b-4f80-b8a6-7495a60fe3a1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -75,12 +69,6 @@
     <ClInclude Include="Structs.h">
       <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectPool.h">
-      <Filter>Content</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSTestScene.h">
-      <Filter>TestScenes</Filter>
-    </ClInclude>
     <ClInclude Include="SceneObject.h">
       <Filter>SceneGraph</Filter>
     </ClInclude>
@@ -99,9 +87,6 @@
     <ClInclude Include="Audio.h">
       <Filter>Services</Filter>
     </ClInclude>
-    <ClInclude Include="SpriteTestScene.h">
-      <Filter>TestScenes</Filter>
-    </ClInclude>
     <ClInclude Include="SpriteComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -111,18 +96,9 @@
     <ClInclude Include="EditableTerrainGridComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainTestScene.h">
-      <Filter>TestScenes</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterDigDug.h">
-      <Filter>DigDug</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
       <Filter>Base</Filter>
     </ClCompile>
     <ClCompile Include="Minigin.cpp">
@@ -161,12 +137,6 @@
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectPool.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
-    <ClCompile Include="FPSTestScene.cpp">
-      <Filter>TestScenes</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>SceneGraph</Filter>
     </ClCompile>
@@ -182,9 +152,6 @@
     <ClCompile Include="Audio.cpp">
       <Filter>Services</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteTestScene.cpp">
-      <Filter>TestScenes</Filter>
-    </ClCompile>
     <ClCompile Include="SpriteComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -193,12 +160,6 @@
     </ClCompile>
     <ClCompile Include="EditableTerrainGridComponent.cpp">
       <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="TerrainTestScene.cpp">
-      <Filter>TestScenes</Filter>
-    </ClCompile>
-    <ClCompile Include="CharacterDigDug.cpp">
-      <Filter>DigDug</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

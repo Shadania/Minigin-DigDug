@@ -21,7 +21,7 @@ namespace dae
 		// for non conform timing on frames
 		void SetSecPerFrame(const std::vector<float> amts);
 		// check name
-		bool IsName(int nameHash);
+		bool IsName(size_t nameHash);
 		
 		void Render(const std::shared_ptr<GameObject>& go) const;
 		void Update(float& accuSec);
@@ -33,7 +33,7 @@ namespace dae
 	private:
 		std::shared_ptr<Texture2D> m_spTex;
 		std::string m_Name;
-		int m_NameHash;
+		size_t m_NameHash;
 		size_t m_AmtFrames;
 		std::vector<float> m_SecPerFrame;
 

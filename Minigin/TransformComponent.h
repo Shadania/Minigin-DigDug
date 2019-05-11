@@ -10,15 +10,19 @@ namespace dae
 	class TransformComponent final : public BaseComponent
 	{
 	public:
-		TransformComponent();
+		TransformComponent(GameObject* go);
 
-		void SetPos(Float2 newPos) { m_Pos = newPos; }
-		void SetRotEuler(float newRot) { m_Angle = newRot; }
-		void SetScale(Float2 newScale) { m_Scale = newScale; }
+		void SetLocalPos(Float2 newPos) { m_Pos = newPos; }
+		void SetLocalRot(float newRot) { m_Rot = newRot; }
+		void SetLocalScale(Float2 newScale) { m_Scale = newScale; }
 
-		Float2 GetPos() const { return m_Pos; }
-		float GetRotEuler() const { return m_Angle; }
-		Float2 GetScale() const { return m_Scale; }
+		Float2 GetLocalPos() const { return m_Pos; }
+		float GetLocalRot() const { return m_Rot; }
+		Float2 GetLocalScale() const { return m_Scale; }
+
+		Float2 GetWorldPos() const;
+		float GetWorldRot() const;
+		Float2 GetWorldScale() const;
 
 		void Translate(float x, float y);
 		void Rotate(float angle);
@@ -32,7 +36,8 @@ namespace dae
 
 	private:
 		Float2 m_Pos;
-		float m_Angle;
+		float m_Rot;
 		Float2 m_Scale;
+		GameObject* m_pMyObj;
 	};
 }

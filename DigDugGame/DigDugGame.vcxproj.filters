@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Boring files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Interesting files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Interesting files\TestScenes">
+      <UniqueIdentifier>{7532919e-2277-483a-8917-88c50911069f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interesting files\Actors">
+      <UniqueIdentifier>{bbd0d2a7-ce7d-4ed3-b600-4ffcccb0b37e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Boring files</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSTestScene.h">
+      <Filter>Interesting files\TestScenes</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteTestScene.h">
+      <Filter>Interesting files\TestScenes</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainTestScene.h">
+      <Filter>Interesting files\TestScenes</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterDigDug.h">
+      <Filter>Interesting files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGame.h">
+      <Filter>Interesting files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DigDugGame.cpp">
+      <Filter>Interesting files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Boring files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSTestScene.cpp">
+      <Filter>Interesting files\TestScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteTestScene.cpp">
+      <Filter>Interesting files\TestScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainTestScene.cpp">
+      <Filter>Interesting files\TestScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterDigDug.cpp">
+      <Filter>Interesting files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame.cpp">
+      <Filter>Interesting files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

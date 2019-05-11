@@ -38,7 +38,7 @@ void dae::Sequence::Render(const std::shared_ptr<GameObject>& go) const
 	Float4 destRect{}, srcRect{};
 	destRect.z = (float)(m_spTex->GetWidth() / (int)m_AmtFrames);
 	destRect.w = (float)m_spTex->GetHeight();
-	auto pos{go->GetTransform()->GetPos()};
+	auto pos{go->GetTransform()->GetWorldPos()};
 	destRect.x = pos.x - (destRect.z / 2);
 	destRect.y = pos.y - (destRect.w / 2);
 
@@ -64,7 +64,7 @@ void dae::Sequence::Update(float& accuSec)
 		m_CurrFrameIdx = (m_CurrFrameIdx + 1) % m_AmtFrames;
 	}
 }
-bool dae::Sequence::IsName(int nameHash)
+bool dae::Sequence::IsName(size_t nameHash)
 {
 	return (nameHash == m_NameHash);
 }
@@ -91,9 +91,8 @@ void dae::SpriteComponent::AddSequence(std::shared_ptr<Sequence> sprite)
 }
 void dae::SpriteComponent::RemoveSprite(const std::string& name)
 {
-	int nameHash{};
 	std::hash<std::string> hasher;
-	nameHash = hasher(name);
+	size_t nameHash{ hasher(name) };
 
 	for (auto sprite : m_Sprites)
 	{
@@ -106,9 +105,8 @@ void dae::SpriteComponent::RemoveSprite(const std::string& name)
 }
 void dae::SpriteComponent::SetActiveSprite(const std::string& name)
 {
-	int nameHash{};
 	std::hash<std::string> hasher;
-	nameHash = hasher(name);
+	size_t nameHash{ hasher(name) };
 	if (m_ActiveSprite)
 		if (m_ActiveSprite->IsName(nameHash))
 			return;
@@ -127,9 +125,8 @@ void dae::SpriteComponent::SetActiveSprite(const std::string& name)
 }
 bool dae::SpriteComponent::IsActiveSprite(const std::string& name) const
 {
-	int nameHash{};
 	std::hash<std::string> hasher;
-	nameHash = hasher(name);
+	size_t nameHash{ hasher(name) };
 	return m_ActiveSprite->IsName(nameHash);
 }
 

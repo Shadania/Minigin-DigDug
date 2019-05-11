@@ -8,11 +8,12 @@
 
 dae::GameObject::GameObject(const Float2& pos, float rot, const Float2& scale)
 	:m_spTransformComponent{}
+	,m_pParent{nullptr}
 {
-	std::shared_ptr<TransformComponent> transform{ std::make_shared<TransformComponent>() };
-	transform->SetPos(pos);
-	transform->SetRotEuler(rot);
-	transform->SetScale(scale);
+	std::shared_ptr<TransformComponent> transform{ std::make_shared<TransformComponent>(this) };
+	transform->SetLocalPos(pos);
+	transform->SetLocalRot(rot);
+	transform->SetLocalScale(scale);
 	m_spTransformComponent = transform;
 }
 
@@ -24,24 +25,24 @@ dae::GameObject::~GameObject()
 	std::cout << "Gameobject got destroyed\n";
 
 	m_spTransformComponent.reset();
-	for (auto sp : m_Components)
+	for (auto sp : m_vspComponents)
 	{
 		sp.reset();
 	}
-	m_Components.clear();
-	for (auto sp : m_ComponentsNeedRendering)
+	m_vspComponents.clear();
+	for (auto sp : m_vspComponentsNeedRendering)
 	{
 		sp.reset();
 	}
 
-	m_ComponentsNeedRendering.clear();
+	m_vspComponentsNeedRendering.clear();
 }
 
 void dae::GameObject::RootFixedUpdate()
 {
 	FixedUpdate();
 
-	for (auto child : m_Children)
+	for (auto child : m_vspChildren)
 	{
 		child->RootFixedUpdate();
 	}
@@ -50,7 +51,7 @@ void dae::GameObject::RootUpdate()
 {
 	Update();
 
-	for (auto child : m_Children)
+	for (auto child : m_vspChildren)
 	{
 		child->RootUpdate();
 	}
@@ -59,7 +60,7 @@ void dae::GameObject::RootLateUpdate()
 {
 	LateUpdate();
 
-	for (auto child : m_Children)
+	for (auto child : m_vspChildren)
 	{
 		child->RootLateUpdate();
 	}
@@ -68,7 +69,7 @@ void dae::GameObject::RootRender() const
 {
 	Render();
 
-	for (auto child : m_Children)
+	for (auto child : m_vspChildren)
 	{
 		child->RootRender();
 	}
@@ -76,71 +77,80 @@ void dae::GameObject::RootRender() const
 
 void dae::GameObject::FixedUpdate()
 {
-	for (auto comp : m_Components)
+	for (auto comp : m_vspComponents)
 	{
 		comp->FixedUpdate();
 	}
-	for (auto comp : m_ComponentsNeedRendering)
+	for (auto comp : m_vspComponentsNeedRendering)
 	{
 		comp->FixedUpdate();
 	}
 }
 void dae::GameObject::Update()
 {
-	for (auto comp : m_Components)
+	for (auto comp : m_vspComponents)
 	{
 		comp->Update();
 	}
-	for (auto comp : m_ComponentsNeedRendering)
+	for (auto comp : m_vspComponentsNeedRendering)
 	{
 		comp->Update();
 	}
 }
 void dae::GameObject::LateUpdate()
 {
-	for (auto comp : m_Components)
+	for (auto comp : m_vspComponents)
 	{
 		comp->LateUpdate();
 	}
-	for (auto comp : m_ComponentsNeedRendering)
+	for (auto comp : m_vspComponentsNeedRendering)
 	{
 		comp->LateUpdate();
 	}
 }
 void dae::GameObject::Render() const
 {
-	for (size_t i{}; i < m_ComponentsNeedRendering.size(); ++i)
+	for (size_t i{}; i < m_vspComponentsNeedRendering.size(); ++i)
 	{
-		m_ComponentsNeedRendering[i]->Render();
+		m_vspComponentsNeedRendering[i]->Render();
 	}
 }
 
 
 void dae::GameObject::AddChild(std::shared_ptr<GameObject> child)
 {
-	m_Children.push_back(child);
+	m_vspChildren.push_back(child);
+	child->SetParent(this);
+}
+void dae::GameObject::SetParent(GameObject* parent)
+{
+	m_pParent = parent;
+}
+dae::GameObject* dae::GameObject::GetParent()
+{
+	return m_pParent;
 }
 void dae::GameObject::AddComponent(std::shared_ptr<BaseComponent> comp)
 {
-	m_Components.push_back(comp);
+	m_vspComponents.push_back(comp);
 	comp->SetGameObj(shared_from_this());
 }
 
 void dae::GameObject::AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp)
 {
-	m_ComponentsNeedRendering.push_back(comp);
+	m_vspComponentsNeedRendering.push_back(comp);
 	comp->SetGameObj(shared_from_this());
 }
 
 std::shared_ptr<dae::BaseComponent> dae::GameObject::GetComponent(const std::string& type)
 {
 	std::hash<std::string> hasher;
-	for (auto comp : m_Components)
+	for (auto comp : m_vspComponents)
 	{
 		if (hasher(comp->GetType()) == hasher(type))
 			return comp;
 	}
-	for (auto comp : m_ComponentsNeedRendering)
+	for (auto comp : m_vspComponentsNeedRendering)
 	{
 		if (hasher(comp->GetType()) == hasher(type))
 			return comp;

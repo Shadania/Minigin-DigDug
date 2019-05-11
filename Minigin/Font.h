@@ -1,5 +1,6 @@
 #pragma once
-#include <SDL_ttf.h>
+
+typedef struct _TTF_Font TTF_Font;
 
 namespace dae
 {

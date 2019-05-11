@@ -4,6 +4,7 @@
 #include "TransformComponent.h"
 #include "Texture2D.h"
 #include "SceneObject.h"
+#include <vector>
 
 
 namespace dae
@@ -25,6 +26,8 @@ namespace dae
 		void RootRender() const;
 
 		void AddChild(std::shared_ptr<GameObject> child);
+		void SetParent(GameObject* parent);
+		GameObject* GetParent();
 		void AddComponent(std::shared_ptr<BaseComponent> comp);
 		void AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp);
 		std::shared_ptr<BaseComponent> GetComponent(const std::string& type);
@@ -46,8 +49,9 @@ namespace dae
 
 	private:
 		std::shared_ptr<TransformComponent> m_spTransformComponent;
-		std::vector<std::shared_ptr<BaseComponent>> m_ComponentsNeedRendering;
-		std::vector<std::shared_ptr<BaseComponent>> m_Components;
-		std::vector<std::shared_ptr<GameObject>> m_Children;
+		std::vector<std::shared_ptr<BaseComponent>> m_vspComponentsNeedRendering;
+		std::vector<std::shared_ptr<BaseComponent>> m_vspComponents;
+		std::vector<std::shared_ptr<GameObject>> m_vspChildren;
+		GameObject* m_pParent;
 	};
 }

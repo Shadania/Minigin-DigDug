@@ -26,13 +26,15 @@ void dae::EditableTerrainGridComponent::Initialize()
 	for (size_t i{}; i < m_AmtCells; ++i)
 	{
 		float x{ (i % m_AmtCols) * m_CellWidth }, y{ (i / m_AmtCols) * m_CellHeight };
-		m_pCells[m_AmtCells].Init(x, y, &m_CellWidth, &m_CellHeight);
+		m_pCells[m_AmtCells].Init(x, y);
 	}
 }
 
 
 bool dae::EditableTerrainGridComponent::DoesCollide(Float4& shape)
 {
+	TerrainCell::SetWidthHeight(&m_CellWidth, &m_CellHeight);
+
 	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
 
 	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
@@ -50,6 +52,8 @@ bool dae::EditableTerrainGridComponent::DoesCollide(Float4& shape)
 }
 void dae::EditableTerrainGridComponent::EraseTerrain(const Float4& shape)
 {
+	TerrainCell::SetWidthHeight(&m_CellWidth, &m_CellHeight);
+
 	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
 
 	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
@@ -69,6 +73,8 @@ void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
 	size_t& leftBotCell, size_t& topRightCell,
 	size_t& amtCols, size_t& amtRows)
 {
+	TerrainCell::SetWidthHeight(&m_CellWidth, &m_CellHeight);
+
 	// fix shape a bit so the pixels actually do fall inside the cells
 	shape.x += m_CellWidth / 8;
 	shape.y += m_CellHeight / 8;
@@ -101,4 +107,13 @@ void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
 
 	amtCols = (topRightCell % m_AmtCols) - (leftBotCell % m_AmtCols);
 	amtRows = (topRightCell / m_AmtCols) - (leftBotCell / m_AmtCols);
+}
+
+void dae::EditableTerrainGridComponent::Render() const
+{
+	for (size_t i{}; i < m_AmtCells; ++i)
+	{
+		// if (m_pCells[i].IsActive())
+			// draw the cell
+	}
 }

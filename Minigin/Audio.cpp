@@ -1,10 +1,10 @@
 #include "MiniginPCH.h"
 #include "Audio.h"
 #include <iostream>
-#pragma comment(lib, "sdl2.lib")
-#pragma comment(lib, "SDL2main.lib")
-#pragma comment(lib, "SDL2_mixer.lib")  
-#include <SDL_mixer.h>
+// #pragma comment(lib, "SDL2.lib")
+// #pragma comment(lib, "SDL2main.lib")
+// #pragma comment(lib, "SDL2_mixer.lib")  
+#include "SDL_mixer.h"
 #include <string>
 
 
