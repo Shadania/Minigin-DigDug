@@ -16,3 +16,6 @@ Minigin/x64/Debug/Minigin.tlog/Minigin.lastbuildstate
 Minigin/x64/Debug/Minigin.tlog/Minigin.write.1u.tlog
 Minigin/x64/Debug/vc141.idb
 x64/Debug/Minigin.exp
+*.ipch
+*.tlog
+*.idb

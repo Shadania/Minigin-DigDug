@@ -21,17 +21,17 @@ void dae::TerrainTestScene::Init()
 
 	//TODO: Uncomment when done with terrain
 	// Sprite
-	// m_spCharacter = std::make_shared<CharacterDigDug>();
-	// AddToScene(m_spCharacter);
+	m_spCharacter = std::make_shared<CharacterDigDug>();
+	AddToScene(m_spCharacter);
 
 	ServiceLocator::GetRenderer()->SetScale(3.0f);
 
 	// Terrain
-	auto go = std::make_shared<GameObject>();
-	auto terrainComp = std::make_shared<EditableTerrainGridComponent>(4.0f, 4.0f, 100, 100);
-	terrainComp->SetColors(1, new Float3(0, 1, 1));
-	go->AddComponentNeedRendering(terrainComp);
-	AddToScene(go);
+	// auto go = std::make_shared<GameObject>();
+	// auto terrainComp = std::make_shared<EditableTerrainGridComponent>(4.0f, 4.0f, 100, 100);
+	// terrainComp->SetColors(1, new Float3(0, 1, 1));
+	// go->AddComponentNeedRendering(terrainComp);
+	// AddToScene(go);
 
 	m_IsInitialized = true;
 }

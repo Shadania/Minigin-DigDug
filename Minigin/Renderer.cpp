@@ -13,6 +13,10 @@ dae::Renderer::Renderer()
 
 }
 
+dae::Renderer::~Renderer()
+{
+	Destroy();
+}
 
 void dae::Renderer::Init(SDL_Window * window)
 {

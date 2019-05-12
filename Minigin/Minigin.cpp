@@ -51,7 +51,6 @@ void dae::Minigin::Initialize()
 
 void dae::Minigin::Cleanup()
 {
-	ServiceLocator::GetRenderer()->Destroy();
 	ServiceLocator::CleanupResources();
 	SDL_DestroyWindow(window);
 	window = nullptr;

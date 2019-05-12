@@ -12,9 +12,10 @@ namespace dae
 
 	public:
 		Renderer();
+		~Renderer();
+
 		void Init(SDL_Window* window);
 		void Render();
-		void Destroy();
 		void SetScale(float scale);
 
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
@@ -27,8 +28,7 @@ namespace dae
 
 	private:
 		SDL_Renderer* mRenderer = nullptr;
+		void Destroy();
 		float m_Scale;
 	};
 }
-
-// These object pools don't seem to like smart pointers. Exceptions are thrown on program end.

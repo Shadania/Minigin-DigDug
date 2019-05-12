@@ -139,7 +139,7 @@ void dae::EditableTerrainGridComponent::Render() const
 	{
 		// if (m_pCells[i].IsActive())
 			// draw the cell
-		if (m_pCells[i].IsActive())
+		// if (m_pCells[i].IsActive())
 			
 	}
 }
