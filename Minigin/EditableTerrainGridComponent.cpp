@@ -1,6 +1,12 @@
 #include "MiniginPCH.h"
 #include "EditableTerrainGridComponent.h"
 
+float* dae::TerrainCell::m_pWidth{ nullptr };
+float* dae::TerrainCell::m_pHeight{ nullptr };
+
+
+
+
 dae::EditableTerrainGridComponent::EditableTerrainGridComponent(float cellHeight, float cellWidth, size_t amtCols, size_t amtRows)
 	:BaseComponent("EditableTerrainComponent")
 	
@@ -11,12 +17,17 @@ dae::EditableTerrainGridComponent::EditableTerrainGridComponent(float cellHeight
 	,m_AmtCells{amtCols * amtRows}
 
 	,m_pCells{nullptr}
+
+	,m_pColors{nullptr}
+	,m_AmtColors{-1}
 {
 	Initialize();
 }
 dae::EditableTerrainGridComponent::~EditableTerrainGridComponent()
 {
 	delete[] m_pCells;
+	if (m_pColors)
+		delete[] m_pColors;
 }
 
 void dae::EditableTerrainGridComponent::Initialize()
@@ -28,6 +39,11 @@ void dae::EditableTerrainGridComponent::Initialize()
 		float x{ (i % m_AmtCols) * m_CellWidth }, y{ (i / m_AmtCols) * m_CellHeight };
 		m_pCells[m_AmtCells].Init(x, y);
 	}
+}
+void dae::EditableTerrainGridComponent::SetColors(int amtColors, Float3* colors)
+{
+	m_AmtColors = amtColors;
+	m_pColors = colors;
 }
 
 
@@ -111,9 +127,19 @@ void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
 
 void dae::EditableTerrainGridComponent::Render() const
 {
+	if (m_AmtColors < 0)
+	{
+		std::cout << "No colors set in EditableTerrainGridComponent!";
+		return;
+	}
+
+	Float4 destRect{};
+
 	for (size_t i{}; i < m_AmtCells; ++i)
 	{
 		// if (m_pCells[i].IsActive())
 			// draw the cell
+		if (m_pCells[i].IsActive())
+			
 	}
 }

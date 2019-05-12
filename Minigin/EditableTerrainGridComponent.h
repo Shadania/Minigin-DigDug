@@ -35,11 +35,21 @@ namespace dae
 			m_pWidth = newWidth;
 			m_pHeight = newHeight;
 		}
+
+		USHORT GetColorID() const
+		{
+			return m_ColorID;
+		}
+		Float2 GetBotLeft() const
+		{
+			return m_BotLeft;
+		}
 	private:
-		Float2 m_BotLeft;
+		Float2 m_BotLeft = {-1, -1};
 		static float* m_pWidth;
 		static float* m_pHeight;
-		bool m_Active;
+		bool m_Active = false;
+		USHORT m_ColorID = 1;
 	};
 
 	class EditableTerrainGridComponent final : public BaseComponent
@@ -50,6 +60,8 @@ namespace dae
 		
 		bool DoesCollide(Float4& shape);
 		void EraseTerrain(const Float4& shape);
+		// this component will take over management of the Colors heap data
+		void SetColors(int amtColors, Float3* colors);
 
 		void Render() const override;
 
@@ -60,6 +72,9 @@ namespace dae
 		size_t m_AmtCols;
 		size_t m_AmtRows;
 		size_t m_AmtCells;
+
+		Float3* m_pColors;
+		int m_AmtColors;
 
 		// goes from left bottom row per row until right top
 		TerrainCell* m_pCells;
