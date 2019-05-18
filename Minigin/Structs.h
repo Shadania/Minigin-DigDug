@@ -54,6 +54,9 @@ namespace dae
 		Float4(const Float2& xy, float z, float w)
 			:Float4(xy.x, xy.y, z, w)
 		{}
+		Float4(const Float3& xyz, float w)
+			:Float4(xyz.x, xyz.y, xyz.z, w)
+		{}
 
 
 		float x{}, y{}, z{}, w{};

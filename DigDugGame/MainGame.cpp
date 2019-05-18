@@ -25,29 +25,29 @@ using namespace dae;
 
 void MainGame::LoadScenes()
 {
-	std::shared_ptr<Scene> scene{};
+	std::shared_ptr<Scene> startScene{};
 
 #ifdef TEST_FPS
-	scene = std::make_shared<FPSTestScene>();
+	startScene = std::make_shared<FPSTestScene>();
 #endif
 #ifdef TEST_SPRITE
-	scene = std::make_shared<SpriteTestScene>();
+	startScene = std::make_shared<SpriteTestScene>();
 #endif
 #ifdef TEST_TERRAIN
-	scene = std::make_shared<TerrainTestScene>();
+	startScene = std::make_shared<TerrainTestScene>();
 #endif
 
 
 
-	ServiceLocator::GetSceneManager()->AddScene(scene);
-	ServiceLocator::GetSceneManager()->SetActiveScene(scene->GetName());
+	ServiceLocator::GetSceneManager()->AddScene(startScene);
+	ServiceLocator::GetSceneManager()->SetActiveScene(startScene->GetName());
 }
 
 
 void MainGame::Run()
 {
 	dae::Minigin engine{};
-	engine.Initialize();
+	engine.Initialize(480, 720); // window width and height
 
 	LoadScenes();
 

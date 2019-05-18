@@ -6,7 +6,7 @@
 #include "InputManager.h"
 
 dae::CharacterDigDug::CharacterDigDug()
-	:m_Speed{170.0f}
+	:m_Speed{50.0f}
 {
 	Initialize();
 }
@@ -37,6 +37,8 @@ void dae::CharacterDigDug::Initialize()
 	m_spSpriteObject = std::make_shared<GameObject>();
 	m_spSpriteObject->AddComponentNeedRendering(m_spSpriteObjectComponent);
 	AddChild(m_spSpriteObject);
+	// Make the sprite's center the bottom
+	m_spSpriteObject->GetTransform()->Translate(0, -4);
 
 	// Input
 	auto input = ServiceLocator::GetInputManager();

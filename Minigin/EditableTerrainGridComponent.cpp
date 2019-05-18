@@ -1,13 +1,18 @@
 #include "MiniginPCH.h"
 #include "EditableTerrainGridComponent.h"
+#include "ServiceLocator.h"
+#include "Renderer.h"
+#include "ResourceManager.h"
+#include "Texture2D.h"
 
 float* dae::TerrainCell::m_pWidth{ nullptr };
 float* dae::TerrainCell::m_pHeight{ nullptr };
+dae::Float2* dae::TerrainCell::m_pOffset{ nullptr };
 
 
 
 
-dae::EditableTerrainGridComponent::EditableTerrainGridComponent(float cellHeight, float cellWidth, size_t amtCols, size_t amtRows)
+dae::EditableTerrainGridComponent::EditableTerrainGridComponent(float cellHeight, float cellWidth, size_t amtCols, size_t amtRows, const std::string& tileFile)
 	:BaseComponent("EditableTerrainComponent")
 	
 	,m_CellHeight{cellHeight}
@@ -20,28 +25,40 @@ dae::EditableTerrainGridComponent::EditableTerrainGridComponent(float cellHeight
 
 	,m_pColors{nullptr}
 	,m_AmtColors{-1}
+
+	, m_pTileTex{ServiceLocator::GetResourceManager()->LoadTexture(tileFile)}
 {
 	Initialize();
 }
 dae::EditableTerrainGridComponent::~EditableTerrainGridComponent()
 {
-	delete[] m_pCells;
+	if (m_pCells)
+	{
+		delete[] m_pCells;
+		m_pCells = nullptr;
+	}
 	if (m_pColors)
+	{
 		delete[] m_pColors;
+		m_pColors = nullptr;
+	}
 }
 
 void dae::EditableTerrainGridComponent::Initialize()
 {
 	m_pCells = new TerrainCell[m_AmtCells]{};
-
+	
 	for (size_t i{}; i < m_AmtCells; ++i)
 	{
 		float x{ (i % m_AmtCols) * m_CellWidth }, y{ (i / m_AmtCols) * m_CellHeight };
-		m_pCells[m_AmtCells].Init(x, y);
+		m_pCells[i].Init(x, y);
 	}
 }
 void dae::EditableTerrainGridComponent::SetColors(int amtColors, Float3* colors)
 {
+	if (m_pColors)
+		delete[] m_pColors;
+
 	m_AmtColors = amtColors;
 	m_pColors = colors;
 }
@@ -49,8 +66,6 @@ void dae::EditableTerrainGridComponent::SetColors(int amtColors, Float3* colors)
 
 bool dae::EditableTerrainGridComponent::DoesCollide(Float4& shape)
 {
-	TerrainCell::SetWidthHeight(&m_CellWidth, &m_CellHeight);
-
 	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
 
 	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
@@ -60,7 +75,7 @@ bool dae::EditableTerrainGridComponent::DoesCollide(Float4& shape)
 	for (size_t i{}; i < amtAffectedCells; ++i)
 	{
 		size_t targetId{ botLeftCell + (i % amtCols) + m_AmtCols * (i / amtCols) };
-
+	
 		if (m_pCells[targetId].IsActive())
 			return true;
 	}
@@ -68,8 +83,6 @@ bool dae::EditableTerrainGridComponent::DoesCollide(Float4& shape)
 }
 void dae::EditableTerrainGridComponent::EraseTerrain(const Float4& shape)
 {
-	TerrainCell::SetWidthHeight(&m_CellWidth, &m_CellHeight);
-
 	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
 
 	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
@@ -89,7 +102,7 @@ void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
 	size_t& leftBotCell, size_t& topRightCell,
 	size_t& amtCols, size_t& amtRows)
 {
-	TerrainCell::SetWidthHeight(&m_CellWidth, &m_CellHeight);
+	TerrainCell::SetWidthHeightOffset(&m_CellWidth, &m_CellHeight, &m_Offset);
 
 	// fix shape a bit so the pixels actually do fall inside the cells
 	shape.x += m_CellWidth / 8;
@@ -97,10 +110,11 @@ void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
 	shape.z -= m_CellWidth / 4;
 	shape.w -= m_CellHeight / 4;
 
-	// find left bottom & right top ids of cells occupied by shape
+	// set target positions
 	Float2 targetBotLeft{ shape.x, shape.y };
 	Float2 targetTopRight{ shape.x + shape.z, shape.y + shape.w };
 
+	// find left bottom & right top ids of cells occupied by shape
 	{
 		size_t i{};
 		for (; i < m_AmtCells; ++i)
@@ -134,12 +148,25 @@ void dae::EditableTerrainGridComponent::Render() const
 	}
 
 	Float4 destRect{};
+	destRect.z = m_CellWidth;
+	destRect.w = m_CellHeight;
 
 	for (size_t i{}; i < m_AmtCells; ++i)
 	{
-		// if (m_pCells[i].IsActive())
+		if (m_pCells[i].IsActive())
+		{
 			// draw the cell
-		// if (m_pCells[i].IsActive())
-			
+			auto pos = m_pCells[i].GetBotLeft();
+			destRect.x = pos.x + m_Offset.x;
+			destRect.y = pos.y + m_Offset.y;
+			// ServiceLocator::GetRenderer()->RenderColorRect(destRect, Float4(m_pColors[m_pCells[i].GetColorID()], 1.0f));
+			ServiceLocator::GetRenderer()->RenderTexture(*m_pTileTex, destRect);
+		}
 	}
+}
+
+
+void dae::EditableTerrainGridComponent::SetOffset(const Float2& offset)
+{
+	m_Offset = offset;
 }

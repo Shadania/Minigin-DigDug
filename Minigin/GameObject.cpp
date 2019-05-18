@@ -74,6 +74,15 @@ void dae::GameObject::RootRender() const
 		child->RootRender();
 	}
 }
+void dae::GameObject::RootInitialize()
+{
+	Initialize();
+
+	for (auto child : m_vspChildren)
+	{
+		child->RootInitialize();
+	}
+}
 
 void dae::GameObject::FixedUpdate()
 {
@@ -113,6 +122,17 @@ void dae::GameObject::Render() const
 	for (size_t i{}; i < m_vspComponentsNeedRendering.size(); ++i)
 	{
 		m_vspComponentsNeedRendering[i]->Render();
+	}
+}
+void dae::GameObject::Initialize()
+{
+	for (size_t i{}; i < m_vspComponents.size(); ++i)
+	{
+		m_vspComponentsNeedRendering[i]->Initialize();
+	}
+	for (size_t i{}; i < m_vspComponentsNeedRendering.size(); ++i)
+	{
+		m_vspComponentsNeedRendering[i]->Initialize();
 	}
 }
 

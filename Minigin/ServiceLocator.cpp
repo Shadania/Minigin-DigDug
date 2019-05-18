@@ -13,9 +13,10 @@ dae::Renderer* dae::ServiceLocator::m_pRenderer{ nullptr };
 dae::ResourceManager* dae::ServiceLocator::m_pResourceManager{ nullptr };
 dae::SceneManager* dae::ServiceLocator::m_pSceneManager{ nullptr };
 dae::Audio* dae::ServiceLocator::m_pAudio{ nullptr };
+dae::BasicGameInfo* dae::ServiceLocator::m_pGameInfo{ nullptr };
 
 
-void dae::ServiceLocator::InitResources()
+void dae::ServiceLocator::InitResources(float wWidth, float wHeight)
 {
 	SetGameTime(new GameTime());
 	SetInputManager(new InputManager());
@@ -23,6 +24,10 @@ void dae::ServiceLocator::InitResources()
 	SetResourceManager(new ResourceManager());
 	SetSceneManager(new SceneManager());
 	SetAudio(new RegularAudio());
+
+	m_pGameInfo = new BasicGameInfo{};
+	m_pGameInfo->m_WindowWidth = wWidth;
+	m_pGameInfo->m_WindowHeight = wHeight;
 }
 void dae::ServiceLocator::CleanupResources()
 {
@@ -38,6 +43,8 @@ void dae::ServiceLocator::CleanupResources()
 		delete m_pSceneManager;
 	if (m_pAudio)
 		delete m_pAudio;
+	if (m_pGameInfo)
+		delete m_pGameInfo;
 }
 
 void dae::ServiceLocator::SetGameTime(GameTime* gameTime)

@@ -20,7 +20,7 @@ void dae::Minigin::LoadGame() const
 
 }
 
-void dae::Minigin::Initialize()
+void dae::Minigin::Initialize(int wWidth, int wHeight)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
 	{
@@ -31,16 +31,17 @@ void dae::Minigin::Initialize()
 		"Programming 4 assignment",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		640,
-		480,
+		wWidth,
+		wHeight,
 		SDL_WINDOW_OPENGL
 	);
+
 	if (window == nullptr) 
 	{
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
-	ServiceLocator::InitResources();
+	ServiceLocator::InitResources((float)wWidth, (float)wHeight);
 
 	ServiceLocator::GetRenderer()->Init(window);
 

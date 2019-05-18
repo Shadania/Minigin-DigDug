@@ -15,6 +15,9 @@
     <Filter Include="GameFiles\Actors">
       <UniqueIdentifier>{bbd0d2a7-ce7d-4ed3-b600-4ffcccb0b37e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameFiles\GameScenes">
+      <UniqueIdentifier>{62c9e79f-4d9d-45c1-bcb5-07e1d019dacb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -34,6 +37,15 @@
     </ClInclude>
     <ClInclude Include="MainGame.h">
       <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterFygar.h">
+      <Filter>GameFiles\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPooka.h">
+      <Filter>GameFiles\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="IngameScene.h">
+      <Filter>GameFiles\GameScenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +69,15 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterFygar.cpp">
+      <Filter>GameFiles\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterPooka.cpp">
+      <Filter>GameFiles\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="IngameScene.cpp">
+      <Filter>GameFiles\GameScenes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -12,11 +12,25 @@ namespace dae
 	class ResourceManager;
 	class SceneManager;
 	class Audio;
+	class ServiceLocator;
+
+	class BasicGameInfo
+	{
+	public:
+		float GetWindowWidth() { return m_WindowWidth; }
+		float GetWindowHeight() { return m_WindowHeight; }
+
+	private:
+		friend class ServiceLocator;
+		float m_WindowWidth;
+		float m_WindowHeight;
+	};
+
 
 	class ServiceLocator final
 	{
 	public:
-		static void InitResources();
+		static void InitResources(float wWidth, float wHeight);
 		static void CleanupResources();
 
 		// GETTERS
@@ -34,6 +48,9 @@ namespace dae
 		static void SetResourceManager(ResourceManager* resourceManager);
 		static void SetSceneManager(SceneManager* sceneManager);
 		static void SetAudio(Audio* audio);
+
+		// PUBLIC DATA
+		static BasicGameInfo* m_pGameInfo;
 
 	private:
 		static GameTime* m_pGameTime;

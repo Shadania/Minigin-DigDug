@@ -21,13 +21,14 @@ namespace dae
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
 		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
 		void RenderTexture(const Texture2D& tex, const Float4& destRect, const Float4& srcRect) const;
+		void RenderTexture(const Texture2D& tex, const Float4& destRect);
 
-		void RenderColor(const Float4& destRect, const Float4& color) const;
+		void RenderColorRect(const Float4& destRect, const Float4& color) const;
 
-		SDL_Renderer* GetSDLRenderer() const { return mRenderer; }
+		SDL_Renderer* GetSDLRenderer() const { return m_pRenderer; }
 
 	private:
-		SDL_Renderer* mRenderer = nullptr;
+		SDL_Renderer* m_pRenderer = nullptr;
 		void Destroy();
 		float m_Scale;
 	};
