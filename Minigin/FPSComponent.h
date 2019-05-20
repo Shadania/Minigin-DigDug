@@ -16,8 +16,9 @@ namespace dae
 		void SetColor(const Float4& newColor);
 		void SetFont(const std::shared_ptr<Font>& newFont);
 
+		virtual void Initialize() override;
+
 	private:
-		void Initialize();
 		std::shared_ptr<TextComponent> m_spText;
 		const std::shared_ptr<Font> m_spFont;
 		Float4 m_Color;

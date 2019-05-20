@@ -96,6 +96,15 @@
     <ClInclude Include="EditableTerrainGridComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainGridMovementComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainGridObstacleComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Events.h">
+      <Filter>Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -159,6 +168,12 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="EditableTerrainGridComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainGridMovementComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainGridObstacleComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>

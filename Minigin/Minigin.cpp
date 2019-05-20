@@ -80,6 +80,8 @@ void dae::Minigin::Run()
 			// process time
 			auto t2 = std::chrono::high_resolution_clock::now();
 			float deltaT{ std::chrono::duration<float>(t2 - t).count() };
+			if (deltaT > m_MaxTimestep)
+				deltaT = m_MaxTimestep;
 			t = t2;
 
 			// should we continue after this?

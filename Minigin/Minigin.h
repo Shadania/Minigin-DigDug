@@ -21,6 +21,6 @@ namespace dae
 		void Run();
 
 	private:
-
+		float m_MaxTimestep = 0.05f;
 	};
 }

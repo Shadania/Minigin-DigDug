@@ -8,6 +8,7 @@ namespace dae
 	public:
 
 		virtual void Update() override;
+		virtual void Initialize() override;
 
 	private:
 

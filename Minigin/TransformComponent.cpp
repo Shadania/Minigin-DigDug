@@ -6,9 +6,7 @@
 dae::TransformComponent::TransformComponent(GameObject* go)
 	:BaseComponent("TransformComponent")
 	,m_pMyObj{go}
-{
-	m_Type = "TransformComponent";
-}
+{}
 
 void dae::TransformComponent::Translate(float x, float y)
 {
@@ -27,7 +25,7 @@ void dae::TransformComponent::Scale(float x, float y)
 
 dae::Float2 dae::TransformComponent::GetWorldPos() const
 {
-	Float2 result{m_Pos};
+	Float2 result{};
 	
 	GameObject* parent{ m_pMyObj };
 	while (parent)

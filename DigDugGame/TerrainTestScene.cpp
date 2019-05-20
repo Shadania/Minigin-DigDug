@@ -19,25 +19,26 @@ void dae::TerrainTestScene::Init()
 	if (m_IsInitialized)
 		return;
 
-	//TODO: Uncomment when done with terrain
-	// Sprite
-	m_spCharacter = std::make_shared<CharacterDigDug>();
-	AddToScene(m_spCharacter);
-	m_spCharacter->GetTransform()->Translate(10.0f, 12 * m_Scale);
+
 
 	// Terrain
 	auto go = std::make_shared<GameObject>();
 
-	int amtRows{ 32 }, amtCols{ 30 };
-	float tileSize{ ServiceLocator::m_pGameInfo->GetWindowWidth() / (amtCols*m_Scale)};
+	int amtRows{ 40 }, amtCols{ 30 };
+	float tileSize{ 4.0f };
+	amtCols = int(ServiceLocator::m_pGameInfo->GetWindowWidth() / (tileSize*m_Scale));
 	auto terrainComp = std::make_shared<EditableTerrainGridComponent>(tileSize, tileSize, amtCols, amtRows, "groundTile1.png");
-	terrainComp->SetColors(1, new Float3(0, 1, 1));
-	Float2 offset{};
-	offset.y = 12 * m_Scale;
-	terrainComp->SetOffset(offset);
-
 	go->AddComponentNeedRendering(terrainComp);
 	AddToScene(go);
+	Float4 topRectToCarve{};
+	topRectToCarve.z = ServiceLocator::m_pGameInfo->GetWindowWidth() / m_Scale;
+	topRectToCarve.w = 8 * tileSize;
+	terrainComp->Carve(topRectToCarve);
+
+	// Sprite
+	m_spCharacter = std::make_shared<CharacterDigDug>(terrainComp, Float2(10.0f, 8 * m_Scale));
+	AddToScene(m_spCharacter);
+	// m_spCharacter->GetTransform()->Translate(10.0f, 14 * m_Scale);
 
 	m_IsInitialized = true;
 

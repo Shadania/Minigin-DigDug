@@ -26,7 +26,8 @@ namespace dae
 		BaseComponent& operator=(BaseComponent&&) noexcept = delete;
 
 	protected:
-		std::weak_ptr<GameObject> m_spMyObj;
+		std::weak_ptr<GameObject> m_wpMyObj;
 		std::string m_Type;
+		bool m_IsInitialized = false;
 	};
 }

@@ -29,7 +29,6 @@ void dae::IngameScene::Init()
 
 	auto go = std::make_shared<GameObject>();
 	auto terrainComp = std::make_shared<EditableTerrainGridComponent>(4.0f, 4.0f, 30, 50, "groundTile1.png");
-	terrainComp->SetColors(1, new Float3(0, 1, 1));
 	go->AddComponentNeedRendering(terrainComp);
 	AddToScene(go);
 

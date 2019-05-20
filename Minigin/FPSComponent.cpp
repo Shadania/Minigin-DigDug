@@ -9,13 +9,16 @@ dae::FPSComponent::FPSComponent(const std::shared_ptr<Font> font, const Float4& 
 	,m_spText{}
 	,m_spFont{font}
 	,m_Color{color}
-{
-	Initialize();
-}
+{}
 void dae::FPSComponent::Initialize()
 {
+	if (m_IsInitialized)
+		return;
+
 	m_spText = std::make_shared<TextComponent>("FPS: ???", m_spFont, m_Color);
 	m_spText->GenerateTexture();
+
+	m_IsInitialized = true;
 }
 
 
@@ -40,6 +43,6 @@ void dae::FPSComponent::Render() const
 }
 void dae::FPSComponent::SetGameObj(std::shared_ptr<GameObject> newObj)
 {
-	m_spMyObj = std::weak_ptr<GameObject>(newObj);
+	m_wpMyObj = std::weak_ptr<GameObject>(newObj);
 	m_spText->SetGameObj(newObj);
 }

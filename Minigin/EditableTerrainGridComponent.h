@@ -20,11 +20,21 @@ namespace dae
 
 		bool PointInCell(Float2 pos)
 		{
-			float x{ (pos.x + m_pOffset->x )- m_BotLeft.x }, y{ (pos.y + m_pOffset->y) - m_BotLeft.y };
-			if (x > 0 && x < *m_pWidth)
-				if (y > 0 && y < *m_pHeight)
+			// To stop weirdly going up or down when going left or right and the other way around by mis calculating the position
+			pos.x += *m_pWidth / 16;
+			pos.y += *m_pHeight / 16;
+
+			// x check
+			if ((pos.x >= m_BotLeft.x) && (pos.x <= (m_BotLeft.x + *m_pWidth)))
+			{
+				// y check
+				if ((pos.y >= m_BotLeft.y) && (pos.y <= (m_BotLeft.y + *m_pHeight)))
+				{
 					return true;
+				}
+			}
 			return false;
+
 		}
 		void SetInactive()
 		{
@@ -42,10 +52,6 @@ namespace dae
 			m_pOffset = newOffset;
 		}
 
-		USHORT GetColorID() const
-		{
-			return m_ColorID;
-		}
 		Float2 GetBotLeft() const
 		{
 			return m_BotLeft;
@@ -56,7 +62,6 @@ namespace dae
 		static float* m_pHeight;
 		static Float2* m_pOffset;
 		bool m_Active = false;
-		USHORT m_ColorID = 1;
 	};
 
 	class EditableTerrainGridComponent final : public BaseComponent
@@ -66,10 +71,15 @@ namespace dae
 		virtual ~EditableTerrainGridComponent();
 
 		bool DoesCollide(Float4& shape);
-		void EraseTerrain(const Float4& shape);
-		// this component will take over management of the Colors heap data
-		void SetColors(int amtColors, Float3* colors);
 		void SetOffset(const Float2& offset);
+
+		void Carve(const Float4& shape);
+		void CanMoveInto(const Float4& shape, const Float2& direction);
+		TerrainCell* GetCellAtPos(const Float2& pos) const;
+		float GetCellWidth() const { return m_CellWidth; }
+		float GetCellHeight() const { return m_CellHeight; }
+
+		Float4& GetBoundaries() { return m_Boundaries; }
 
 		void Render() const override;
 		virtual void Initialize() override;
@@ -84,11 +94,12 @@ namespace dae
 		size_t m_AmtCols;
 		size_t m_AmtRows;
 		size_t m_AmtCells;
+		
 		Float2 m_Offset = { 0, 0 };
 
-		Float3* m_pColors;
-		int m_AmtColors;
 		std::shared_ptr<Texture2D> m_pTileTex;
+
+		Float4 m_Boundaries = {};
 
 		// goes from left bottom row per row until right top
 		TerrainCell* m_pCells;

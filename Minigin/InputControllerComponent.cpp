@@ -9,3 +9,9 @@ void dae::InputControllerComponent::Update()
 {
 	// check inputs
 }
+
+
+void dae::InputControllerComponent::Initialize()
+{
+	// do init
+}

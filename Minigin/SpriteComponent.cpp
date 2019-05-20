@@ -139,7 +139,7 @@ void dae::SpriteComponent::Update()
 }
 void dae::SpriteComponent::Render() const
 {
-	m_ActiveSprite->Render(m_spMyObj.lock());
+	m_ActiveSprite->Render(m_wpMyObj.lock());
 }
 
 void dae::SpriteComponent::Freeze(bool resetDelta)

@@ -13,6 +13,7 @@ dae::Scene::Scene(const std::string& name)
 void dae::Scene::AddToScene(const std::shared_ptr<GameObject>& object)
 {
 	m_Objects.push_back(object);
+	object->RootInitialize();
 }
 
 

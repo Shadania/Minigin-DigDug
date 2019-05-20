@@ -16,8 +16,7 @@ dae::TextureComponent::TextureComponent(Float2 pos, float rot, Float2 scale)
 	, m_Pos{pos}
 	, m_Rot{rot}
 	, m_Scale{scale}
-{
-}
+{}
 
 void dae::TextureComponent::SetTexture(const std::string& fileName)
 {
@@ -26,7 +25,7 @@ void dae::TextureComponent::SetTexture(const std::string& fileName)
 
 void dae::TextureComponent::Render() const
 {
-	Float2 finalPos{ m_spMyObj.lock()->GetTransform()->GetLocalPos() };
+	Float2 finalPos{ m_wpMyObj.lock()->GetTransform()->GetLocalPos() };
 	finalPos.x += m_Pos.x;
 	finalPos.y += m_Pos.y;
 	ServiceLocator::GetRenderer()->RenderTexture(*m_spTexture, finalPos.x, finalPos.y);
