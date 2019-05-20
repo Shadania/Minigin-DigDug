@@ -12,11 +12,11 @@
     <Filter Include="GameFiles\TestScenes">
       <UniqueIdentifier>{7532919e-2277-483a-8917-88c50911069f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameFiles\Actors">
-      <UniqueIdentifier>{bbd0d2a7-ce7d-4ed3-b600-4ffcccb0b37e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameFiles\GameScenes">
       <UniqueIdentifier>{62c9e79f-4d9d-45c1-bcb5-07e1d019dacb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Prefabs">
+      <UniqueIdentifier>{bbd0d2a7-ce7d-4ed3-b600-4ffcccb0b37e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,16 +33,16 @@
       <Filter>GameFiles\TestScenes</Filter>
     </ClInclude>
     <ClInclude Include="CharacterDigDug.h">
-      <Filter>GameFiles\Actors</Filter>
+      <Filter>GameFiles\Prefabs</Filter>
     </ClInclude>
     <ClInclude Include="MainGame.h">
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="CharacterFygar.h">
-      <Filter>GameFiles\Actors</Filter>
+      <Filter>GameFiles\Prefabs</Filter>
     </ClInclude>
     <ClInclude Include="CharacterPooka.h">
-      <Filter>GameFiles\Actors</Filter>
+      <Filter>GameFiles\Prefabs</Filter>
     </ClInclude>
     <ClInclude Include="IngameScene.h">
       <Filter>GameFiles\GameScenes</Filter>
@@ -62,7 +62,7 @@
       <Filter>GameFiles\TestScenes</Filter>
     </ClCompile>
     <ClCompile Include="CharacterDigDug.cpp">
-      <Filter>GameFiles\Actors</Filter>
+      <Filter>GameFiles\Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="MainGame.cpp">
       <Filter>Base</Filter>
@@ -71,10 +71,10 @@
       <Filter>Base</Filter>
     </ClCompile>
     <ClCompile Include="CharacterFygar.cpp">
-      <Filter>GameFiles\Actors</Filter>
+      <Filter>GameFiles\Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="CharacterPooka.cpp">
-      <Filter>GameFiles\Actors</Filter>
+      <Filter>GameFiles\Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="IngameScene.cpp">
       <Filter>GameFiles\GameScenes</Filter>

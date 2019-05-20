@@ -36,9 +36,10 @@ void dae::TerrainTestScene::Init()
 	terrainComp->Carve(topRectToCarve);
 
 	// Sprite
+	go = std::make_shared<GameObject>();
 	m_spCharacter = std::make_shared<CharacterDigDug>(terrainComp, Float2(10.0f, 8 * m_Scale));
-	AddToScene(m_spCharacter);
-	// m_spCharacter->GetTransform()->Translate(10.0f, 14 * m_Scale);
+	go->AddComponent(m_spCharacter);
+	AddToScene(go);
 
 	m_IsInitialized = true;
 
@@ -46,10 +47,5 @@ void dae::TerrainTestScene::Init()
 }
 void dae::TerrainTestScene::Update()
 {
-	//TODO: Character interaction with terrain
-
-
-
-
 	Scene::Update();
 }

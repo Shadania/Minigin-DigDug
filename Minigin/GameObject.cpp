@@ -128,7 +128,7 @@ void dae::GameObject::Initialize()
 {
 	for (size_t i{}; i < m_vspComponents.size(); ++i)
 	{
-		m_vspComponentsNeedRendering[i]->Initialize();
+		m_vspComponents[i]->Initialize();
 	}
 	for (size_t i{}; i < m_vspComponentsNeedRendering.size(); ++i)
 	{

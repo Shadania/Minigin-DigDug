@@ -5,6 +5,7 @@
 #include "SpriteComponent.h"
 #include "InputManager.h"
 #include "TerrainGridMovementComponent.h"
+#include "GameObject.h"
 
 dae::CharacterDigDug::CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, const Float2& startingPos)
 	:m_Speed{50.0f}
@@ -131,6 +132,4 @@ void dae::CharacterDigDug::Update()
 	}
 
 	m_PrevDir = newDir;
-
-	GameObject::Update();
 }

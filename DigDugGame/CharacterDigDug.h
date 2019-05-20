@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "BaseComponent.h"
 #include "TerrainGridMovementComponent.h"
 
 namespace dae
@@ -10,7 +10,7 @@ namespace dae
 
 
 
-	class CharacterDigDug final : public GameObject
+	class CharacterDigDug final : public BaseComponent
 	{
 	public:
 		CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, const Float2& startingPos);

@@ -17,7 +17,7 @@ namespace dae
 	 * A container of components
 	 * Initializes its own Transform Component
 	 */
-	class GameObject : public std::enable_shared_from_this<GameObject>
+	class GameObject final : public std::enable_shared_from_this<GameObject>
 	{
 	public:
 		void RootFixedUpdate();

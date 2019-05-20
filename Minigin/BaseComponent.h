@@ -4,6 +4,7 @@
 namespace dae
 {
 	class GameObject;
+	class TransformComponent;
 
 	class BaseComponent
 	{
@@ -24,6 +25,12 @@ namespace dae
 		BaseComponent(BaseComponent&&) noexcept = delete;
 		BaseComponent& operator=(const BaseComponent&) = delete;
 		BaseComponent& operator=(BaseComponent&&) noexcept = delete;
+
+		
+		void AddChild(std::shared_ptr<GameObject> gObj);
+		std::shared_ptr<TransformComponent> GetTransform();
+		void AddComponent(std::shared_ptr<BaseComponent> comp);
+		void AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp);
 
 	protected:
 		std::weak_ptr<GameObject> m_wpMyObj;
