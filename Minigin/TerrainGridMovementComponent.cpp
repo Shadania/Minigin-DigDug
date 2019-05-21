@@ -91,6 +91,7 @@ void dae::TerrainGridMovementComponent::StateFinishing::Update()
 {
 	if (pAgent->HasArrived())
 	{
+		pAgent->DoCollision();
 		pAgent->m_CurrPos = pAgent->m_TargetPos;
 		pAgent->SetState(std::make_shared<StateStill>());
 	}
@@ -195,6 +196,8 @@ void dae::TerrainGridMovementComponent::HandleVelocity()
 	}
 	// m_CurrPos = m_wpMyObj.lock()->GetTransform()->GetWorldPos();
 
+	m_spTerrain->DoCollision(m_CurrPos, m_Dimensions, &m_CurrDir);
+
 	// Do clamp
 	Float4& bounds{ m_spTerrain->GetBoundaries() };
 	if (m_CurrPos.x < bounds.x)
@@ -251,4 +254,8 @@ void dae::TerrainGridMovementComponent::SetTargetPosHere()
 void dae::TerrainGridMovementComponent::DoCarve()
 {
 	m_spTerrain->Carve(Float4(m_CurrPos, m_Dimensions));
+}
+void dae::TerrainGridMovementComponent::DoCollision()
+{
+	m_spTerrain->DoCollision(m_CurrPos, m_Dimensions, &m_CurrDir);
 }

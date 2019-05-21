@@ -13,7 +13,7 @@ namespace dae
 	{
 	public:
 		Sequence(std::shared_ptr<Texture2D> tex, 
-			const std::string& name, size_t amtFrames, 
+			const std::string& name, size_t amtFrames, bool repeat = true,
 			bool resetDeltaOnActive = false, float secPerFrame = 0.2f);
 
 		// for conform timing
@@ -27,6 +27,7 @@ namespace dae
 		void Update(float& accuSec);
 		void Freeze();
 
+		void SetFrame(size_t frame);
 
 		bool m_ResetDeltaOnActive;
 
@@ -38,6 +39,7 @@ namespace dae
 		std::vector<float> m_SecPerFrame;
 
 		int m_CurrFrameIdx;
+		bool m_Repeat;
 	};
 
 
@@ -54,6 +56,8 @@ namespace dae
 		void RemoveSprite(const std::string& name);
 		void SetActiveSprite(const std::string& name);
 		bool IsActiveSprite(const std::string& name) const;
+		Sequence& GetActiveSprite() { return *m_ActiveSprite; }
+		void SetFrame(size_t frame);
 
 		void Freeze(bool resetDelta = false);
 		void Unfreeze();

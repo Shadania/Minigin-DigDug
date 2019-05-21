@@ -4,6 +4,11 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Texture2D.h"
+#include "TerrainGridMovementComponent.h"
+#include "TerrainGridObstacleComponent.h"
+#include <algorithm>
+
+
 
 float* dae::TerrainCell::m_pWidth{ nullptr };
 float* dae::TerrainCell::m_pHeight{ nullptr };
@@ -53,24 +58,6 @@ void dae::EditableTerrainGridComponent::Initialize()
 	m_IsInitialized = true;
 }
 
-// Deprecated -> Use CanMoveInto
-bool dae::EditableTerrainGridComponent::DoesCollide(Float4& shape)
-{
-	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
-
-	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
-
-	size_t amtAffectedCells{ amtCols * amtRows };
-
-	for (size_t i{}; i < amtAffectedCells; ++i)
-	{
-		size_t targetId{ botLeftCell + (i % amtCols) + m_AmtCols * (i / amtCols) };
-	
-		if (m_pCells[targetId].IsActive())
-			return true;
-	}
-	return false;
-}
 
 void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
 	size_t& leftBotCell, size_t& topRightCell,
@@ -78,7 +65,7 @@ void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
 {
 	TerrainCell::SetWidthHeightOffset(&m_CellWidth, &m_CellHeight, &m_Offset);
 
-	// fix shape a bit so the pixels actually do fall inside the cells
+	// make shape bigger so the pixels actually do fall inside the cells
 	shape.x -= m_CellWidth / 8;
 	shape.y -= m_CellHeight / 8;
 	shape.z += m_CellWidth / 4;
@@ -123,6 +110,130 @@ void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
 }
 
 
+void dae::EditableTerrainGridComponent::DoCollision(Float2& botLeftPos, const Float2& dims, Direction* dir)
+{
+	Float4 shape{ botLeftPos, dims };
+	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
+
+	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
+
+	// check where and if there is collision based on direction
+	size_t col{}, row{};
+	bool hitSmth{ false };
+
+	switch (*dir)
+	{
+	case Direction::Down:
+		for (row = 0; row < amtRows; ++row)
+		{
+			for (col = 0; col < amtCols; ++col)
+			{
+				if (m_pCells[botLeftCell + col + (m_AmtCols * row)].IsBlocked())
+				{
+					hitSmth = true;
+					break;
+				}
+			}
+			if (hitSmth)
+				break;
+		}
+		break;
+	case Direction::Up:
+		for (row = amtRows - 1; row > 0 ; --row)
+		{
+			for (col = 0; col < amtCols; ++col)
+			{
+				if (m_pCells[botLeftCell + col + (m_AmtCols * row)].IsBlocked())
+				{
+					hitSmth = true;
+					break;
+				}
+			}
+			if (hitSmth)
+				break;
+		}
+		break;
+
+	case Direction::Left:
+		for (col = 0; col < amtCols; ++col)
+		{
+			for (row = 0; row < amtRows; ++row)
+			{
+				if (m_pCells[botLeftCell + col + (row * m_AmtCols)].IsBlocked())
+				{
+					hitSmth = true;
+					break;
+				}
+			}
+			if (hitSmth)
+				break;
+		}
+		break;
+	case Direction::Right:
+		for (col = amtCols - 1; col > 0; --col)
+		{
+			for (row = 0; row < amtRows; ++row)
+			{
+				if (m_pCells[botLeftCell + col + (row * m_AmtCols)].IsBlocked())
+				{
+					hitSmth = true;
+					break;
+				}
+			}
+			if (hitSmth)
+				break;
+		}
+		break;
+	}
+
+	// handle position based on collision
+	if (hitSmth)
+	{
+		switch (*dir)
+		{
+		case Direction::Down:
+			{
+				size_t diff{ amtRows - row };
+				botLeftPos.y = GetCellAt(botLeftCell % m_AmtCols, (botLeftCell + diff) / m_AmtCols).GetBotLeft().y;
+			}
+			break;
+		case Direction::Up:
+			{
+				size_t diff{ (row + 1)*m_AmtCols };
+				botLeftPos.y = GetCellAt(botLeftCell % m_AmtCols, (botLeftCell + diff ) / m_AmtCols).GetBotLeft().y;
+			}
+			break;
+		case Direction::Left:
+			{
+				botLeftPos.x = GetCellAt((botLeftCell + col + 1) % m_AmtCols, botLeftCell / m_AmtCols).GetBotLeft().x;
+			}
+			break;
+		case Direction::Right:
+			{
+				size_t diff{ amtCols - col };
+				botLeftPos.x = GetCellAt((botLeftCell - diff + 1) % m_AmtCols, botLeftCell / m_AmtCols).GetBotLeft().x;
+			}
+			break;
+		}
+	}
+}
+bool dae::EditableTerrainGridComponent::DoesCollide(Float4& shape)
+{
+	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
+
+	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
+
+	for (size_t i{}; i < amtCols; ++i)
+	{
+		for (size_t j{}; j < amtRows; ++j)
+		{
+			size_t targetId{ botLeftCell + i + m_AmtCols * j };
+			if (m_pCells[targetId].IsActive())
+				return true;
+		}
+	}
+	return false;
+}
 void dae::EditableTerrainGridComponent::Carve(const Float4& shape)
 {
 	// Get cells to carve
@@ -146,6 +257,10 @@ void dae::EditableTerrainGridComponent::CanMoveInto(const Float4& shape, const F
 	(shape);
 	(direction);
 	//TODO: Complete
+
+
+
+
 }
 dae::TerrainCell* dae::EditableTerrainGridComponent::GetCellAtPos(const Float2& pos) const
 {
@@ -155,6 +270,15 @@ dae::TerrainCell* dae::EditableTerrainGridComponent::GetCellAtPos(const Float2& 
 			return &m_pCells[i];
 	}
 	return nullptr;
+}
+int dae::EditableTerrainGridComponent::GetIndexOfCellAtpos(const Float2& pos) const
+{
+	for (int i{}; i < m_AmtCells; ++i)
+	{
+		if (m_pCells[i].PointInCell(pos))
+			return i;
+	}
+	return -1;
 }
 
 
@@ -172,7 +296,6 @@ void dae::EditableTerrainGridComponent::Render() const
 			auto pos = m_pCells[i].GetBotLeft();
 			destRect.x = pos.x + m_Offset.x;
 			destRect.y = pos.y + m_Offset.y;
-			// ServiceLocator::GetRenderer()->RenderColorRect(destRect, Float4(m_pColors[m_pCells[i].GetColorID()], 1.0f));
 			ServiceLocator::GetRenderer()->RenderTexture(*m_pTileTex, destRect);
 		}
 	}
@@ -182,4 +305,55 @@ void dae::EditableTerrainGridComponent::Render() const
 void dae::EditableTerrainGridComponent::SetOffset(const Float2& offset)
 {
 	m_Offset = offset;
+}
+
+
+void dae::EditableTerrainGridComponent::RegisterObstacle(std::shared_ptr<TerrainGridObstacleComponent> obstacle)
+{
+	size_t botLeftCell{}, amtCols{}, amtRows{};
+
+	obstacle->GetInfo(botLeftCell, amtCols, amtRows);
+
+	for (size_t row{}; row < amtRows; ++row)
+	{
+		for (size_t col{}; col < amtCols; ++col)
+		{
+			size_t targetIdx{botLeftCell + col + (m_AmtCols * row)};
+			m_pCells[targetIdx].SetBlocked();
+		}
+	}
+}
+void dae::EditableTerrainGridComponent::RemoveObstacle(std::shared_ptr<TerrainGridObstacleComponent> obstacle)
+{
+	size_t botLeftCell{}, amtCols{}, amtRows{};
+
+	obstacle->GetInfo(botLeftCell, amtCols, amtRows);
+
+	for (size_t row{}; row < amtRows; ++row)
+	{
+		for (size_t col{}; col < amtCols; ++col)
+		{
+			size_t targetIdx{ botLeftCell + col + (m_AmtCols * row) };
+			m_pCells[targetIdx].SetActive();
+		}
+	}
+}
+
+
+dae::TerrainCell& dae::EditableTerrainGridComponent::GetCellAt(size_t col, size_t row)
+{
+	return m_pCells[col + m_AmtCols * row];
+}
+
+
+void dae::EditableTerrainGridComponent::GetVectorOfCells(std::vector<TerrainCell*>& cells, size_t botLeft, size_t cols, size_t rows)
+{
+	for (size_t i{}; i < cols; ++i)
+	{
+		for (size_t j{}; j < rows; ++j)
+		{
+			size_t targetIdx{botLeft + i + m_AmtCells * j};
+			cells.push_back(&m_pCells[targetIdx]);
+		}
+	}
 }

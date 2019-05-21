@@ -6,7 +6,7 @@
 #include "InputManager.h"
 #include "EditableTerrainGridComponent.h"
 #include "CharacterDigDug.h"
-
+#include "Rock.h"
 
 dae::TerrainTestScene::TerrainTestScene()
 	:Scene("TerrainTestScene")
@@ -24,8 +24,8 @@ void dae::TerrainTestScene::Init()
 	// Terrain
 	auto go = std::make_shared<GameObject>();
 
-	int amtRows{ 40 }, amtCols{ 30 };
-	float tileSize{ 4.0f };
+	int amtRows{ 100 }, amtCols{ 30 };
+	float tileSize{ 2.0f };
 	amtCols = int(ServiceLocator::m_pGameInfo->GetWindowWidth() / (tileSize*m_Scale));
 	auto terrainComp = std::make_shared<EditableTerrainGridComponent>(tileSize, tileSize, amtCols, amtRows, "groundTile1.png");
 	go->AddComponentNeedRendering(terrainComp);
@@ -37,9 +37,16 @@ void dae::TerrainTestScene::Init()
 
 	// Sprite
 	go = std::make_shared<GameObject>();
-	m_spCharacter = std::make_shared<CharacterDigDug>(terrainComp, Float2(10.0f, 8 * m_Scale));
+	m_spCharacter = std::make_shared<CharacterDigDug>(terrainComp, Float2(16.0f, 8 * tileSize / m_Scale));
 	go->AddComponent(m_spCharacter);
 	AddToScene(go);
+
+	// Rock
+	go = std::make_shared<GameObject>();
+	go->AddComponent(std::make_shared<Rock>(terrainComp, (size_t)terrainComp->GetIndexOfCellAtpos(Float2(100, 100))));
+	AddToScene(go);
+
+
 
 	m_IsInitialized = true;
 

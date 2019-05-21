@@ -47,6 +47,9 @@
     <ClInclude Include="IngameScene.h">
       <Filter>GameFiles\GameScenes</Filter>
     </ClInclude>
+    <ClInclude Include="Rock.h">
+      <Filter>GameFiles\Prefabs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -78,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="IngameScene.cpp">
       <Filter>GameFiles\GameScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Rock.cpp">
+      <Filter>GameFiles\Prefabs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

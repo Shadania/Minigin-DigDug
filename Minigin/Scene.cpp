@@ -1,6 +1,7 @@
 #include "MiniginPCH.h"
 #include "Scene.h"
 #include "GameObject.h"
+#include <algorithm>
 
 unsigned int dae::Scene::idCounter = 0;
 
@@ -14,6 +15,7 @@ void dae::Scene::AddToScene(const std::shared_ptr<GameObject>& object)
 {
 	m_Objects.push_back(object);
 	object->RootInitialize();
+	object->m_pScene = this;
 }
 
 
@@ -50,4 +52,9 @@ void dae::Scene::Render() const
 std::string dae::Scene::GetName() const
 {
 	return m_Name;
+}
+
+void dae::Scene::RemoveGameObject(std::shared_ptr<GameObject> obj)
+{
+	m_Objects.erase(std::remove(m_Objects.begin(), m_Objects.end(), obj), m_Objects.end());
 }

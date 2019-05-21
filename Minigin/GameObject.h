@@ -11,6 +11,7 @@ namespace dae
 {
 	class BaseComponent;
 	class TextureComponent;
+	class Scene;
 
 	/*
 	 * GAMEOBJECT:
@@ -35,6 +36,8 @@ namespace dae
 
 		std::shared_ptr<dae::TransformComponent> GetTransform();
 
+		void Destroy();
+
 		GameObject(const Float2& pos = { 0, 0 }, float rot = 0.0f, const Float2& scale = { 1, 1 });
 		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;
@@ -50,10 +53,14 @@ namespace dae
 		virtual void Initialize();
 
 	private:
+		friend class Scene;
 		std::shared_ptr<TransformComponent> m_spTransformComponent;
 		std::vector<std::shared_ptr<BaseComponent>> m_vspComponentsNeedRendering;
 		std::vector<std::shared_ptr<BaseComponent>> m_vspComponents;
 		std::vector<std::shared_ptr<GameObject>> m_vspChildren;
-		GameObject* m_pParent;
+		GameObject* m_pParent = nullptr;
+		Scene* m_pScene = nullptr;
+
+		void RemoveChild(std::shared_ptr<GameObject> child);
 	};
 }

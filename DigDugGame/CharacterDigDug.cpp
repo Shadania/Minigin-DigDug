@@ -44,7 +44,7 @@ void dae::CharacterDigDug::Initialize()
 	AddChild(m_spSpriteObject);
 	m_spSpriteObjectComponent->Freeze();
 	// Make the sprite's center the bottom
-	// m_spSpriteObject->GetTransform()->Translate(4, 4);
+	m_spSpriteObject->GetTransform()->Translate(6, 4);
 
 	// Input
 	auto input = ServiceLocator::GetInputManager();
@@ -53,7 +53,7 @@ void dae::CharacterDigDug::Initialize()
 
 	// Grid agent
 	m_spGridAgentComponent = std::make_shared<TerrainGridMovementComponent>(m_spTerrain, m_Speed, true);
-	m_spGridAgentComponent->SetDimensions(4, 4);
+	m_spGridAgentComponent->SetDimensions(10, 10);
 	m_spGridAgentComponent->SetPos(m_StartingPos);
 	GetTransform()->Translate(m_StartingPos.x, m_StartingPos.y);
 	AddComponent(m_spGridAgentComponent);

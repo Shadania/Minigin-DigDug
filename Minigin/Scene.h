@@ -19,6 +19,8 @@ namespace dae
 		virtual void Init() {};
 		virtual std::string GetName() const;
 
+		void RemoveGameObject(std::shared_ptr<GameObject> obj);
+
 		virtual ~Scene() = default;
 		Scene(const Scene& other) = delete;
 		Scene(Scene&& other) = delete;

@@ -84,6 +84,7 @@ namespace dae
 		bool HasArrived();
 		void SetTargetPosHere();
 		void DoCarve();
+		void DoCollision();
 
 		void SetState(const std::shared_ptr<AgentState>& newState);
 	};

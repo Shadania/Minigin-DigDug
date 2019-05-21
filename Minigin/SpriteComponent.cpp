@@ -9,7 +9,7 @@
 
 #pragma region Sequence
 dae::Sequence::Sequence(std::shared_ptr<Texture2D> tex, 
-	const std::string& name, size_t amtFrames,
+	const std::string& name, size_t amtFrames, bool repeat,
 	bool resetDeltaOnActive, float secPerFrame)
 	: m_spTex{ tex }
 	, m_Name{ name }
@@ -18,6 +18,7 @@ dae::Sequence::Sequence(std::shared_ptr<Texture2D> tex,
 	, m_SecPerFrame{secPerFrame}
 	, m_CurrFrameIdx{0}
 	,m_ResetDeltaOnActive{resetDeltaOnActive}
+	,m_Repeat(repeat)
 {
 	std::hash<std::string> hasher;
 	m_NameHash = hasher(m_Name);
@@ -62,6 +63,10 @@ void dae::Sequence::Update(float& accuSec)
 	{
 		accuSec -= maxSec;
 		m_CurrFrameIdx = (m_CurrFrameIdx + 1) % m_AmtFrames;
+		if (!m_Repeat && (m_CurrFrameIdx == 0))
+		{
+			m_CurrFrameIdx = (int)m_AmtFrames-1;
+		}
 	}
 }
 bool dae::Sequence::IsName(size_t nameHash)
@@ -71,6 +76,11 @@ bool dae::Sequence::IsName(size_t nameHash)
 void dae::Sequence::Freeze()
 {
 	m_CurrFrameIdx = 0;
+}
+
+void dae::Sequence::SetFrame(size_t frame)
+{
+	m_CurrFrameIdx = (int)frame;
 }
 #pragma endregion Sequence
 
@@ -128,6 +138,11 @@ bool dae::SpriteComponent::IsActiveSprite(const std::string& name) const
 	std::hash<std::string> hasher;
 	size_t nameHash{ hasher(name) };
 	return m_ActiveSprite->IsName(nameHash);
+}
+void dae::SpriteComponent::SetFrame(size_t frame)
+{
+	m_ActiveSprite->SetFrame(frame);
+	m_AccuSec = 0.0f;
 }
 
 void dae::SpriteComponent::Update()

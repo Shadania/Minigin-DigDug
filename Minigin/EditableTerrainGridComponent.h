@@ -4,9 +4,18 @@
 namespace dae
 {
 	class Texture2D;
+	class TerrainGridObstacleComponent;
+	enum class Direction;
 
 	class TerrainCell
 	{
+		enum class State
+		{
+			Inactive,
+			Active,
+			Blocked
+		};
+
 	public:
 		TerrainCell() = default;
 		~TerrainCell() = default;
@@ -15,7 +24,6 @@ namespace dae
 		{
 			m_BotLeft.x = x;
 			m_BotLeft.y = y;
-			m_Active = true;
 		}
 
 		bool PointInCell(Float2 pos)
@@ -38,12 +46,19 @@ namespace dae
 		}
 		void SetInactive()
 		{
-			m_Active = false;
+			if (m_State != State::Blocked)
+			m_State = State::Inactive;
 		}
 		bool IsActive()
 		{
-			return m_Active;
+			return m_State != State::Inactive;
 		}
+		bool IsBlocked()
+		{
+			return m_State == State::Blocked;
+		}
+		void SetBlocked() { m_State = State::Blocked; }
+		void SetActive() { m_State = State::Active; }
 
 		static void SetWidthHeightOffset(float* newWidth, float* newHeight, Float2* newOffset)
 		{
@@ -61,7 +76,7 @@ namespace dae
 		static float* m_pWidth;
 		static float* m_pHeight;
 		static Float2* m_pOffset;
-		bool m_Active = false;
+		State m_State = State::Active;
 	};
 
 	class EditableTerrainGridComponent final : public BaseComponent
@@ -72,16 +87,27 @@ namespace dae
 
 		bool DoesCollide(Float4& shape);
 		void SetOffset(const Float2& offset);
+		Float2 GetOffset() const { return m_Offset; }
 
 		void Carve(const Float4& shape);
+		void DoCollision(Float2& botLeftPos, const Float2& dims, Direction* dir);
 		void CanMoveInto(const Float4& shape, const Float2& direction);
 		TerrainCell* GetCellAtPos(const Float2& pos) const;
+		int GetIndexOfCellAtpos(const Float2& pos) const;
 		float GetCellWidth() const { return m_CellWidth; }
 		float GetCellHeight() const { return m_CellHeight; }
 
 		Float4& GetBoundaries() { return m_Boundaries; }
+		size_t GetAmtCols() { return m_AmtCols; }
+		size_t GetAmtRows() { return m_AmtRows; }
 
-		void Render() const override;
+		void RegisterObstacle(std::shared_ptr<TerrainGridObstacleComponent> obstacle);
+		void RemoveObstacle(std::shared_ptr<TerrainGridObstacleComponent> obstacle);
+
+		void GetVectorOfCells(std::vector<TerrainCell*>& cells, size_t botLeft, size_t cols, size_t rows);
+
+
+		virtual void Render() const override;
 		virtual void Initialize() override;
 
 	protected:
@@ -109,5 +135,6 @@ namespace dae
 		void GetCellsOverlappingWith(Float4 shape,
 			size_t& leftBotCell, size_t& topRightCell,
 			size_t& amtCols, size_t& amtRows);
+		TerrainCell& GetCellAt(size_t col, size_t row);
 	};
 }
