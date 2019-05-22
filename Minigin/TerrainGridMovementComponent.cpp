@@ -16,15 +16,26 @@ dae::TerrainGridMovementComponent::TerrainGridMovementComponent(const std::share
 {}
 
 
-void dae::TerrainGridMovementComponent::GiveDirection(Direction newDir)
+dae::TerrainGridMoveResult dae::TerrainGridMovementComponent::GiveDirection(Direction newDir)
 {
 	if (m_MoveState != TerrainGridMoveState::Still)
-		return;
+	{
+		switch (m_MoveState)
+		{
+		case TerrainGridMoveState::Moving:
+			return TerrainGridMoveResult::Go;
+		case TerrainGridMoveState::Carving:
+			return TerrainGridMoveResult::Carving;
+		}
+		return TerrainGridMoveResult::Blocked;
+	}
 
 	if (newDir == Direction::None)
-		return;
+		return TerrainGridMoveResult::Blocked;
 
-	switch (m_spTerrain->TryGo(newDir, m_CurrGridCell, m_CanCarve))
+	auto res = m_spTerrain->TryGo(newDir, m_CurrGridCell, m_CanCarve, m_IgnoredCellIdxs);
+
+	switch (res)
 	{
 	case TerrainGridMoveResult::Blocked:
 		// do nothing.
@@ -32,36 +43,16 @@ void dae::TerrainGridMovementComponent::GiveDirection(Direction newDir)
 
 	case TerrainGridMoveResult::Carving:
 		m_Direction = newDir;
-		SetFutureGridCell();
 		m_MoveState = TerrainGridMoveState::Carving;
 		break;
 
 	case TerrainGridMoveResult::Go:
 		m_Direction = newDir;
-		SetFutureGridCell();
 		m_MoveState = TerrainGridMoveState::Moving;
 		break;
 	}
-}
 
-
-void dae::TerrainGridMovementComponent::SetFutureGridCell()
-{
-	switch (m_Direction)
-	{
-	case Direction::Down:
-		m_FutureGridCell = m_CurrGridCell + m_spTerrain->AmtCols();
-		break;
-	case Direction::Up:
-		m_FutureGridCell = m_CurrGridCell - m_spTerrain->AmtCols();
-		break;
-	case Direction::Right:
-		m_FutureGridCell = m_CurrGridCell + 1;
-		break;
-	case Direction::Left:
-		m_FutureGridCell = m_CurrGridCell - 1;
-		break;
-	}
+	return res;
 }
 
 void dae::TerrainGridMovementComponent::Update()
@@ -80,7 +71,7 @@ void dae::TerrainGridMovementComponent::Initialize()
 {
 	// set pos correctly
 	m_CenterPos = m_spTerrain->GetCenterPosOfCellIdx(m_CurrGridCell);
-	GetTransform()->Translate(m_CenterPos);
+	GetTransform()->SetLocalPos(m_CenterPos);
 }
 
 void dae::TerrainGridMovementComponent::HandleMoveCarve()
@@ -160,5 +151,63 @@ void dae::TerrainGridMovementComponent::HandleMoveCarve()
 }
 void dae::TerrainGridMovementComponent::HandleMoveNoCarve()
 {
+	// we are moving so get the movement delta
+	float deltaMovement = ServiceLocator::GetGameTime()->GetDeltaT() * ((m_MoveState == TerrainGridMoveState::Moving) ? m_Speed : m_CarveSpeed);
+	
+	// setup variables
+	Float2 futurePos{ m_CenterPos };
+	size_t newIdx{};
+	float diff{};
+	bool useY{ false };
 
+	// fill variables
+	switch (m_Direction)
+	{
+	case Direction::Up:
+		futurePos.y -= deltaMovement;
+		newIdx = m_CurrGridCell - m_spTerrain->AmtCols();
+		useY = true;
+		break;
+	case Direction::Down:
+		futurePos.y += deltaMovement;
+		newIdx = m_CurrGridCell + m_spTerrain->AmtCols();
+		useY = true;
+		break;
+	case Direction::Left:
+		futurePos.x -= deltaMovement;
+		newIdx = m_CurrGridCell - 1;
+		break;
+	case Direction::Right:
+		futurePos.x += deltaMovement;
+		newIdx = m_CurrGridCell + 1;
+		break;
+	}
+
+	bool halfway{};
+
+	if (useY)
+	{
+		diff = abs(futurePos.y - m_spTerrain->GetCenterPosOfCellIdx(newIdx).y);
+		halfway = diff < (m_spTerrain->CellHeight() / 2);
+	}
+	else
+	{
+		diff = abs(futurePos.x - m_spTerrain->GetCenterPosOfCellIdx(newIdx).x);
+		halfway = diff < (m_spTerrain->CellWidth() / 2);
+	}
+
+
+	if (abs(diff) < 1.0f)
+	{
+		// reached goal!
+		m_MoveState = TerrainGridMoveState::Still;
+		m_CurrGridCell = newIdx;
+		m_CenterPos = m_spTerrain->GetCenterPosOfCellIdx(m_CurrGridCell);
+		m_Direction = Direction::None;
+		m_PastHalfCarved = false;
+	}
+	else
+	{
+		m_CenterPos = futurePos;
+	}
 }

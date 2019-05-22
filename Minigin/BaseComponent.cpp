@@ -42,3 +42,7 @@ void dae::BaseComponent::AddComponentNeedRendering(std::shared_ptr<BaseComponent
 {
 	m_wpMyObj.lock()->AddComponentNeedRendering(comp);
 }
+void dae::BaseComponent::Destroy()
+{
+	m_wpMyObj.lock()->Destroy();
+}

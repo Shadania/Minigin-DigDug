@@ -1,13 +1,12 @@
 #pragma once
-/*
 #include "BaseComponent.h"
 
 namespace dae
 {
-	class SpriteComponent;
-	class TerrainGridObstacleComponent;
 	class EditableTerrainGridComponent;
-	class TerrainCell;
+	class TerrainGridMovementComponent;
+	class TerrainGridObstacleComponent;
+	class SpriteComponent;
 
 	class Rock final : public BaseComponent
 	{
@@ -24,47 +23,48 @@ namespace dae
 		{
 			virtual void Update() override;
 		private:
-			float m_WiggleTime = 0.5f;
-			float m_WiggleFrameTime = 0.1f;
 			float m_AccuSec = 0.0f;
-			float m_TotalSec = 0.0f;
-			size_t m_CurrFrame = 1;
+			float m_AccuFrameSec = 0.0f;
+			const float m_SecPerWiggle = 0.15f;
+			const float m_TotalSec = 0.7f;
+			size_t m_CurrFrame = 0;
 		};
 		struct StateFalling : public RockState
 		{
 			virtual void Update() override;
-		private:
-			float m_noCollisionTime = 0.0f;
-			float m_FallingSpeed = 20.0f;
-			float m_AccuSec = 0.0f;
 		};
 		struct StateCrumbling : public RockState
 		{
 			virtual void Update() override;
 		private:
-			float m_CrumblingTime = 0.8f;
 			float m_AccuSec = 0.0f;
+			const float m_MaxCrumbleTime = 0.8f;
 		};
 
 
 	public:
-		Rock(std::shared_ptr<EditableTerrainGridComponent> spTerrain, size_t leftbotCellIdx);
+		Rock(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t terrainIdx);
+		
 
 		virtual void Initialize() override;
 		virtual void Update() override;
 
+
 	private:
-		friend struct RockState;
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
-		std::shared_ptr<SpriteComponent> m_spSpriteObjectComponent;
-		std::shared_ptr<TerrainGridObstacleComponent> m_spObstacleComponent;
+		std::shared_ptr<TerrainGridMovementComponent> m_spAgentComp;
+		std::shared_ptr<TerrainGridObstacleComponent> m_spObstacleComp;
+		std::shared_ptr<SpriteComponent> m_spSpriteComp;
 
-		std::vector<TerrainCell*> m_vpLockCells;
+		size_t m_Idx;
 
-		std::shared_ptr<RockState> m_spState;
+		std::shared_ptr<RockState> m_CurrState;
 
-		void SetState(std::shared_ptr<RockState> newState);
-		void SelfDestruct();
+		void SetState(std::shared_ptr<RockState> newState)
+		{
+			m_CurrState = newState;
+			m_CurrState->pRock = this;
+		}
 	};
+
 }
-*/

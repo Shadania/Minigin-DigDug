@@ -157,7 +157,7 @@ void dae::EditableTerrainGridComponent::Render() const
 }
 
 
-dae::TerrainGridMoveResult dae::EditableTerrainGridComponent::TryGo(Direction dir, size_t from, bool canCarve)
+dae::TerrainGridMoveResult dae::EditableTerrainGridComponent::TryGo(Direction dir, size_t from, bool canCarve, const std::vector<size_t>& ignoredCells)
 {
 	if (from >= m_vCells.size())
 	{
@@ -190,6 +190,10 @@ dae::TerrainGridMoveResult dae::EditableTerrainGridComponent::TryGo(Direction di
 		break;
 	}
 
+
+	if (std::find(ignoredCells.begin(), ignoredCells.end(), (from)) != ignoredCells.end())
+		return TerrainGridMoveResult::Go;
+
 	if (!canCarve)
 	{
 		if (m_vCells[from].IsCompletelyOpen())
@@ -197,37 +201,44 @@ dae::TerrainGridMoveResult dae::EditableTerrainGridComponent::TryGo(Direction di
 			switch (dir)
 			{
 			case Direction::Up:
+				if (std::find(ignoredCells.begin(), ignoredCells.end(), (from - m_Cols)) != ignoredCells.end())
+					return TerrainGridMoveResult::Go;
 				if (m_vCells[from - m_Cols].IsCompletelyOpen())
 					return TerrainGridMoveResult::Go;
 				if (m_vCells[from - m_Cols].GetDugState().m_DugBottom) // base being dug is implied, since you can not have just a side of a cell in this version of the game
 					return TerrainGridMoveResult::Go;
+
 				return TerrainGridMoveResult::Blocked;
 
-				break;
 			case Direction::Down:
+				if (std::find(ignoredCells.begin(), ignoredCells.end(), (from + m_Cols)) != ignoredCells.end())
+					return TerrainGridMoveResult::Go;
 				if (m_vCells[from + m_Cols].IsCompletelyOpen())
 					return TerrainGridMoveResult::Go;
 				if (m_vCells[from + m_Cols].GetDugState().m_DugTop)
 					return TerrainGridMoveResult::Go;
+
 				return TerrainGridMoveResult::Blocked;
 
-				break;
 			case Direction::Left:
+				if (std::find(ignoredCells.begin(), ignoredCells.end(), (from - 1)) != ignoredCells.end())
+					return TerrainGridMoveResult::Go;
 				if (m_vCells[from - 1].IsCompletelyOpen())
 					return TerrainGridMoveResult::Go;
 				if (m_vCells[from - 1].GetDugState().m_DugRight)
 					return TerrainGridMoveResult::Go;
+
 				return TerrainGridMoveResult::Blocked;
 
-				break;
 			case Direction::Right:
+				if (std::find(ignoredCells.begin(), ignoredCells.end(), (from + 1)) != ignoredCells.end())
+					return TerrainGridMoveResult::Go;
 				if (m_vCells[from + 1].IsCompletelyOpen())
 					return TerrainGridMoveResult::Go;
 				if (m_vCells[from + 1].GetDugState().m_DugLeft)
 					return TerrainGridMoveResult::Go;
-				return TerrainGridMoveResult::Blocked;
 
-				break;
+				return TerrainGridMoveResult::Blocked;
 			}
 		}
 		else
@@ -235,31 +246,43 @@ dae::TerrainGridMoveResult dae::EditableTerrainGridComponent::TryGo(Direction di
 			switch (dir)
 			{
 			case Direction::Up:
+				if (std::find(ignoredCells.begin(), ignoredCells.end(), (from - m_Cols)) != ignoredCells.end())
+					return TerrainGridMoveResult::Go;
 				if (!m_vCells[from].GetDugState().m_DugTop)
 					return TerrainGridMoveResult::Blocked;
 				if (!m_vCells[from - m_Cols].GetDugState().m_DugBase)
 					return TerrainGridMoveResult::Blocked;
+
 				return TerrainGridMoveResult::Go;
 
 			case Direction::Down:
+				if (std::find(ignoredCells.begin(), ignoredCells.end(), (from + m_Cols)) != ignoredCells.end())
+					return TerrainGridMoveResult::Go;
 				if (!m_vCells[from].GetDugState().m_DugBase)
 					return TerrainGridMoveResult::Blocked;
 				if (!m_vCells[from + m_Cols].GetDugState().m_DugTop)
 					return TerrainGridMoveResult::Blocked;
+
 				return TerrainGridMoveResult::Go;
 
 			case Direction::Left:
+				if (std::find(ignoredCells.begin(), ignoredCells.end(), (from - 1)) != ignoredCells.end())
+					return TerrainGridMoveResult::Go;
 				if (!m_vCells[from].GetDugState().m_DugLeft)
 					return TerrainGridMoveResult::Blocked;
 				if (!m_vCells[from - 1].GetDugState().m_DugRight)
 					return TerrainGridMoveResult::Blocked;
+
 				return TerrainGridMoveResult::Go;
 
 			case Direction::Right:
+				if (std::find(ignoredCells.begin(), ignoredCells.end(), (from + 1)) != ignoredCells.end())
+					return TerrainGridMoveResult::Go;
 				if (!m_vCells[from].GetDugState().m_DugRight)
 					return TerrainGridMoveResult::Blocked;
 				if (!m_vCells[from + 1].GetDugState().m_DugLeft)
 					return TerrainGridMoveResult::Blocked;
+
 				return TerrainGridMoveResult::Go;
 			}
 		}
@@ -403,6 +426,10 @@ void dae::EditableTerrainGridComponent::SetCellCompletelyOpen(size_t idx)
 	m_vCells[idx].SetCompletelyOpen(true);
 }
 
+bool dae::EditableTerrainGridComponent::IsCellFree(size_t idx)
+{
+	return (m_vCells[idx].IsCompletelyOpen() || m_vCells[idx].GetDugState().m_DugBase);
+}
 
 
 const dae::Float2& dae::EditableTerrainGridComponent::GetCenterPosOfCellIdx(size_t idx) const
@@ -414,6 +441,15 @@ const dae::Float2& dae::EditableTerrainGridComponent::GetCenterPosOfCellIdx(size
 	}
 	
 	return m_vCells[idx].GetCenterPos();
+}
+
+void dae::EditableTerrainGridComponent::SetCellBlocked(size_t idx)
+{
+	m_vCells[idx].SetBlocked(true);
+}
+void dae::EditableTerrainGridComponent::SetCellUnblocked(size_t idx)
+{
+	m_vCells[idx].SetBlocked(false);
 }
 #pragma endregion
 

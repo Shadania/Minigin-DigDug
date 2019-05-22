@@ -4,6 +4,8 @@
 
 #include "EditableTerrainGridComponent.h"
 
+#include <algorithm>
+
 namespace dae
 {
 	class TerrainGridMovementComponent final : public BaseComponent
@@ -13,13 +15,17 @@ namespace dae
 			bool canCarve = false, float carveSpeed = 0.0f);
 
 		// Only reacts to things when standing still
-		void GiveDirection(Direction newDir);
+		TerrainGridMoveResult GiveDirection(Direction newDir);
 		virtual void Update() override;
 		virtual void Initialize() override;
+
+		void AddIdxToIgnoreList(size_t idx) { m_IgnoredCellIdxs.push_back(idx); };
+		void RemoveIdxFromIgnoreList(size_t idx) { m_IgnoredCellIdxs.erase(std::remove(m_IgnoredCellIdxs.begin(), m_IgnoredCellIdxs.end(), idx), m_IgnoredCellIdxs.end()); }
 		
 	private:
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		TerrainGridMoveState m_MoveState = TerrainGridMoveState::Still;
+		std::vector<size_t> m_IgnoredCellIdxs = {};
 		Direction m_Direction = Direction::None;
 		size_t m_CurrGridCell = 0;
 		size_t m_FutureGridCell = 0;
@@ -30,8 +36,6 @@ namespace dae
 		Float2 m_CenterPos;
 
 		// Private methods
-		void SetFutureGridCell();
-
 		void HandleMoveCarve();
 		void HandleMoveNoCarve();
 	};

@@ -27,10 +27,12 @@ namespace dae
 		BaseComponent& operator=(BaseComponent&&) noexcept = delete;
 
 		
+		// GameObject functions rerouted through here for ease of access
 		void AddChild(std::shared_ptr<GameObject> gObj);
 		std::shared_ptr<TransformComponent> GetTransform();
 		void AddComponent(std::shared_ptr<BaseComponent> comp);
 		void AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp);
+		void Destroy();
 
 	protected:
 		std::weak_ptr<GameObject> m_wpMyObj;

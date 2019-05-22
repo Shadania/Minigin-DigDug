@@ -112,12 +112,17 @@ namespace dae
 
 
 
-		TerrainGridMoveResult TryGo(Direction dir, size_t from, bool canCarve);
+		TerrainGridMoveResult TryGo(Direction dir, size_t from, bool canCarve, const std::vector<size_t>& ignoredCells);
 		bool ContinueCarve(Direction srcDir, size_t target);
 
 		// For setup
 		void DirectCarve(size_t idx, EditableTerrainGridCell::DugState which);
 		void SetCellCompletelyOpen(size_t idx);
+
+		void SetCellBlocked(size_t idx);
+		void SetCellUnblocked(size_t idx);
+
+		bool IsCellFree(size_t idx);
 
 		const Float2& GetCenterPosOfCellIdx(size_t idx) const;
 

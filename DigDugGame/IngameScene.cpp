@@ -23,7 +23,6 @@ void dae::IngameScene::Init()
 	// Make terrain
 	int cellSize{ 20 }; // the resources i made are 20 pixels by 20
 	// -> 24 rows, 36 cols ( - 2 )
-	// size_t rows{ServiceLocator::m_pGameInfo->GetWindowWidth() / cellSize}, cols{(ServiceLocator::m_pGameInfo->GetWindowHeight() / cellSize) - 2};
 	size_t rows{ 16 }, cols{ 14 }; // 2 highest rows are empty
 	auto go = std::make_shared<GameObject>();
 	auto terrainComp = std::make_shared<EditableTerrainGridComponent>(rows, cols, Float2{280, 320}, "background.png");
@@ -135,7 +134,9 @@ void dae::IngameScene::Init()
 
 
 	// Place rocks on terrain
-
+	go = std::make_shared<GameObject>();
+	go->AddComponentNeedRendering(std::make_shared<Rock>(terrainComp, cols * 2 + 3));
+	AddToScene(go);
 
 
 	// Init text on scene

@@ -13,6 +13,7 @@ namespace dae
 		TransformComponent(GameObject* go);
 
 		void SetLocalPos(Float2 newPos) { m_Pos = newPos; }
+		void SetLocalPos(float x, float y) { m_Pos.x = x; m_Pos.y = y; }
 		void SetLocalRot(float newRot) { m_Rot = newRot; }
 		void SetLocalScale(Float2 newScale) { m_Scale = newScale; }
 

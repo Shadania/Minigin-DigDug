@@ -52,7 +52,7 @@ void dae::CharacterDigDug::Initialize()
 	input->AddAxis("MoveVertical", 's', 'w');
 
 	// Grid agent
-	m_spGridAgentComponent = std::make_shared<TerrainGridMovementComponent>(m_spTerrain, m_StartingPos, 60.0, true, 40.0);
+	m_spGridAgentComponent = std::make_shared<TerrainGridMovementComponent>(m_spTerrain, m_StartingPos, 60.0f, true, 40.0f);
 	AddComponent(m_spGridAgentComponent);
 
 	m_IsInitialized = true;
