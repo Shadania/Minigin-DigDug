@@ -20,7 +20,6 @@ void dae::Rock::StateStill::Update()
 
 	if (readyToFall)
 	{
-		std::cout << "Rock wiggles\n";
 		pRock->SetState(std::make_shared<StateWiggling>());
 	}
 }
@@ -45,7 +44,7 @@ void dae::Rock::StateWiggling::Update()
 		pRock->AddComponent(pRock->m_spAgentComp);
 		pRock->m_spAgentComp->AddIdxToIgnoreList(pRock->m_Idx);
 		// Change state
-		std::cout << "Rock falls\n";
+		pRock->m_spTerrain->SetCellUnblocked(pRock->m_Idx);
 		pRock->SetState(std::make_shared<StateFalling>());
 	}
 }
@@ -54,7 +53,6 @@ void dae::Rock::StateFalling::Update()
 	if (pRock->m_spAgentComp->GiveDirection(Direction::Down) == dae::TerrainGridMoveResult::Blocked)
 	{
 		pRock->m_spSpriteComp->Unfreeze();
-		std::cout << "Rock crumbles\n";
 		pRock->SetState(std::make_shared<StateCrumbling>());
 	}
 }
@@ -64,7 +62,6 @@ void dae::Rock::StateCrumbling::Update()
 	m_AccuSec += ServiceLocator::GetGameTime()->GetDeltaT();
 	if (m_AccuSec >= m_MaxCrumbleTime)
 	{
-		std::cout << "Rock disappears\n";
 		pRock->Destroy();
 	}
 }

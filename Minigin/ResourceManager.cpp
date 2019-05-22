@@ -9,7 +9,7 @@
 #include "Font.h"
 #include "ServiceLocator.h"
 
-void dae::ResourceManager::Init(std::string&& dataPath)
+void dae::ResourceManager::Init(std::string&& dataPath, const std::string& defaultFontPath, size_t defaultFontSize)
 {
 	mDataPath = std::move(dataPath);
 
@@ -28,6 +28,11 @@ void dae::ResourceManager::Init(std::string&& dataPath)
 	if (TTF_Init() != 0) 
 	{
 		throw std::runtime_error(std::string("Failed to load support for fonts: ") + SDL_GetError());
+	}
+
+	if (!defaultFontPath.empty())
+	{
+		m_spDefaultFont = LoadFont(defaultFontPath, (unsigned int)defaultFontSize);
 	}
 }
 

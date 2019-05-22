@@ -142,13 +142,13 @@ void dae::EditableTerrainGridComponent::Initialize()
 	// m_vCells.resize(amtCells);
 	for (size_t i{}; i < amtCells; ++i)
 	{
-		Float2 centerPos{m_CellDims.x * (i % m_Cols) + (m_CellDims.x / 2), m_CellDims.y * (i / m_Cols) + (m_CellDims.y / 2) };
+		Float2 centerPos{m_CellDims.x * (i % m_Cols), m_CellDims.y * (i / m_Cols) };
 		m_vCells.push_back(EditableTerrainGridCell(centerPos));
 	}
 }
 void dae::EditableTerrainGridComponent::Render() const
 {
-	ServiceLocator::GetRenderer()->RenderTextureFullScreen(*m_spBackground);
+	ServiceLocator::GetRenderer()->RenderTexture(*m_spBackground, 0, 0, m_Dims.x, m_Dims.y );
 
 	for (size_t i{}; i < m_vCells.size(); ++i)
 	{
@@ -174,7 +174,7 @@ dae::TerrainGridMoveResult dae::EditableTerrainGridComponent::TryGo(Direction di
 
 		break;
 	case Direction::Down:
-		if ((from / m_Cols) == m_Rows)
+		if ((from / m_Cols) == (m_Rows-1))
 			return TerrainGridMoveResult::Blocked;
 
 		break;
@@ -184,7 +184,7 @@ dae::TerrainGridMoveResult dae::EditableTerrainGridComponent::TryGo(Direction di
 
 		break;
 	case Direction::Right:
-		if ((from & m_Cols) == (m_Cols - 1))
+		if ((from % m_Cols) == (m_Cols - 1))
 			return TerrainGridMoveResult::Blocked;
 
 		break;

@@ -4,6 +4,7 @@
 namespace dae
 {
 	class CharacterDigDug;
+	class TextComponent;
 
 	class IngameScene final : public Scene
 	{
@@ -15,6 +16,12 @@ namespace dae
 
 	private:
 		float m_Scale = 2.0f;
+
+		// Dynamic text
+		std::shared_ptr<TextComponent> m_spPlayer1ScoreText;
+		std::shared_ptr<TextComponent> m_spPlayer2ScoreText;
+		std::shared_ptr<TextComponent> m_spTotalScoreText;
+		std::shared_ptr<TextComponent> m_spRoundNR;
 	};
 }
 

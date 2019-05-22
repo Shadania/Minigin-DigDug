@@ -7,6 +7,8 @@
 #include "EditableTerrainGridComponent.h"
 #include "CharacterDigDug.h"
 #include "Rock.h"
+#include "TextureComponents.h"
+#include "ResourceManager.h"
 
 
 dae::IngameScene::IngameScene()
@@ -35,6 +37,12 @@ void dae::IngameScene::Init()
 		for (size_t i{}; i < cols * 2; ++i)
 		{
 			terrainComp->SetCellCompletelyOpen(i);
+		}
+
+		// Block topmost layer to prevent "flying"
+		for (size_t i{}; i < cols; ++i)
+		{
+			terrainComp->SetCellBlocked(i);
 		}
 
 		// Top right four long
@@ -138,8 +146,81 @@ void dae::IngameScene::Init()
 	go->AddComponentNeedRendering(std::make_shared<Rock>(terrainComp, cols * 2 + 3));
 	AddToScene(go);
 
+	// Place enemies on terrain
+	//TODO: Enemies
 
 	// Init text on scene
+	{
+		auto font = ServiceLocator::GetResourceManager()->GetDefaultFont();
+		auto wWidth = ServiceLocator::m_pGameInfo->GetWindowWidth();
+		auto wHeight = ServiceLocator::m_pGameInfo->GetWindowHeight();
+
+		float leftX{ 20 / m_Scale }, rightX{ (wWidth / 6 * 5 - 40) / m_Scale }, midX{ (wWidth / 2 - 60) / m_Scale };
+		float spacing{ 15 };
+		float topY{ 2 }, botY{ (wHeight - 60) / m_Scale };
+
+		// Static text
+		go = std::make_shared<GameObject>();
+		auto text = std::make_shared<TextComponent>("PLAYER 1", font);
+		go->AddComponentNeedRendering(text);
+		text->GenerateTexture();
+		go->GetTransform()->SetLocalPos(Float2{ leftX, topY });
+		AddToScene(go);
+
+		go = std::make_shared<GameObject>();
+		text = std::make_shared<TextComponent>("PLAYER 2", font);
+		go->AddComponentNeedRendering(text);
+		text->GenerateTexture();
+		go->GetTransform()->SetLocalPos(Float2{ rightX, topY });
+		AddToScene(go);
+
+		go = std::make_shared<GameObject>();
+		text = std::make_shared<TextComponent>("TOTAL", font);
+		go->AddComponentNeedRendering(text);
+		text->GenerateTexture();
+		go->GetTransform()->SetLocalPos(Float2{ midX, topY });
+		AddToScene(go);
+
+		go = std::make_shared<GameObject>();
+		text = std::make_shared<TextComponent>("ROUND", font);
+		go->AddComponentNeedRendering(text);
+		text->GenerateTexture();
+		go->GetTransform()->SetLocalPos(Float2{ midX, botY });
+		AddToScene(go);
+
+
+		// Dynamic text
+		go = std::make_shared<GameObject>();
+		m_spPlayer1ScoreText = std::make_shared<TextComponent>("PLAYER1SCORE", font);
+		go->AddComponentNeedRendering(m_spPlayer1ScoreText);
+		m_spPlayer1ScoreText->GenerateTexture();
+		go->GetTransform()->SetLocalPos(Float2{ leftX, topY + spacing });
+		AddToScene(go);
+
+		go = std::make_shared<GameObject>();
+		m_spPlayer2ScoreText = std::make_shared<TextComponent>("PLAYER2SCORE", font);
+		go->AddComponentNeedRendering(m_spPlayer2ScoreText);
+		m_spPlayer2ScoreText->GenerateTexture();
+		go->GetTransform()->SetLocalPos(Float2{ rightX, topY + spacing });
+		AddToScene(go);
+
+		go = std::make_shared<GameObject>();
+		m_spTotalScoreText = std::make_shared<TextComponent>("TOTALSCORE", font);
+		go->AddComponentNeedRendering(m_spTotalScoreText);
+		m_spTotalScoreText->GenerateTexture();
+		go->GetTransform()->SetLocalPos(Float2{ midX, topY + spacing });
+		AddToScene(go);
+
+		go = std::make_shared<GameObject>();
+		m_spRoundNR = std::make_shared<TextComponent>("ROUNDNR", font);
+		go->AddComponentNeedRendering(m_spRoundNR);
+		m_spRoundNR->GenerateTexture();
+		go->GetTransform()->SetLocalPos(Float2{ midX, botY + spacing });
+		AddToScene(go);
+	}
+	
+
+
 	
 	m_IsInitialized = true;
 	ServiceLocator::GetRenderer()->SetScale(m_Scale);

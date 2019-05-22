@@ -28,7 +28,7 @@ namespace dae
 		std::shared_ptr<TerrainGridMovementComponent> m_spGridAgentComponent;
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		std::string m_CurrSequence;
-		TerrainGridMoveState m_CurrState = TerrainGridMoveState::Still;
+		TerrainGridMoveState m_CurrState = TerrainGridMoveState::Still;\
 
 		size_t m_StartingPos;
 	};

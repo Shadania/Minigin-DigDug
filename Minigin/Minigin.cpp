@@ -46,7 +46,7 @@ void dae::Minigin::Initialize(int wWidth, int wHeight)
 	ServiceLocator::GetRenderer()->Init(window);
 
 	// tell the resource manager where he can find the game data
-	ServiceLocator::GetResourceManager()->Init("../Data/");
+	ServiceLocator::GetResourceManager()->Init("../Data/", "FFFFORWA.TTF", 8);
 }
 
 

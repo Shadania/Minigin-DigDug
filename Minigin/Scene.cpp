@@ -28,9 +28,9 @@ void dae::Scene::FixedUpdate()
 }
 void dae::Scene::Update()
 {
-	for(auto gameObject : m_Objects)
+	for (size_t i{}; i < m_Objects.size(); ++i)
 	{
-		gameObject->RootUpdate();
+		m_Objects[i]->RootUpdate();
 	}
 }
 void dae::Scene::LateUpdate()

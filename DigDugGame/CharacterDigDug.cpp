@@ -22,22 +22,40 @@ void dae::CharacterDigDug::Initialize()
 	// Run sprites
 	m_spSpriteObjectComponent = std::make_shared<SpriteComponent>();
 	auto tex{ ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/RunDown.png") };
-	auto sequence{ std::make_shared<Sequence>(tex, "RunDown", 2) };
+	auto sequence{ std::make_shared<Sequence>(tex, "Down", 2) };
 	m_spSpriteObjectComponent->AddSequence(sequence);
 
 	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/RunLeft.png");
-	sequence = std::make_shared<Sequence>(tex, "RunLeft", 2);
+	sequence = std::make_shared<Sequence>(tex, "Left", 2);
 	m_spSpriteObjectComponent->AddSequence(sequence);
 
 	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/RunRight.png");
-	sequence = std::make_shared<Sequence>(tex, "RunRight", 2);
+	sequence = std::make_shared<Sequence>(tex, "Right", 2);
 	m_spSpriteObjectComponent->AddSequence(sequence);
 
 	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/RunUp.png");
-	sequence = std::make_shared<Sequence>(tex, "RunUp", 2);
+	sequence = std::make_shared<Sequence>(tex, "Up", 2);
 	m_spSpriteObjectComponent->AddSequence(sequence);
 
-	m_spSpriteObjectComponent->SetActiveSprite("RunRight");
+	// Carve sprites
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/CarveDown.png");
+	sequence = std::make_shared<Sequence>(tex, "DownCarve", 2);
+	m_spSpriteObjectComponent->AddSequence(sequence);
+
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/CarveUp.png");
+	sequence = std::make_shared<Sequence>(tex, "UpCarve", 2);
+	m_spSpriteObjectComponent->AddSequence(sequence);
+
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/CarveRight.png");
+	sequence = std::make_shared<Sequence>(tex, "RightCarve", 2);
+	m_spSpriteObjectComponent->AddSequence(sequence);
+
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/CarveLeft.png");
+	sequence = std::make_shared<Sequence>(tex, "LeftCarve", 2);
+	m_spSpriteObjectComponent->AddSequence(sequence);
+
+
+	m_spSpriteObjectComponent->SetActiveSprite("Right");
 
 	m_spSpriteObject = std::make_shared<GameObject>();
 	m_spSpriteObject->AddComponentNeedRendering(m_spSpriteObjectComponent);
@@ -76,31 +94,49 @@ void dae::CharacterDigDug::Update()
 
 		if (horizontalMovement > 0.001f)
 		{
-			m_CurrSequence = "RunRight";
-			m_spGridAgentComponent->GiveDirection(Direction::Right);
+			m_CurrSequence = "Right";
+			newDir = Direction::Right;
 		}
 		else if (horizontalMovement < -0.001f)
 		{
-			m_CurrSequence = "RunLeft";
-			m_spGridAgentComponent->GiveDirection(Direction::Left);
+			m_CurrSequence = "Left";
+			newDir = Direction::Left;
 		}
 		else if (verticalMovement > 0.001f)
 		{
-			m_CurrSequence = "RunDown";
-			m_spGridAgentComponent->GiveDirection(Direction::Down);
+			m_CurrSequence = "Down";
+			newDir = Direction::Down;
 		}
 		else
 		{
-			m_CurrSequence = "RunUp";
-			m_spGridAgentComponent->GiveDirection(Direction::Up);
+			m_CurrSequence = "Up";
+			newDir = Direction::Up;
 		}
-
-		m_spSpriteObjectComponent->SetActiveSprite(m_CurrSequence);
 	}
-	else
+
+	auto prevDir = m_spGridAgentComponent->GetCurrDir();
+	auto result = m_spGridAgentComponent->GiveDirection(newDir);
+
+	switch (result)
 	{
-		// No movement
+	case TerrainGridMoveResult::Go:
+		if (prevDir == newDir)
+		{
+			m_spSpriteObjectComponent->Unfreeze();
+			m_spSpriteObjectComponent->SetActiveSprite(m_CurrSequence);
+		}
+		break;
+	case TerrainGridMoveResult::Carving:
+		if (prevDir == newDir)
+		{
+			m_spSpriteObjectComponent->Unfreeze();
+			auto newSeq = m_CurrSequence + "Carve";
+			m_spSpriteObjectComponent->SetActiveSprite(newSeq);
+		}
+		break;
+	case TerrainGridMoveResult::Blocked:
 		m_spSpriteObjectComponent->Freeze();
-		m_spGridAgentComponent->GiveDirection(Direction::None);
+		m_spSpriteObjectComponent->SetActiveSprite(m_CurrSequence);
+		break;
 	}
 }

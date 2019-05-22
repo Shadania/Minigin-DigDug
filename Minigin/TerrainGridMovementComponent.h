@@ -22,6 +22,8 @@ namespace dae
 		void AddIdxToIgnoreList(size_t idx) { m_IgnoredCellIdxs.push_back(idx); };
 		void RemoveIdxFromIgnoreList(size_t idx) { m_IgnoredCellIdxs.erase(std::remove(m_IgnoredCellIdxs.begin(), m_IgnoredCellIdxs.end(), idx), m_IgnoredCellIdxs.end()); }
 		
+		const Direction& GetCurrDir()const { return m_Direction; }
+
 	private:
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		TerrainGridMoveState m_MoveState = TerrainGridMoveState::Still;
