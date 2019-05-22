@@ -1,4 +1,5 @@
 #pragma once
+/*
 #include "BaseComponent.h"
 
 namespace dae
@@ -34,7 +35,7 @@ namespace dae
 			virtual void Update() override;
 		private:
 			float m_noCollisionTime = 0.0f;
-			float m_FallingSpeed = 10.0f;
+			float m_FallingSpeed = 20.0f;
 			float m_AccuSec = 0.0f;
 		};
 		struct StateCrumbling : public RockState
@@ -45,7 +46,7 @@ namespace dae
 			float m_AccuSec = 0.0f;
 		};
 
-		
+
 	public:
 		Rock(std::shared_ptr<EditableTerrainGridComponent> spTerrain, size_t leftbotCellIdx);
 
@@ -66,3 +67,4 @@ namespace dae
 		void SelfDestruct();
 	};
 }
+*/

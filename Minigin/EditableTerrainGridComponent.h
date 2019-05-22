@@ -4,137 +4,138 @@
 namespace dae
 {
 	class Texture2D;
-	class TerrainGridObstacleComponent;
-	enum class Direction;
 
-	class TerrainCell
+
+	enum class Direction
 	{
-		enum class State
+		Up,
+		Down,
+		Left,
+		Right,
+		None
+	};		
+	enum class TerrainGridMoveResult
+	{
+		Go,
+		Blocked,
+		Carving
+	};
+	enum class TerrainGridMoveState
+	{
+		Still,
+		Moving,
+		Carving
+	};
+
+	class EditableTerrainGridCell
+	{
+	public:
+		enum class Part
 		{
-			Inactive,
-			Active,
-			Blocked
+			Base,
+			Top,
+			Bottom,
+			Left,
+			Right,
+			TopLeft,
+			TopRight,
+			BottomLeft,
+			BottomRight
+		};
+		struct DugState
+		{
+			bool m_DugBase = false;
+
+			bool m_DugTop = false;
+			bool m_DugBottom = false;
+			bool m_DugLeft = false;
+			bool m_DugRight = false;
+
+			bool m_DugTopLeft = false;
+			bool m_DugTopRight = false;
+			bool m_DugBottomLeft = false;
+			bool m_DugBottomRight = false;
 		};
 
-	public:
-		TerrainCell() = default;
-		~TerrainCell() = default;
+		EditableTerrainGridCell() = default;
+		EditableTerrainGridCell(const Float2& centerPos, bool completelyOpen = false, bool blocked = false, DugState dugState = DugState());
 
-		void Init(float x, float y)
-		{
-			m_BotLeft.x = x;
-			m_BotLeft.y = y;
-		}
+		
 
-		bool PointInCell(Float2 pos)
-		{
-			// To stop weirdly going up or down when going left or right and the other way around by mis calculating the position
-			pos.x += *m_pWidth / 16;
-			pos.y += *m_pHeight / 16;
+		void SetPartDug(Part which, bool dug);
+		void SetAllDug(DugState state);
+		const DugState& GetDugState() const { return m_DugState; }
+		void Render() const;
 
-			// x check
-			if ((pos.x >= m_BotLeft.x) && (pos.x <= (m_BotLeft.x + *m_pWidth)))
-			{
-				// y check
-				if ((pos.y >= m_BotLeft.y) && (pos.y <= (m_BotLeft.y + *m_pHeight)))
-				{
-					return true;
-				}
-			}
-			return false;
+		void SetCenterPos(const Float2& pos) { m_CenterPos = pos; }
+		const Float2& GetCenterPos() const { return m_CenterPos; }
+		void SetCompletelyOpen(bool completelyOpen) { m_CompletelyOpen = completelyOpen; };
+		bool IsCompletelyOpen() const { return m_CompletelyOpen; }
+		void SetBlocked(bool blocked) { m_Blocked = blocked; }
+		bool IsBlocked() const { return m_Blocked; }
 
-		}
-		void SetInactive()
-		{
-			if (m_State != State::Blocked)
-			m_State = State::Inactive;
-		}
-		bool IsActive()
-		{
-			return m_State != State::Inactive;
-		}
-		bool IsBlocked()
-		{
-			return m_State == State::Blocked;
-		}
-		void SetBlocked() { m_State = State::Blocked; }
-		void SetActive() { m_State = State::Active; }
-
-		static void SetWidthHeightOffset(float* newWidth, float* newHeight, Float2* newOffset)
-		{
-			m_pWidth = newWidth;
-			m_pHeight = newHeight;
-			m_pOffset = newOffset;
-		}
-
-		Float2 GetBotLeft() const
-		{
-			return m_BotLeft;
-		}
 	private:
-		Float2 m_BotLeft = {-1, -1};
-		static float* m_pWidth;
-		static float* m_pHeight;
-		static Float2* m_pOffset;
-		State m_State = State::Active;
+
+		// STATICS
+		static bool m_ResourcesInitialized;
+
+		static std::shared_ptr<Texture2D> m_GroundBase;
+
+		static std::shared_ptr<Texture2D> m_GroundTop;
+		static std::shared_ptr<Texture2D> m_GroundBottom;
+		static std::shared_ptr<Texture2D> m_GroundLeft;
+		static std::shared_ptr<Texture2D> m_GroundRight;
+
+		static std::shared_ptr<Texture2D> m_GroundTopLeft;
+		static std::shared_ptr<Texture2D> m_GroundTopRight;
+		static std::shared_ptr<Texture2D> m_GroundBottomLeft;
+		static std::shared_ptr<Texture2D> m_GroundBottomRight;
+
+		// STATIC PRIVATE METHODS
+		static void InitResources();
+
+		// PRIVATE DATA MEMBERS
+		DugState m_DugState = {};
+		Float2 m_CenterPos = {};
+		bool m_CompletelyOpen = false;
+		bool m_Blocked = false;
 	};
+
 
 	class EditableTerrainGridComponent final : public BaseComponent
 	{
 	public:
-		EditableTerrainGridComponent(float cellHeight, float cellWidth, size_t amtCols, size_t amtRows, const std::string& tileFile);
-		virtual ~EditableTerrainGridComponent();
+		EditableTerrainGridComponent(size_t rows, size_t cols, const Float2& dims, const std::string& background, const Float2& offset = { 0, 0 } );
 
-		bool DoesCollide(Float4& shape);
-		void SetOffset(const Float2& offset);
-		Float2 GetOffset() const { return m_Offset; }
-
-		void Carve(const Float4& shape);
-		void DoCollision(Float2& botLeftPos, const Float2& dims, Direction* dir);
-		void CanMoveInto(const Float4& shape, const Float2& direction);
-		TerrainCell* GetCellAtPos(const Float2& pos) const;
-		int GetIndexOfCellAtpos(const Float2& pos) const;
-		float GetCellWidth() const { return m_CellWidth; }
-		float GetCellHeight() const { return m_CellHeight; }
-
-		Float4& GetBoundaries() { return m_Boundaries; }
-		size_t GetAmtCols() { return m_AmtCols; }
-		size_t GetAmtRows() { return m_AmtRows; }
-
-		void RegisterObstacle(std::shared_ptr<TerrainGridObstacleComponent> obstacle);
-		void RemoveObstacle(std::shared_ptr<TerrainGridObstacleComponent> obstacle);
-
-		void GetVectorOfCells(std::vector<TerrainCell*>& cells, size_t botLeft, size_t cols, size_t rows);
-
-
-		virtual void Render() const override;
 		virtual void Initialize() override;
+		virtual void Render() const override;
 
-	protected:
 
+
+		TerrainGridMoveResult TryGo(Direction dir, size_t from, bool canCarve);
+		bool ContinueCarve(Direction srcDir, size_t target);
+
+		// For setup
+		void DirectCarve(size_t idx, EditableTerrainGridCell::DugState which);
+		void SetCellCompletelyOpen(size_t idx);
+
+		const Float2& GetCenterPosOfCellIdx(size_t idx) const;
+
+		size_t AmtRows() const { return m_Rows; }
+		size_t AmtCols() const { return m_Cols; }
+
+		float CellWidth() const { return m_CellDims.x; }
+		float CellHeight() const { return m_CellDims.y; };
 
 	private:
-		// DATA MEMBERS
-		float m_CellHeight;
-		float m_CellWidth;
-		size_t m_AmtCols;
-		size_t m_AmtRows;
-		size_t m_AmtCells;
-		
-		Float2 m_Offset = { 0, 0 };
+		size_t m_Rows = 0;
+		size_t m_Cols = 0;
 
-		std::shared_ptr<Texture2D> m_pTileTex;
+		const Float2 m_Dims;
+		const Float2 m_CellDims;
+		const Float2 m_Offset;
 
-		Float4 m_Boundaries = {};
-
-		// goes from left bottom row per row until right top
-		TerrainCell* m_pCells;
-		// std::vector<TerrainCell> m_Cells;
-		
-		// PRIVATE METHODS
-		void GetCellsOverlappingWith(Float4 shape,
-			size_t& leftBotCell, size_t& topRightCell,
-			size_t& amtCols, size_t& amtRows);
-		TerrainCell& GetCellAt(size_t col, size_t row);
+		std::vector<EditableTerrainGridCell> m_vCells = {};
+		std::shared_ptr<Texture2D> m_spBackground = {};
 	};
 }

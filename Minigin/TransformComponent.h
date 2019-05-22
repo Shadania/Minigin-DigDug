@@ -25,8 +25,11 @@ namespace dae
 		Float2 GetWorldScale() const;
 
 		void Translate(float x, float y);
+		void Translate(const Float2& pos);
 		void Rotate(float angle);
 		void Scale(float x, float y);
+		void Scale(const Float2& scale);
+		void Scale(float uniformScale);
 
 
 		TransformComponent(const TransformComponent&) = delete;

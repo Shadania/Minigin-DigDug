@@ -1,359 +1,419 @@
 #include "MiniginPCH.h"
 #include "EditableTerrainGridComponent.h"
-#include "ServiceLocator.h"
-#include "Renderer.h"
-#include "ResourceManager.h"
 #include "Texture2D.h"
+#include "ServiceLocator.h"
+#include "ResourceManager.h"
+#include "Renderer.h"
 #include "TerrainGridMovementComponent.h"
 #include "TerrainGridObstacleComponent.h"
-#include <algorithm>
 
+#pragma region Cell
+bool dae::EditableTerrainGridCell::m_ResourcesInitialized{ false };
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundBase{};
 
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundTop{};
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundBottom{};
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundLeft{};
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundRight{};
 
-float* dae::TerrainCell::m_pWidth{ nullptr };
-float* dae::TerrainCell::m_pHeight{ nullptr };
-dae::Float2* dae::TerrainCell::m_pOffset{ nullptr };
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundTopLeft{};
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundTopRight{};
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundBottomLeft{};
+std::shared_ptr<dae::Texture2D> dae::EditableTerrainGridCell::m_GroundBottomRight{};
 
-
-
-
-dae::EditableTerrainGridComponent::EditableTerrainGridComponent(float cellHeight, float cellWidth, 
-	size_t amtCols, size_t amtRows, const std::string& tileFile)
-	:BaseComponent("EditableTerrainComponent")
-	
-	,m_CellHeight{cellHeight}
-	,m_CellWidth{cellWidth}
-	,m_AmtCols{amtCols}
-	,m_AmtRows{amtRows}
-	,m_AmtCells{amtCols * amtRows}
-	,m_Boundaries{0, 0, cellWidth * amtCols, cellHeight * amtRows}
-
-	,m_pCells{nullptr}
-
-	, m_pTileTex{ServiceLocator::GetResourceManager()->LoadTexture(tileFile)}
-{}
-
-dae::EditableTerrainGridComponent::~EditableTerrainGridComponent()
+void dae::EditableTerrainGridCell::InitResources()
 {
-	if (m_pCells)
+	auto res = ServiceLocator::GetResourceManager();
+	m_GroundBase = res->LoadTexture("Ground/baseGround.png");
+
+	m_GroundTop = res->LoadTexture("Ground/top.png");
+	m_GroundBottom = res->LoadTexture("Ground/bottom.png");
+	m_GroundLeft = res->LoadTexture("Ground/left.png");
+	m_GroundRight = res->LoadTexture("Ground/right.png");
+
+	m_GroundTopLeft = res->LoadTexture("Ground/topLeft.png");
+	m_GroundTopRight = res->LoadTexture("Ground/topRight.png");
+	m_GroundBottomLeft = res->LoadTexture("Ground/bottomLeft.png");
+	m_GroundBottomRight = res->LoadTexture("Ground/bottomRight.png");
+
+	m_ResourcesInitialized = true;
+}
+
+
+
+dae::EditableTerrainGridCell::EditableTerrainGridCell(const Float2& centerPos, bool completelyOpen, 
+	bool blocked, DugState dugState)
+	:m_CenterPos{centerPos}
+	,m_CompletelyOpen{completelyOpen}
+	,m_Blocked{blocked}
+	,m_DugState{dugState}
+{
+	if (!m_ResourcesInitialized)
+		InitResources();
+}
+
+void dae::EditableTerrainGridCell::SetPartDug(Part which, bool dug)
+{
+	switch (which)
 	{
-		delete[] m_pCells;
-		m_pCells = nullptr;
+	case Part::Base:
+		m_DugState.m_DugBase = dug;
+		break;
+
+	case Part::Top:
+		m_DugState.m_DugTop = dug;
+		break;
+	case Part::Bottom:
+		m_DugState.m_DugBottom = dug;
+		break;
+	case Part::Left:
+		m_DugState.m_DugLeft = dug;
+		break;
+	case Part::Right:
+		m_DugState.m_DugRight = dug;
+		break;
+
+	case Part::TopLeft:
+		m_DugState.m_DugTopLeft = dug;
+		break;
+	case Part::TopRight:
+		m_DugState.m_DugTopRight = dug;
+		break;
+	case Part::BottomLeft:
+		m_DugState.m_DugBottomLeft = dug;
+		break;
+	case Part::BottomRight:
+		m_DugState.m_DugBottomRight = dug;
+		break;
 	}
 }
+void dae::EditableTerrainGridCell::Render() const
+{
+	auto ren = ServiceLocator::GetRenderer();
+
+	if (m_CompletelyOpen)
+		return;
+
+
+	if (m_DugState.m_DugBase)
+		ren->RenderTexture(*m_GroundBase, m_CenterPos.x, m_CenterPos.y);
+
+	if (m_DugState.m_DugTop)
+		ren->RenderTexture(*m_GroundTop, m_CenterPos.x, m_CenterPos.y);
+	if (m_DugState.m_DugBottom)
+		ren->RenderTexture(*m_GroundBottom, m_CenterPos.x, m_CenterPos.y);
+	if (m_DugState.m_DugLeft)
+		ren->RenderTexture(*m_GroundLeft, m_CenterPos.x, m_CenterPos.y);
+	if (m_DugState.m_DugRight)
+		ren->RenderTexture(*m_GroundRight, m_CenterPos.x, m_CenterPos.y);
+
+	if (m_DugState.m_DugTopLeft)
+		ren->RenderTexture(*m_GroundTopLeft, m_CenterPos.x, m_CenterPos.y);
+	if (m_DugState.m_DugTopRight)
+		ren->RenderTexture(*m_GroundTopRight, m_CenterPos.x, m_CenterPos.y);
+	if (m_DugState.m_DugBottomLeft)
+		ren->RenderTexture(*m_GroundBottomLeft, m_CenterPos.x, m_CenterPos.y);
+	if (m_DugState.m_DugBottomRight)
+		ren->RenderTexture(*m_GroundBottomRight, m_CenterPos.x, m_CenterPos.y);
+}
+void dae::EditableTerrainGridCell::SetAllDug(DugState state)
+{
+	m_DugState = state;
+}
+
+#pragma endregion
+
+#pragma region Grid
+
+
+dae::EditableTerrainGridComponent::EditableTerrainGridComponent(size_t rows, size_t cols, const Float2& dims, const std::string& background, const Float2& offset )
+	:BaseComponent("EditableTerrainGridComponent")
+	, m_Rows{rows}
+	, m_Cols{cols}
+	, m_Dims{dims}
+	, m_CellDims{dims.x / cols, dims.y / rows}
+	, m_Offset{offset}
+	, m_spBackground{ServiceLocator::GetResourceManager()->LoadTexture(background)}
+{}
 
 void dae::EditableTerrainGridComponent::Initialize()
 {
-	if (m_IsInitialized)
-		return;
-
-	m_pCells = new TerrainCell[m_AmtCells]{};
-	
-	for (size_t i{}; i < m_AmtCells; ++i)
+	size_t amtCells{ m_Rows * m_Cols };
+	// m_vCells.resize(amtCells);
+	for (size_t i{}; i < amtCells; ++i)
 	{
-		float x{ (i % m_AmtCols) * m_CellWidth }, y{ (i / m_AmtCols) * m_CellHeight };
-		m_pCells[i].Init(x, y);
+		Float2 centerPos{m_CellDims.x * (i % m_Cols) + (m_CellDims.x / 2), m_CellDims.y * (i / m_Cols) + (m_CellDims.y / 2) };
+		m_vCells.push_back(EditableTerrainGridCell(centerPos));
 	}
+}
+void dae::EditableTerrainGridComponent::Render() const
+{
+	ServiceLocator::GetRenderer()->RenderTextureFullScreen(*m_spBackground);
 
-	m_IsInitialized = true;
+	for (size_t i{}; i < m_vCells.size(); ++i)
+	{
+		m_vCells[i].Render();
+	}
 }
 
 
-void dae::EditableTerrainGridComponent::GetCellsOverlappingWith(Float4 shape,
-	size_t& leftBotCell, size_t& topRightCell,
-	size_t& amtCols, size_t& amtRows)
+dae::TerrainGridMoveResult dae::EditableTerrainGridComponent::TryGo(Direction dir, size_t from, bool canCarve)
 {
-	TerrainCell::SetWidthHeightOffset(&m_CellWidth, &m_CellHeight, &m_Offset);
-
-	// make shape bigger so the pixels actually do fall inside the cells
-	shape.x -= m_CellWidth / 8;
-	shape.y -= m_CellHeight / 8;
-	shape.z += m_CellWidth / 4;
-	shape.w += m_CellHeight / 4;
-
-	if (shape.x < 0.0f)
-		shape.x = m_CellWidth / 8;
-	if (shape.y < 0.0f)
-		shape.y = m_CellHeight / 8;
-	if (shape.z > (m_Boundaries.x + m_Boundaries.z))
-		shape.z = m_Boundaries.x + m_Boundaries.z - m_CellWidth / 4;
-	if (shape.w > (m_Boundaries.y + m_Boundaries.w))
-		shape.w = m_Boundaries.y + m_Boundaries.w - m_CellHeight / 4;
-
-	// set target positions
-	Float2 targetBotLeft{ shape.x, shape.y };
-	Float2 targetTopRight{ shape.x + shape.z, shape.y + shape.w };
-
-	// find left bottom & right top ids of cells occupied by shape
+	if (from >= m_vCells.size())
 	{
-		size_t i{};
-		for (; i < m_AmtCells; ++i)
-		{
-			if (m_pCells[i].PointInCell(targetBotLeft))
-			{
-				leftBotCell = i;
-				break;
-			}
-		}
-		for (; i < m_AmtCells; ++i)
-		{
-			if (m_pCells[i].PointInCell(targetTopRight))
-			{
-				topRightCell = i;
-				break;
-			}
-		}
+		std::cout << "Idx too big for this terrain!\n";
+		return TerrainGridMoveResult::Blocked;	
 	}
 
-	amtCols = (topRightCell % m_AmtCols) - (leftBotCell % m_AmtCols) + 1;
-	amtRows = (topRightCell / m_AmtCols) - (leftBotCell / m_AmtCols) + 1;
-}
-
-
-void dae::EditableTerrainGridComponent::DoCollision(Float2& botLeftPos, const Float2& dims, Direction* dir)
-{
-	Float4 shape{ botLeftPos, dims };
-	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
-
-	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
-
-	// check where and if there is collision based on direction
-	size_t col{}, row{};
-	bool hitSmth{ false };
-
-	switch (*dir)
+	// Edge checks
+	switch (dir)
 	{
-	case Direction::Down:
-		for (row = 0; row < amtRows; ++row)
-		{
-			for (col = 0; col < amtCols; ++col)
-			{
-				if (m_pCells[botLeftCell + col + (m_AmtCols * row)].IsBlocked())
-				{
-					hitSmth = true;
-					break;
-				}
-			}
-			if (hitSmth)
-				break;
-		}
-		break;
 	case Direction::Up:
-		for (row = amtRows - 1; row > 0 ; --row)
-		{
-			for (col = 0; col < amtCols; ++col)
-			{
-				if (m_pCells[botLeftCell + col + (m_AmtCols * row)].IsBlocked())
-				{
-					hitSmth = true;
-					break;
-				}
-			}
-			if (hitSmth)
-				break;
-		}
-		break;
+		if ((from / m_Cols) == 0)
+			return TerrainGridMoveResult::Blocked;
 
+		break;
+	case Direction::Down:
+		if ((from / m_Cols) == m_Rows)
+			return TerrainGridMoveResult::Blocked;
+
+		break;
 	case Direction::Left:
-		for (col = 0; col < amtCols; ++col)
-		{
-			for (row = 0; row < amtRows; ++row)
-			{
-				if (m_pCells[botLeftCell + col + (row * m_AmtCols)].IsBlocked())
-				{
-					hitSmth = true;
-					break;
-				}
-			}
-			if (hitSmth)
-				break;
-		}
+		if ((from % m_Cols) == 0)
+			return TerrainGridMoveResult::Blocked;
+
 		break;
 	case Direction::Right:
-		for (col = amtCols - 1; col > 0; --col)
-		{
-			for (row = 0; row < amtRows; ++row)
-			{
-				if (m_pCells[botLeftCell + col + (row * m_AmtCols)].IsBlocked())
-				{
-					hitSmth = true;
-					break;
-				}
-			}
-			if (hitSmth)
-				break;
-		}
+		if ((from & m_Cols) == (m_Cols - 1))
+			return TerrainGridMoveResult::Blocked;
+
 		break;
 	}
 
-	// handle position based on collision
-	if (hitSmth)
+	if (!canCarve)
 	{
-		switch (*dir)
+		if (m_vCells[from].IsCompletelyOpen())
 		{
-		case Direction::Down:
+			switch (dir)
 			{
-				size_t diff{ amtRows - row };
-				botLeftPos.y = GetCellAt(botLeftCell % m_AmtCols, (botLeftCell + diff) / m_AmtCols).GetBotLeft().y;
+			case Direction::Up:
+				if (m_vCells[from - m_Cols].IsCompletelyOpen())
+					return TerrainGridMoveResult::Go;
+				if (m_vCells[from - m_Cols].GetDugState().m_DugBottom) // base being dug is implied, since you can not have just a side of a cell in this version of the game
+					return TerrainGridMoveResult::Go;
+				return TerrainGridMoveResult::Blocked;
+
+				break;
+			case Direction::Down:
+				if (m_vCells[from + m_Cols].IsCompletelyOpen())
+					return TerrainGridMoveResult::Go;
+				if (m_vCells[from + m_Cols].GetDugState().m_DugTop)
+					return TerrainGridMoveResult::Go;
+				return TerrainGridMoveResult::Blocked;
+
+				break;
+			case Direction::Left:
+				if (m_vCells[from - 1].IsCompletelyOpen())
+					return TerrainGridMoveResult::Go;
+				if (m_vCells[from - 1].GetDugState().m_DugRight)
+					return TerrainGridMoveResult::Go;
+				return TerrainGridMoveResult::Blocked;
+
+				break;
+			case Direction::Right:
+				if (m_vCells[from + 1].IsCompletelyOpen())
+					return TerrainGridMoveResult::Go;
+				if (m_vCells[from + 1].GetDugState().m_DugLeft)
+					return TerrainGridMoveResult::Go;
+				return TerrainGridMoveResult::Blocked;
+
+				break;
 			}
-			break;
-		case Direction::Up:
+		}
+		else
+		{
+			switch (dir)
 			{
-				size_t diff{ (row + 1)*m_AmtCols };
-				botLeftPos.y = GetCellAt(botLeftCell % m_AmtCols, (botLeftCell + diff ) / m_AmtCols).GetBotLeft().y;
+			case Direction::Up:
+				if (!m_vCells[from].GetDugState().m_DugTop)
+					return TerrainGridMoveResult::Blocked;
+				if (!m_vCells[from - m_Cols].GetDugState().m_DugBase)
+					return TerrainGridMoveResult::Blocked;
+				return TerrainGridMoveResult::Go;
+
+			case Direction::Down:
+				if (!m_vCells[from].GetDugState().m_DugBase)
+					return TerrainGridMoveResult::Blocked;
+				if (!m_vCells[from + m_Cols].GetDugState().m_DugTop)
+					return TerrainGridMoveResult::Blocked;
+				return TerrainGridMoveResult::Go;
+
+			case Direction::Left:
+				if (!m_vCells[from].GetDugState().m_DugLeft)
+					return TerrainGridMoveResult::Blocked;
+				if (!m_vCells[from - 1].GetDugState().m_DugRight)
+					return TerrainGridMoveResult::Blocked;
+				return TerrainGridMoveResult::Go;
+
+			case Direction::Right:
+				if (!m_vCells[from].GetDugState().m_DugRight)
+					return TerrainGridMoveResult::Blocked;
+				if (!m_vCells[from + 1].GetDugState().m_DugLeft)
+					return TerrainGridMoveResult::Blocked;
+				return TerrainGridMoveResult::Go;
 			}
-			break;
-		case Direction::Left:
-			{
-				botLeftPos.x = GetCellAt((botLeftCell + col + 1) % m_AmtCols, botLeftCell / m_AmtCols).GetBotLeft().x;
-			}
-			break;
-		case Direction::Right:
-			{
-				size_t diff{ amtCols - col };
-				botLeftPos.x = GetCellAt((botLeftCell - diff + 1) % m_AmtCols, botLeftCell / m_AmtCols).GetBotLeft().x;
-			}
-			break;
 		}
 	}
-}
-bool dae::EditableTerrainGridComponent::DoesCollide(Float4& shape)
-{
-	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
-
-	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
-
-	for (size_t i{}; i < amtCols; ++i)
+	else
 	{
-		for (size_t j{}; j < amtRows; ++j)
+		// first check if target cell is blocked
+		// if not, dig
+		// (if was completely open, is free)
+		switch (dir)
 		{
-			size_t targetId{ botLeftCell + i + m_AmtCols * j };
-			if (m_pCells[targetId].IsActive())
-				return true;
+		case Direction::Up:
+			{
+				if (m_vCells[from - m_Cols].IsBlocked())
+					return TerrainGridMoveResult::Blocked;
+
+				if (m_vCells[from].IsCompletelyOpen() && m_vCells[from - m_Cols].IsCompletelyOpen())
+					return TerrainGridMoveResult::Go;
+
+				auto dState = m_vCells[from - m_Cols].GetDugState();
+				if (m_vCells[from].GetDugState().m_DugTop && dState.m_DugBottom && dState.m_DugBase)
+					return TerrainGridMoveResult::Go;
+
+				// do dig
+				m_vCells[from].SetPartDug(EditableTerrainGridCell::Part::Top, true);
+				m_vCells[from - m_Cols].SetPartDug(EditableTerrainGridCell::Part::Bottom, true);
+				return TerrainGridMoveResult::Carving;
+			}
+
+		case Direction::Down:
+			{
+				if (m_vCells[from + m_Cols].IsBlocked())
+					return TerrainGridMoveResult::Blocked;
+
+				if (m_vCells[from].IsCompletelyOpen() && m_vCells[from + m_Cols].IsCompletelyOpen())
+					return TerrainGridMoveResult::Go;
+
+				auto dState = m_vCells[from + m_Cols].GetDugState();
+				if (m_vCells[from].GetDugState().m_DugBottom && dState.m_DugTop && dState.m_DugBase)
+					return TerrainGridMoveResult::Go;
+
+				// do dig
+				m_vCells[from].SetPartDug(EditableTerrainGridCell::Part::Bottom, true);
+				m_vCells[from + m_Cols].SetPartDug(EditableTerrainGridCell::Part::Top, true);
+				return TerrainGridMoveResult::Carving;
+			}
+
+		case Direction::Left:
+			{
+				if (m_vCells[from - 1].IsBlocked())
+					return TerrainGridMoveResult::Blocked;
+
+				if (m_vCells[from].IsCompletelyOpen() && m_vCells[from - 1].IsCompletelyOpen())
+					return TerrainGridMoveResult::Go;
+
+				auto dState = m_vCells[from - 1].GetDugState();
+				if (m_vCells[from].GetDugState().m_DugLeft && dState.m_DugRight && dState.m_DugBase)
+					return TerrainGridMoveResult::Go;
+
+				// do dig
+				m_vCells[from].SetPartDug(EditableTerrainGridCell::Part::Left, true);
+				m_vCells[from - 1].SetPartDug(EditableTerrainGridCell::Part::Right, true);
+				return TerrainGridMoveResult::Carving;
+			}
+
+		case Direction::Right:
+			{
+				if (m_vCells[from + 1].IsBlocked())
+					return TerrainGridMoveResult::Blocked;
+
+				if (m_vCells[from].IsCompletelyOpen() && m_vCells[from + 1].IsCompletelyOpen())
+					return TerrainGridMoveResult::Go;
+
+				auto dState = m_vCells[from + 1].GetDugState();
+				if (m_vCells[from].GetDugState().m_DugRight && dState.m_DugLeft && dState.m_DugBase)
+					return TerrainGridMoveResult::Go;
+
+				// do dig
+				m_vCells[from].SetPartDug(EditableTerrainGridCell::Part::Right, true);
+				m_vCells[from + 1].SetPartDug(EditableTerrainGridCell::Part::Left, true);
+				return TerrainGridMoveResult::Carving;
+			}
 		}
+	}
+
+	return TerrainGridMoveResult::Blocked;
+}
+bool dae::EditableTerrainGridComponent::ContinueCarve(Direction srcDir, size_t target)
+{
+	if (target >= m_vCells.size())
+	{
+		std::cout << "Idx too big for this terrain component!\n";
+		return false;
+	}
+
+	// No need to dig more if we're completely open
+	if (m_vCells[target].IsCompletelyOpen())
+	{
+		return false;
+	}
+
+	// Set entered side to dug
+	switch (srcDir)
+	{
+	case Direction::Up:
+		m_vCells[target].SetPartDug(EditableTerrainGridCell::Part::Bottom, true);
+		break;
+	case Direction::Down:
+		m_vCells[target].SetPartDug(EditableTerrainGridCell::Part::Top, true);
+		break;
+	case Direction::Left:
+		m_vCells[target].SetPartDug(EditableTerrainGridCell::Part::Right, true);
+		break;
+	case Direction::Right:
+		m_vCells[target].SetPartDug(EditableTerrainGridCell::Part::Left, true);
+		break;
+	}
+
+	// If this cell's center was already dug, stop digging. Else keep digging until completely through
+	if (!m_vCells[target].GetDugState().m_DugBase)
+	{
+		m_vCells[target].SetPartDug(EditableTerrainGridCell::Part::Base, true);
+		return true;
 	}
 	return false;
 }
-void dae::EditableTerrainGridComponent::Carve(const Float4& shape)
+
+
+void dae::EditableTerrainGridComponent::DirectCarve(size_t idx, EditableTerrainGridCell::DugState which)
 {
-	// Get cells to carve
-	size_t botLeftCell{}, topRightCell{}, amtCols{}, amtRows{};
-
-	GetCellsOverlappingWith(shape, botLeftCell, topRightCell, amtCols, amtRows);
-
-	size_t amtAffectedCells{ amtCols * amtRows };
-
-	// Carve cells away
-	for (size_t i{}; i < amtAffectedCells; ++i)
+	if (idx >= m_vCells.size())
 	{
-		size_t targetId{ botLeftCell + (i % amtCols) + m_AmtCols * (i / amtCols) };
-
-		m_pCells[targetId].SetInactive();
+		std::cout << "Idx too big for this terrain component!\n";
+		return;
 	}
+
+	m_vCells[idx].SetAllDug(which);
 }
-void dae::EditableTerrainGridComponent::CanMoveInto(const Float4& shape, const Float2& direction)
+void dae::EditableTerrainGridComponent::SetCellCompletelyOpen(size_t idx)
 {
-	// For agents that do not carve
-	(shape);
-	(direction);
-	//TODO: Complete
-
-
-
-
+	m_vCells[idx].SetCompletelyOpen(true);
 }
-dae::TerrainCell* dae::EditableTerrainGridComponent::GetCellAtPos(const Float2& pos) const
+
+
+
+const dae::Float2& dae::EditableTerrainGridComponent::GetCenterPosOfCellIdx(size_t idx) const
 {
-	for (size_t i{}; i < m_AmtCells; ++i)
+	if (idx >= m_vCells.size())
 	{
-		if (m_pCells[i].PointInCell(pos))
-			return &m_pCells[i];
+		std::cout << "Idx too big for this terrain component!\n";
+		return m_vCells[0].GetCenterPos();
 	}
-	return nullptr;
+	
+	return m_vCells[idx].GetCenterPos();
 }
-int dae::EditableTerrainGridComponent::GetIndexOfCellAtpos(const Float2& pos) const
-{
-	for (int i{}; i < m_AmtCells; ++i)
-	{
-		if (m_pCells[i].PointInCell(pos))
-			return i;
-	}
-	return -1;
-}
+#pragma endregion
 
-
-void dae::EditableTerrainGridComponent::Render() const
-{
-	Float4 destRect{};
-	destRect.z = m_CellWidth;
-	destRect.w = m_CellHeight;
-
-	for (size_t i{}; i < m_AmtCells; ++i)
-	{
-		if (m_pCells[i].IsActive())
-		{
-			// draw the cell
-			auto pos = m_pCells[i].GetBotLeft();
-			destRect.x = pos.x + m_Offset.x;
-			destRect.y = pos.y + m_Offset.y;
-			ServiceLocator::GetRenderer()->RenderTexture(*m_pTileTex, destRect);
-		}
-	}
-}
-
-
-void dae::EditableTerrainGridComponent::SetOffset(const Float2& offset)
-{
-	m_Offset = offset;
-}
-
-
-void dae::EditableTerrainGridComponent::RegisterObstacle(std::shared_ptr<TerrainGridObstacleComponent> obstacle)
-{
-	size_t botLeftCell{}, amtCols{}, amtRows{};
-
-	obstacle->GetInfo(botLeftCell, amtCols, amtRows);
-
-	for (size_t row{}; row < amtRows; ++row)
-	{
-		for (size_t col{}; col < amtCols; ++col)
-		{
-			size_t targetIdx{botLeftCell + col + (m_AmtCols * row)};
-			m_pCells[targetIdx].SetBlocked();
-		}
-	}
-}
-void dae::EditableTerrainGridComponent::RemoveObstacle(std::shared_ptr<TerrainGridObstacleComponent> obstacle)
-{
-	size_t botLeftCell{}, amtCols{}, amtRows{};
-
-	obstacle->GetInfo(botLeftCell, amtCols, amtRows);
-
-	for (size_t row{}; row < amtRows; ++row)
-	{
-		for (size_t col{}; col < amtCols; ++col)
-		{
-			size_t targetIdx{ botLeftCell + col + (m_AmtCols * row) };
-			m_pCells[targetIdx].SetActive();
-		}
-	}
-}
-
-
-dae::TerrainCell& dae::EditableTerrainGridComponent::GetCellAt(size_t col, size_t row)
-{
-	return m_pCells[col + m_AmtCols * row];
-}
-
-
-void dae::EditableTerrainGridComponent::GetVectorOfCells(std::vector<TerrainCell*>& cells, size_t botLeft, size_t cols, size_t rows)
-{
-	for (size_t i{}; i < cols; ++i)
-	{
-		for (size_t j{}; j < rows; ++j)
-		{
-			size_t targetIdx{botLeft + i + m_AmtCells * j};
-			cells.push_back(&m_pCells[targetIdx]);
-		}
-	}
-}

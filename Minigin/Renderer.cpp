@@ -49,6 +49,11 @@ void dae::Renderer::SetScale(float scale)
 	m_Scale = scale;
 }
 
+void dae::Renderer::RenderTextureFullScreen(const Texture2D& texture) const
+{
+	SDL_Rect dst{0, 0, (int)ServiceLocator::m_pGameInfo->GetWindowWidth(), (int)ServiceLocator::m_pGameInfo->GetWindowHeight() };
+	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+}
 void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
 {
 	SDL_Rect dst{int(x * m_Scale), int(y * m_Scale), int(texture.GetWidth() * m_Scale), int(texture.GetHeight() * m_Scale)};
@@ -57,10 +62,6 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
 {
 	SDL_Rect dst{int(x * m_Scale), int(y * m_Scale), int(width * m_Scale), int (height * m_Scale)};
-	// dst.x = static_cast<int>(x);
-	// dst.y = static_cast<int>(y);
-	// dst.w = static_cast<int>(width);
-	// dst.h = static_cast<int>(height);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 void dae::Renderer::RenderTexture(const Texture2D& tex, const Float4& destRect, const Float4& srcRect) const
@@ -77,20 +78,4 @@ void dae::Renderer::RenderTexture(const Texture2D& tex, const Float4& destRect)
 	srcRect.z = (float)tex.GetWidth();
 	srcRect.w = (float)tex.GetHeight();
 	RenderTexture(tex, destRect, srcRect);
-}
-
-
-void dae::Renderer::RenderColorRect(const Float4&, const Float4&) const
-{
-	// SDL_Rect destRectSDL{ int(destRect.x * m_Scale), int(destRect.y * m_Scale), int(destRect.z * m_Scale), int(destRect.w * m_Scale) };
-	// SDL_SetRenderDrawColor(GetSDLRenderer(), Uint8(color.x), Uint8(color.y), Uint8(color.z), Uint8(color.w));
-	// if (SDL_RenderFillRect(GetSDLRenderer(), &destRectSDL) != 0)
-	// {
-	// 	std::cout << SDL_GetError() << std::endl;
-	// }
-	// 
-	// SDL_RenderDrawRect(GetSDLRenderer(), NULL);
-
-	// Doesn't seem to work
-	// maybe figure it out later
 }

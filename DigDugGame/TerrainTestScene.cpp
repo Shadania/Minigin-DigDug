@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TerrainTestScene.h"
+/*
 #include "GameObject.h"
 #include "ServiceLocator.h"
 #include "Renderer.h"
@@ -28,12 +29,17 @@ void dae::TerrainTestScene::Init()
 	float tileSize{ 2.0f };
 	amtCols = int(ServiceLocator::m_pGameInfo->GetWindowWidth() / (tileSize*m_Scale));
 	auto terrainComp = std::make_shared<EditableTerrainGridComponent>(tileSize, tileSize, amtCols, amtRows, "groundTile1.png");
+	terrainComp->SetVerticalZones(true, 4);
+	terrainComp->SetVerticalZoneTexture(0, "groundTile0.png");
+	terrainComp->SetVerticalZoneTexture(1, "groundTile1.png");
+	terrainComp->SetVerticalZoneTexture(2, "groundTile2.png");
+	terrainComp->SetVerticalZoneTexture(3, "groundTile3.png");
 	go->AddComponentNeedRendering(terrainComp);
 	AddToScene(go);
 	Float4 topRectToCarve{};
 	topRectToCarve.z = ServiceLocator::m_pGameInfo->GetWindowWidth() / m_Scale;
 	topRectToCarve.w = 8 * tileSize;
-	terrainComp->Carve(topRectToCarve);
+	terrainComp->PureCarve(topRectToCarve);
 
 	// Sprite
 	go = std::make_shared<GameObject>();
@@ -55,4 +61,4 @@ void dae::TerrainTestScene::Init()
 void dae::TerrainTestScene::Update()
 {
 	Scene::Update();
-}
+}*/

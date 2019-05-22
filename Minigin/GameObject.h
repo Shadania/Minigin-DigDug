@@ -60,6 +60,7 @@ namespace dae
 		std::vector<std::shared_ptr<GameObject>> m_vspChildren;
 		GameObject* m_pParent = nullptr;
 		Scene* m_pScene = nullptr;
+		bool m_IsInitialized = false;
 
 		void RemoveChild(std::shared_ptr<GameObject> child);
 	};

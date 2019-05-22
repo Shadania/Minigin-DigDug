@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Rock.h"
+/*
 #include "SpriteComponent.h"
 #include "ServiceLocator.h"
 #include "ResourceManager.h"
@@ -85,7 +86,7 @@ void dae::Rock::StateCrumbling::Update()
 {
 	float elapsedSec{ ServiceLocator::GetGameTime()->GetDeltaT() };
 	m_AccuSec += elapsedSec;
-	
+
 	if (m_AccuSec > m_CrumblingTime)
 	{
 		//stop
@@ -98,7 +99,7 @@ void dae::Rock::StateCrumbling::Update()
 dae::Rock::Rock(std::shared_ptr<EditableTerrainGridComponent> spTerrain, size_t leftbotCellIdx)
 	:BaseComponent("Rock")
 	, m_spTerrain{spTerrain}
-	,m_spObstacleComponent{ std::make_shared<TerrainGridObstacleComponent>(spTerrain, leftbotCellIdx, 
+	,m_spObstacleComponent{ std::make_shared<TerrainGridObstacleComponent>(spTerrain, leftbotCellIdx,
 		size_t(16 / spTerrain->GetCellWidth()), size_t (16 / spTerrain->GetCellHeight())) }
 {}
 
@@ -125,7 +126,7 @@ void dae::Rock::Initialize()
 	size_t botLeftCellIdx{}, amtCols{}, amtRows{};
 	m_spObstacleComponent->GetInfo(botLeftCellIdx, amtCols, amtRows);
 	m_spTerrain->GetVectorOfCells(m_vpLockCells, botLeftCellIdx + (amtRows * m_spTerrain->GetAmtCols()), amtCols, 1);
-	
+
 	m_spTerrain->RegisterObstacle(m_spObstacleComponent);
 }
 
@@ -144,3 +145,4 @@ void dae::Rock::SelfDestruct()
 {
 	m_wpMyObj.lock()->Destroy();
 }
+*/

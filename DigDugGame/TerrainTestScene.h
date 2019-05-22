@@ -1,4 +1,5 @@
 #pragma once
+/*
 #include "Scene.h"
 
 namespace dae
@@ -17,4 +18,4 @@ namespace dae
 		std::shared_ptr<CharacterDigDug> m_spCharacter;
 		float m_Scale = 3.0f;
 	};
-}
+}*/

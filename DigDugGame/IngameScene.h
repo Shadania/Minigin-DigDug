@@ -14,7 +14,7 @@ namespace dae
 		virtual void Update() override;
 
 	private:
-		std::shared_ptr<CharacterDigDug> m_spCharacter;
+		float m_Scale = 2.0f;
 	};
 }
 

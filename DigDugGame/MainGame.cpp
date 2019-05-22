@@ -6,7 +6,7 @@
 #include "SceneManager.h"
 
 
-#define TEST_TERRAIN
+#define MAIN
 
 #ifdef TEST_FPS
 #include "FPSTestScene.h"
@@ -18,6 +18,10 @@
 
 #ifdef TEST_TERRAIN
 #include "TerrainTestScene.h"
+#endif
+
+#ifdef MAIN
+#include "IngameScene.h"
 #endif
 
 
@@ -36,6 +40,9 @@ void MainGame::LoadScenes()
 #ifdef TEST_TERRAIN
 	startScene = std::make_shared<TerrainTestScene>();
 #endif
+#ifdef MAIN
+	startScene = std::make_shared<IngameScene>();
+#endif
 
 
 
@@ -47,7 +54,8 @@ void MainGame::LoadScenes()
 void MainGame::Run()
 {
 	dae::Minigin engine{};
-	engine.Initialize(480, 720); // window width and height
+	// engine.Initialize(480, 720); // window width and height
+	engine.Initialize(560, 720); // window width and height
 
 	LoadScenes();
 

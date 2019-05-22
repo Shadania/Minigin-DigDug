@@ -78,12 +78,17 @@ void dae::GameObject::RootRender() const
 }
 void dae::GameObject::RootInitialize()
 {
+	if (m_IsInitialized)
+		return;
+
 	Initialize();
 
 	for (size_t i{}; i < m_vspChildren.size(); ++i)
 	{
 		m_vspChildren[i]->RootInitialize();
 	}
+
+	m_IsInitialized = true;
 }
 
 void dae::GameObject::FixedUpdate()
@@ -157,12 +162,18 @@ void dae::GameObject::AddComponent(std::shared_ptr<BaseComponent> comp)
 {
 	m_vspComponents.push_back(comp);
 	comp->SetGameObj(shared_from_this());
+
+	if (m_IsInitialized)
+		comp->Initialize();
 }
 
 void dae::GameObject::AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp)
 {
 	m_vspComponentsNeedRendering.push_back(comp);
 	comp->SetGameObj(shared_from_this());
+
+	if (m_IsInitialized)
+		comp->Initialize();
 }
 
 std::shared_ptr<dae::BaseComponent> dae::GameObject::GetComponent(const std::string& type)

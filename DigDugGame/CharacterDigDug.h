@@ -13,7 +13,7 @@ namespace dae
 	class CharacterDigDug final : public BaseComponent
 	{
 	public:
-		CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, const Float2& startingPos);
+		CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startingPos);
 	
 	protected:
 		virtual void Update() override;
@@ -28,9 +28,8 @@ namespace dae
 		std::shared_ptr<TerrainGridMovementComponent> m_spGridAgentComponent;
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		std::string m_CurrSequence;
-		MoveInfo m_CurrState = MoveInfo::Stopped;
-		Direction m_PrevDir = Direction::None;
+		TerrainGridMoveState m_CurrState = TerrainGridMoveState::Still;
 
-		Float2 m_StartingPos;
+		size_t m_StartingPos;
 	};
 }
