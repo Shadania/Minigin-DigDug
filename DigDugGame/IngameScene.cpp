@@ -9,6 +9,7 @@
 #include "Rock.h"
 #include "TextureComponents.h"
 #include "ResourceManager.h"
+#include "CharacterPooka.h"
 
 
 dae::IngameScene::IngameScene()
@@ -31,7 +32,7 @@ void dae::IngameScene::Init()
 	go->AddComponentNeedRendering(terrainComp);
 	AddToScene(go);
 	
-	// Cut terrain
+	// Setup terrain
 	{
 		// Open up the first two rows
 		for (size_t i{}; i < cols * 2; ++i)
@@ -136,18 +137,23 @@ void dae::IngameScene::Init()
 
 	// Player character	
 	go = std::make_shared<GameObject>();
-	auto character = std::make_shared<CharacterDigDug>(terrainComp, cols * 2 + 9);
-	go->AddComponent(character);
+	m_InitialPlayerPos = cols * 2 + 9;
+	m_spPlayer = std::make_shared<CharacterDigDug>(terrainComp, m_InitialPlayerPos, this);
+	go->AddComponent(m_spPlayer);
 	AddToScene(go);
 
 
 	// Place rocks on terrain
 	go = std::make_shared<GameObject>();
-	go->AddComponentNeedRendering(std::make_shared<Rock>(terrainComp, cols * 2 + 3));
+	go->AddComponent(std::make_shared<Rock>(terrainComp, cols * 2 + 3));
 	AddToScene(go);
 
 	// Place enemies on terrain
-	//TODO: Enemies
+	go = std::make_shared<GameObject>();
+	go->AddComponent(std::make_shared<CharacterPooka>(this, terrainComp, (cols * 4 + 1)));
+	AddToScene(go);
+
+
 
 	// Init text on scene
 	{
@@ -233,4 +239,8 @@ void dae::IngameScene::Update()
 
 
 	Scene::Update();
+}
+void dae::IngameScene::RespawnPlayer()
+{
+	m_spPlayer->RespawnAtCellIdx(m_InitialPlayerPos);
 }

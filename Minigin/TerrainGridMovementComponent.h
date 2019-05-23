@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include <deque>
+
 namespace dae
 {
 	class TerrainGridMovementComponent final : public BaseComponent
@@ -24,6 +26,12 @@ namespace dae
 		
 		const Direction& GetCurrDir()const { return m_Direction; }
 
+		bool FindPathTo(size_t targetIdx);
+
+
+		void Reset(size_t newPos);
+		void Stop(); // Stops all movement, can only be undone by a reset
+
 	private:
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		TerrainGridMoveState m_MoveState = TerrainGridMoveState::Still;
@@ -36,6 +44,10 @@ namespace dae
 		float m_CarveSpeed;
 		bool m_PastHalfCarved = false;
 		Float2 m_CenterPos;
+		bool m_IsStopped = false;
+
+		bool m_FollowingPath = false;
+		std::deque<Direction> m_CurrentPath = {};
 
 		// Private methods
 		void HandleMoveCarve();

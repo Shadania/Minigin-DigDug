@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseComponent.h"
+#include <deque>
 
 namespace dae
 {
@@ -102,6 +103,23 @@ namespace dae
 	};
 
 
+	struct PathfindNode
+	{
+		PathfindNode(size_t idx, Direction from, std::shared_ptr<PathfindNode> prev)
+			: idx{ idx }
+			, from{ from }
+			, prev{prev}
+		{}
+		bool operator==(const PathfindNode& other)
+		{
+			return (idx == other.idx);
+		}
+
+		size_t idx;
+		Direction from;
+		std::shared_ptr<PathfindNode> prev;
+	};
+
 	class EditableTerrainGridComponent final : public BaseComponent
 	{
 	public:
@@ -114,6 +132,11 @@ namespace dae
 
 		TerrainGridMoveResult TryGo(Direction dir, size_t from, bool canCarve, const std::vector<size_t>& ignoredCells);
 		bool ContinueCarve(Direction srcDir, size_t target);
+
+		// Pathfinding
+		bool GenerateNoCarvePath(std::deque<Direction>& path, size_t src, size_t dest);
+		std::deque<std::shared_ptr<PathfindNode> > GetPossibleConnections(std::shared_ptr<PathfindNode> from);
+
 
 		// For setup
 		void DirectCarve(size_t idx, EditableTerrainGridCell::DugState which);

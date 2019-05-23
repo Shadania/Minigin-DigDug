@@ -16,6 +16,7 @@ namespace dae
 		virtual void LateUpdate() {}
 		virtual void Render() const {}
 		virtual void Initialize() {}
+		virtual void OnDestroy() {}
 
 		std::shared_ptr<dae::GameObject> GameObj() const;
 		virtual void SetGameObj(std::shared_ptr<GameObject> newObj);

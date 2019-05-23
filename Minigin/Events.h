@@ -9,32 +9,45 @@ namespace dae
 	{
 		//TODO: Listener
 	public:
-		Listener(const std::function<int()>& fn)
-			:m_fn{ fn }
-		{}
+		Listener()
+			:m_fn{}
+		{
+			id = total;
+			total++;
+		}
 		void Notify() { m_fn(); }
 
-		void SetFunction(std::function<int()>& fn) { m_fn = fn; }
+		void SetFunction(std::function<void()> fn)
+		{
+			m_fn = fn;
+		}
+
+		bool operator==(const Listener& other)
+		{
+			return id == other.id;
+		}
 	private:
 
-		std::function<int()> m_fn;
+		std::function<void()> m_fn;
+		int id;
+		static int total;
 	};
 
 	class Event
 	{
 	public:
 		//TODO: Event
-		void AddListener(Listener* listener) { m_vpListeners.push_back(listener); }
-		void RemoveListener(Listener* listener) { m_vpListeners.erase(std::remove(m_vpListeners.begin(), m_vpListeners.end(), listener), m_vpListeners.end()); }
-		void FireEvent()
+		void AddListener(Listener listener) { m_vpListeners.push_back(listener); }
+		void RemoveListener(Listener listener) { m_vpListeners.erase(std::remove(m_vpListeners.begin(), m_vpListeners.end(), listener), m_vpListeners.end()); }
+		void Invoke()
 		{
-			for (Listener* l : m_vpListeners)
+			for (Listener l : m_vpListeners)
 			{
-				l->Notify();
+				l.Notify();
 			}
 		}
 
 	private:
-		std::vector<Listener*> m_vpListeners;
+		std::vector<Listener> m_vpListeners;
 	};
 }

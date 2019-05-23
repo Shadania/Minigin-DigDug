@@ -7,6 +7,7 @@ namespace dae
 	class TerrainGridMovementComponent;
 	class TerrainGridObstacleComponent;
 	class SpriteComponent;
+	class CollisionComponent;
 
 	class Rock final : public BaseComponent
 	{
@@ -54,6 +55,7 @@ namespace dae
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		std::shared_ptr<TerrainGridMovementComponent> m_spAgentComp;
 		std::shared_ptr<TerrainGridObstacleComponent> m_spObstacleComp;
+		std::shared_ptr<CollisionComponent> m_spCollComp;
 		std::shared_ptr<SpriteComponent> m_spSpriteComp;
 
 		size_t m_Idx;

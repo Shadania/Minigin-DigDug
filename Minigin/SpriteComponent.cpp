@@ -125,10 +125,11 @@ void dae::SpriteComponent::SetActiveSprite(const std::string& name)
 	{
 		if (sprite->IsName(nameHash))
 		{
-			if (sprite->m_ResetDeltaOnActive)
-				m_AccuSec = 0.0f;
-
 			m_ActiveSprite = sprite;
+			if (sprite->m_ResetDeltaOnActive)
+			{
+				SetFrame(0);
+			}
 			return;
 		}
 	}

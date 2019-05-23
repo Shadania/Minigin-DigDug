@@ -451,5 +451,133 @@ void dae::EditableTerrainGridComponent::SetCellUnblocked(size_t idx)
 {
 	m_vCells[idx].SetBlocked(false);
 }
+
+
+bool dae::EditableTerrainGridComponent::GenerateNoCarvePath(std::deque<Direction>& path, size_t src, size_t dest)
+{
+	// Find out if targetnode is enterable
+	if (m_vCells[dest].IsBlocked())
+		return false;
+	if (!m_vCells[dest].GetDugState().m_DugBase)
+		return false;
+
+
+	// SETUP
+	// Find all possible connections from source to start with
+	std::deque<std::shared_ptr<PathfindNode>> openList{};
+	std::deque<std::shared_ptr<PathfindNode>> closedList{};
+
+	std::shared_ptr<PathfindNode> startNode{ std::make_shared<PathfindNode>(src, Direction::None, nullptr) };
+
+	openList.push_back(startNode);
+
+	while (!openList.empty())
+	{
+		// Get next node from openlist and put it in closedlist
+		std::shared_ptr<PathfindNode> thisNode{ openList.front() };
+		openList.pop_front();
+		closedList.push_back(thisNode);
+
+		// Get all possible connections
+		auto conns = GetPossibleConnections(thisNode);
+		for (size_t i{}; i < conns.size(); ++i)
+		{
+			if (std::find_if(closedList.begin(), closedList.end(), [conns, i](std::shared_ptr<PathfindNode> node) {return conns[i]->idx == node->idx;}) == closedList.end())
+			{
+				if (std::find_if(openList.begin(), openList.end(), [conns, i](std::shared_ptr<PathfindNode> node) {return conns[i]->idx == node->idx; }) == openList.end())
+				{
+					// Check if we reached target node
+					if (conns[i]->idx == dest)
+					{
+						// Setup new path
+						path.clear();
+						std::shared_ptr<PathfindNode> currNode{ conns[i] };
+						while (currNode)
+						{
+							path.push_front(currNode->from);
+							currNode = currNode->prev;
+						}
+
+						return true;
+					}
+
+					openList.push_back(conns[i]);
+				}
+			}
+		}
+	}
+
+	return false;
+}
+std::deque<std::shared_ptr<dae::PathfindNode> > dae::EditableTerrainGridComponent::GetPossibleConnections(std::shared_ptr<PathfindNode> from)
+{
+	std::deque<std::shared_ptr<PathfindNode>> result{};
+
+	// go over all directions
+	// structure: is not on edge? is able to go that way? is able to enter that cell?
+
+	// up
+	if ((from->idx / m_Cols) > 0)
+	{
+		if (m_vCells[from->idx].GetDugState().m_DugTop)
+		{
+			size_t dest{ from->idx - m_Cols };
+			if (!m_vCells[dest].IsBlocked())
+			{
+				if (m_vCells[dest].IsCompletelyOpen())
+					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Up, from));
+				else if (m_vCells[dest].GetDugState().m_DugBottom && m_vCells[dest].GetDugState().m_DugBase)
+					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Up, from));
+			}
+		}
+	}
+	// down
+	if ((from->idx / m_Cols) < (m_Rows - 1))
+	{
+		if (m_vCells[from->idx].GetDugState().m_DugBottom)
+		{
+			size_t dest{ from->idx + m_Cols };
+			if (!m_vCells[dest].IsBlocked())
+			{
+				if (m_vCells[dest].IsCompletelyOpen())
+					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Down, from));
+				else if (m_vCells[dest].GetDugState().m_DugTop && m_vCells[dest].GetDugState().m_DugBase)
+					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Down, from));
+			}
+		}
+	}
+	// left
+	if ((from->idx % m_Cols) > 0)
+	{
+		if (m_vCells[from->idx].GetDugState().m_DugLeft)
+		{
+			size_t dest{ from->idx - 1 };
+			if (!m_vCells[dest].IsBlocked())
+			{
+				if (m_vCells[dest].IsCompletelyOpen())
+					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Left, from));
+				else if (m_vCells[dest].GetDugState().m_DugRight && m_vCells[dest].GetDugState().m_DugBase)
+					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Left, from));
+			}
+		}
+	}
+	// right
+	if ((from->idx % m_Cols) < (m_Cols - 1))
+	{
+		if (m_vCells[from->idx].GetDugState().m_DugRight)
+		{
+			size_t dest{ from->idx + 1 };
+			if (!m_vCells[dest].IsBlocked())
+			{
+				if (m_vCells[dest].IsCompletelyOpen())
+					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Right, from));
+				else if (m_vCells[dest].GetDugState().m_DugLeft && m_vCells[dest].GetDugState().m_DugBase)
+					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Right, from));
+			}
+		}
+	}
+
+	return result;
+}
 #pragma endregion
 

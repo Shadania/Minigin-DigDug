@@ -214,6 +214,8 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\x64\*.dll" "$(OutputPath)" /R /Y</C
   <ItemGroup>
     <ClInclude Include="Audio.h" />
     <ClInclude Include="BaseComponent.h" />
+    <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="EditableTerrainGridComponent.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="Font.h" />
@@ -239,11 +241,15 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\x64\*.dll" "$(OutputPath)" /R /Y</C
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
+    <ClCompile Include="CollisionComponent.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="EditableTerrainGridComponent.cpp" />
+    <ClCompile Include="Events.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FPSComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />

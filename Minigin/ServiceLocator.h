@@ -13,6 +13,7 @@ namespace dae
 	class SceneManager;
 	class Audio;
 	class ServiceLocator;
+	class CollisionManager;
 
 	class BasicGameInfo
 	{
@@ -40,6 +41,7 @@ namespace dae
 		static ResourceManager* GetResourceManager() { return m_pResourceManager; }
 		static SceneManager* GetSceneManager() { return m_pSceneManager; }
 		static Audio* GetAudio() { return m_pAudio; }
+		static CollisionManager* GetCollisionManager() { return m_pCollisionManager; }
 
 		// SETTERS
 		static void SetGameTime(GameTime* gameTime);
@@ -48,6 +50,7 @@ namespace dae
 		static void SetResourceManager(ResourceManager* resourceManager);
 		static void SetSceneManager(SceneManager* sceneManager);
 		static void SetAudio(Audio* audio);
+		static void SetCollisionManager(CollisionManager* coll);
 
 		// PUBLIC DATA
 		static BasicGameInfo* m_pGameInfo;
@@ -59,5 +62,6 @@ namespace dae
 		static ResourceManager* m_pResourceManager;
 		static SceneManager* m_pSceneManager;
 		static Audio* m_pAudio;
+		static CollisionManager* m_pCollisionManager;
 	};
 }

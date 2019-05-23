@@ -26,6 +26,12 @@ dae::GameObject::~GameObject()
 {
 	std::cout << "Gameobject got destroyed\n";
 
+	if (!m_IsBeingDestroyed)
+	{
+		m_IsBeingDestroyed = true;
+		RootOnDestroy();
+	}
+
 	m_spTransformComponent.reset();
 	for (auto sp : m_vspComponents)
 	{
@@ -90,6 +96,14 @@ void dae::GameObject::RootInitialize()
 
 	m_IsInitialized = true;
 }
+void dae::GameObject::RootOnDestroy()
+{
+	OnDestroy();
+	for (size_t i{}; i < m_vspChildren.size(); ++i)
+	{
+		m_vspChildren[i]->RootOnDestroy();
+	}
+}
 
 void dae::GameObject::FixedUpdate()
 {
@@ -140,6 +154,17 @@ void dae::GameObject::Initialize()
 	for (size_t i{}; i < m_vspComponentsNeedRendering.size(); ++i)
 	{
 		m_vspComponentsNeedRendering[i]->Initialize();
+	}
+}
+void dae::GameObject::OnDestroy()
+{
+	for (size_t i{}; i < m_vspComponents.size(); ++i)
+	{
+		m_vspComponents[i]->OnDestroy();
+	}
+	for (size_t i{}; i < m_vspComponentsNeedRendering.size(); ++i)
+	{
+		m_vspComponentsNeedRendering[i]->OnDestroy();
 	}
 }
 
@@ -200,6 +225,12 @@ std::shared_ptr<dae::TransformComponent> dae::GameObject::GetTransform()
 
 void dae::GameObject::Destroy()
 {
+	if (!m_IsBeingDestroyed)
+	{
+		m_IsBeingDestroyed = true;
+		RootOnDestroy();
+	}
+
 	if (m_pParent)
 	{
 		m_pParent->RemoveChild(shared_from_this());

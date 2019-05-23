@@ -102,6 +102,15 @@
     <ClInclude Include="Events.h">
       <Filter>Base</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -172,6 +181,15 @@
     </ClCompile>
     <ClCompile Include="TerrainGridObstacleComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Services</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Events.cpp">
+      <Filter>Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -18,6 +18,9 @@ dae::TerrainGridMovementComponent::TerrainGridMovementComponent(const std::share
 
 dae::TerrainGridMoveResult dae::TerrainGridMovementComponent::GiveDirection(Direction newDir)
 {
+	if (m_IsStopped)
+		return TerrainGridMoveResult::Blocked;
+
 	if (m_MoveState != TerrainGridMoveState::Still)
 	{
 		switch (m_MoveState)
@@ -57,6 +60,17 @@ dae::TerrainGridMoveResult dae::TerrainGridMovementComponent::GiveDirection(Dire
 
 void dae::TerrainGridMovementComponent::Update()
 {
+	if (m_IsStopped)
+		return;
+
+	if (m_FollowingPath)
+	{
+		if (GiveDirection(m_CurrentPath.front()) == TerrainGridMoveResult::Blocked)
+			m_CurrentPath.pop_front();
+		if (m_CurrentPath.empty())
+			m_FollowingPath = false;
+	}
+
 	if (m_MoveState == TerrainGridMoveState::Still)
 		return;
 
@@ -210,4 +224,29 @@ void dae::TerrainGridMovementComponent::HandleMoveNoCarve()
 	{
 		m_CenterPos = futurePos;
 	}
+}
+
+
+bool dae::TerrainGridMovementComponent::FindPathTo(size_t targetIdx)
+{	
+	return (m_FollowingPath = m_spTerrain->GenerateNoCarvePath(m_CurrentPath, m_CurrGridCell, targetIdx));
+}
+
+
+void dae::TerrainGridMovementComponent::Reset(size_t newPos)
+{
+	m_MoveState = TerrainGridMoveState::Still;
+	m_Direction = Direction::None;
+	m_CurrGridCell = newPos;
+	m_CenterPos = m_spTerrain->GetCenterPosOfCellIdx(m_CurrGridCell);
+	GetTransform()->SetLocalPos(m_CenterPos);
+	m_PastHalfCarved = false;
+
+	m_CurrentPath = {};
+	m_FollowingPath = false;
+	m_IsStopped = false;
+}
+void dae::TerrainGridMovementComponent::Stop()
+{
+	m_IsStopped = true;
 }

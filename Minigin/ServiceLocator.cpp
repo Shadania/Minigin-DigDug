@@ -6,6 +6,7 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "Audio.h"
+#include "CollisionManager.h"
 
 dae::GameTime* dae::ServiceLocator::m_pGameTime{nullptr};
 dae::InputManager* dae::ServiceLocator::m_pInputManager{ nullptr };
@@ -14,6 +15,7 @@ dae::ResourceManager* dae::ServiceLocator::m_pResourceManager{ nullptr };
 dae::SceneManager* dae::ServiceLocator::m_pSceneManager{ nullptr };
 dae::Audio* dae::ServiceLocator::m_pAudio{ nullptr };
 dae::BasicGameInfo* dae::ServiceLocator::m_pGameInfo{ nullptr };
+dae::CollisionManager* dae::ServiceLocator::m_pCollisionManager{ nullptr };
 
 
 void dae::ServiceLocator::InitResources(float wWidth, float wHeight)
@@ -24,6 +26,7 @@ void dae::ServiceLocator::InitResources(float wWidth, float wHeight)
 	SetResourceManager(new ResourceManager());
 	SetSceneManager(new SceneManager());
 	SetAudio(new RegularAudio());
+	SetCollisionManager(new CollisionManager());
 
 	m_pGameInfo = new BasicGameInfo{};
 	m_pGameInfo->m_WindowWidth = wWidth;
@@ -45,6 +48,8 @@ void dae::ServiceLocator::CleanupResources()
 		delete m_pAudio;
 	if (m_pGameInfo)
 		delete m_pGameInfo;
+	if (m_pCollisionManager)
+		delete m_pCollisionManager;
 }
 
 void dae::ServiceLocator::SetGameTime(GameTime* gameTime)
@@ -88,4 +93,11 @@ void dae::ServiceLocator::SetAudio(Audio* audio)
 		delete m_pAudio;
 
 	m_pAudio = audio;
+}
+void dae::ServiceLocator::SetCollisionManager(CollisionManager* coll)
+{
+	if (m_pCollisionManager)
+		delete m_pCollisionManager;
+	
+	m_pCollisionManager = coll;
 }

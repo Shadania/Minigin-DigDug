@@ -26,6 +26,7 @@ namespace dae
 		void RootLateUpdate();
 		void RootRender() const;
 		void RootInitialize();
+		void RootOnDestroy();
 
 		void AddChild(std::shared_ptr<GameObject> child);
 		void SetParent(GameObject* parent);
@@ -45,14 +46,15 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
-	protected:
-		virtual void FixedUpdate();
-		virtual void Update();
-		virtual void LateUpdate();
-		virtual void Render() const;
-		virtual void Initialize();
-
 	private:
+		void FixedUpdate();
+		void Update();
+		void LateUpdate();
+		void Render() const;
+		void Initialize();
+		void OnDestroy();
+
+
 		friend class Scene;
 		std::shared_ptr<TransformComponent> m_spTransformComponent;
 		std::vector<std::shared_ptr<BaseComponent>> m_vspComponentsNeedRendering;
@@ -60,7 +62,9 @@ namespace dae
 		std::vector<std::shared_ptr<GameObject>> m_vspChildren;
 		GameObject* m_pParent = nullptr;
 		Scene* m_pScene = nullptr;
+
 		bool m_IsInitialized = false;
+		bool m_IsBeingDestroyed = false;
 
 		void RemoveChild(std::shared_ptr<GameObject> child);
 	};

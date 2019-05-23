@@ -6,11 +6,15 @@
 #include "InputManager.h"
 #include "TerrainGridMovementComponent.h"
 #include "GameObject.h"
+#include "CollisionComponent.h"
+#include <functional>
+#include "IngameScene.h"
 
-dae::CharacterDigDug::CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startingPos)
+dae::CharacterDigDug::CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startingPos, IngameScene* pScene)
 	:m_Speed{50.0f}
 	,m_spTerrain{spTerrain}
 	, m_StartingPos{startingPos}
+	,m_pScene{pScene}
 {}
 
 
@@ -54,6 +58,10 @@ void dae::CharacterDigDug::Initialize()
 	sequence = std::make_shared<Sequence>(tex, "LeftCarve", 2);
 	m_spSpriteObjectComponent->AddSequence(sequence);
 
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/Death.png");
+	sequence = std::make_shared<Sequence>(tex, "Death", 4, false, true, 0.3f);
+	m_spSpriteObjectComponent->AddSequence(sequence);
+
 
 	m_spSpriteObjectComponent->SetActiveSprite("Right");
 
@@ -74,9 +82,73 @@ void dae::CharacterDigDug::Initialize()
 	AddComponent(m_spGridAgentComponent);
 
 	m_IsInitialized = true;
+
+	// Collision
+	m_spCollComp = std::make_shared<CollisionComponent>(0);
+	m_spCollComp->AddCollTarget(1);
+	m_spCollComp->AddCollTarget(2);
+	m_spCollComp->AddCollTarget(3);
+
+
+	Listener listener{};
+
+	std::function<void()> fn{ [this]() { this->HandleCollision(); } };
+
+	listener.SetFunction(fn);
+	m_spCollComp->m_HasCollided.AddListener(listener);
+	AddComponent(m_spCollComp);
 }
 
 void dae::CharacterDigDug::Update()
+{
+	if (m_Dying)
+	{
+		m_AccuDyingTime += ServiceLocator::GetGameTime()->GetDeltaT();
+		if (m_AccuDyingTime >= m_MaxDyingTime)
+		{
+			m_AccuDyingTime = 0.0f;
+			m_pScene->RespawnPlayer();
+		}
+	}
+	else
+	{
+		HandleMovement();
+	}
+
+	// Collision
+	m_spCollComp->SetShape(Float4(GetTransform()->GetWorldPos(), 14, 14));
+}
+
+void dae::CharacterDigDug::HandleCollision()
+{
+	if (!m_Dying) // What is dead can never die
+	{
+		switch (m_spCollComp->GetCollidedTag())
+		{
+		case 1: // Rock
+		case 2: // Pooka
+		case 3: // Fygar
+			m_spGridAgentComponent->Stop();
+			m_spSpriteObjectComponent->SetActiveSprite("Death");
+			m_spSpriteObjectComponent->SetFrame(0);
+			m_Dying = true;
+			break;
+		}
+	}
+}
+
+
+void dae::CharacterDigDug::RespawnAtCellIdx(size_t idx)
+{
+	m_Dying = false;
+	m_spGridAgentComponent->Reset(idx);
+	m_CurrSequence = "Right";
+	m_spSpriteObjectComponent->SetActiveSprite(m_CurrSequence);
+	std::cout << "Respawned!\n";
+}
+
+
+void dae::CharacterDigDug::HandleMovement()
 {
 	auto input = ServiceLocator::GetInputManager();
 	auto delta = ServiceLocator::GetGameTime()->GetDeltaT();
@@ -84,7 +156,7 @@ void dae::CharacterDigDug::Update()
 	float horizontalMovement{ input->GetAxis("MoveHorizontal") };
 	float verticalMovement{ input->GetAxis("MoveVertical") };
 
-	Direction newDir{Direction::None};
+	Direction newDir{ Direction::None };
 
 	if ((abs(horizontalMovement) + abs(verticalMovement)) > 0.001f)
 	{

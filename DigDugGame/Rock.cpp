@@ -10,6 +10,8 @@
 #include "GameTime.h"
 #include "ResourceManager.h"
 #include "GameObject.h"
+#include "CollisionComponent.h"
+
 
 #pragma region FSM
 void dae::Rock::StateStill::Update()
@@ -95,10 +97,14 @@ void dae::Rock::Initialize()
 
 	SetState(std::make_shared<StateStill>());
 
+	m_spCollComp = std::make_shared<CollisionComponent>(1);
+	AddComponent(m_spCollComp);
+
 	m_IsInitialized = true;
 }
 
 void dae::Rock::Update()
 {
+	m_spCollComp->SetShape(Float4(GetTransform()->GetWorldPos(), 16, 16));
 	m_CurrState->Update();
 }

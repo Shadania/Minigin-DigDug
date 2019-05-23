@@ -11,6 +11,7 @@
 #include "Scene.h"
 #include "GameTime.h"
 #include "ServiceLocator.h"
+#include "CollisionManager.h"
 
 
 #include "Log.h"
@@ -69,7 +70,8 @@ void dae::Minigin::Run()
 		auto renderer = ServiceLocator::GetRenderer();
 		auto scenes = ServiceLocator::GetSceneManager();
 		auto input = ServiceLocator::GetInputManager();
-		auto time = ServiceLocator::GetGameTime(); 
+		auto time = ServiceLocator::GetGameTime();
+		auto col = ServiceLocator::GetCollisionManager();
 
 		float accuSec{};
 
@@ -100,6 +102,9 @@ void dae::Minigin::Run()
 				accuSec -= msPerFrame;
 				scenes->FixedUpdate();
 			}
+
+			// collision before lateupdate & after all regular updates
+			col->CalculateCollision();
 
 			scenes->LateUpdate();
 			
