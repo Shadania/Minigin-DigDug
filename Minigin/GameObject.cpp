@@ -29,7 +29,7 @@ dae::GameObject::GameObject(const Float2& pos, float rot, const Float2& scale)
 
 dae::GameObject::~GameObject()
 {
-	std::cout << "Gameobject got destroyed\n";
+	std::cout << "Gameobject " << ID << " got destroyed\n";
 
 	DestroyObject();
 
@@ -246,6 +246,12 @@ void dae::GameObject::DestroyObject()
 	if (!m_IsBeingDestroyed)
 	{
 		RootOnDestroy();
+	}
+
+	// Destroy children
+	for (size_t i{}; i < m_vspChildren.size(); ++i)
+	{
+		m_vspChildren[i]->DestroyObject();
 	}
 
 	if (m_pParent)

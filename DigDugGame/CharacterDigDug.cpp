@@ -90,12 +90,9 @@ void dae::CharacterDigDug::Initialize()
 	m_spCollComp->AddCollTarget(3);
 
 
-	Listener listener{};
-
-	std::function<void()> fn{ [this]() { this->HandleCollision(); } };
-
-	listener.SetFunction(fn);
-	m_spCollComp->m_HasCollided.AddListener(listener);
+	auto list = std::make_shared<Listener>();
+	list->SetFunction([this]() { this->HandleCollision(); });
+	m_spCollComp->m_HasCollided.AddListener(list);
 	AddComponent(m_spCollComp);
 }
 

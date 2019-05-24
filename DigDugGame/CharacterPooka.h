@@ -7,6 +7,7 @@ namespace dae
 	class SpriteComponent;
 	class TerrainGridMovementComponent;
 	class IngameScene;
+	class Listener;
 	class CollisionComponent;
 
 	class CharacterPooka final : public BaseComponent
@@ -101,6 +102,7 @@ namespace dae
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		std::shared_ptr<TerrainGridMovementComponent> m_spAgent;
 		std::shared_ptr<CollisionComponent> m_spCollComp;
+		std::shared_ptr<Listener> m_spListener;
 		Direction m_CurrDir = Direction::Down;
 		IngameScene* m_pScene;
 

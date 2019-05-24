@@ -227,10 +227,10 @@ void dae::IngameScene::Init()
 	}
 	
 	// FPS Counter
-	// go = std::make_shared<GameObject>();
-	// go->AddComponent(std::make_shared<FPSComponent>(ServiceLocator::GetResourceManager()->GetDefaultFont(), Float4{0, 0, 0, 1}));
-	// go->GetTransform()->SetLocalPos(0, 30);
-	// AddToScene(go);
+	go = std::make_shared<GameObject>();
+	go->AddComponent(std::make_shared<FPSComponent>(ServiceLocator::GetResourceManager()->GetDefaultFont(), Float4{0, 0, 0, 1}));
+	go->GetTransform()->SetLocalPos(0, 30);
+	AddToScene(go);
 
 	
 	m_IsInitialized = true;

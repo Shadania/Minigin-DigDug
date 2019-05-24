@@ -10,7 +10,7 @@
 #include "GameObject.h"
 #include "CollisionComponent.h"
 #include "IngameScene.h"
-
+#include "Events.h"
 
 
 #pragma region FSM
@@ -142,9 +142,9 @@ void dae::CharacterPooka::Initialize()
 
 	m_spCollComp = std::make_shared<CollisionComponent>(2);
 	m_spCollComp->AddCollTarget(1); // Rock
-	Listener list{};
-	list.SetFunction([this]() {this->HandleColl(); });
-	m_spCollComp->m_HasCollided.AddListener(list);
+	m_spListener = std::make_shared<Listener>();
+	m_spListener->SetFunction([this]() {this->HandleColl(); });
+	m_spCollComp->m_HasCollided.AddListener(m_spListener);
 	AddComponent(m_spCollComp);
 
 	SetState(std::make_shared<StateMoving>());
@@ -164,6 +164,7 @@ void dae::CharacterPooka::HandleColl()
 			m_wpRockToFallWith = m_spCollComp->GetCollidedObj()->GameObj();
 			m_CurrDir = Direction::None;
 			SetState(std::make_shared<StateFlattenedByRock>());
+			m_spListener->StopListening();
 			break;
 		}
 	}

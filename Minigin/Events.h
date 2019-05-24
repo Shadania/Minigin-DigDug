@@ -5,15 +5,33 @@
 
 namespace dae
 {
+	class Listener;
+
+	class Event
+	{
+	public:
+		~Event();
+		void AddListener(std::shared_ptr<Listener> listener);
+		void RemoveListener(size_t listenerId);
+		void Invoke();
+
+	private:
+		std::vector<std::shared_ptr<Listener>> m_vpListeners;
+	};
+
 	class Listener
 	{
-		//TODO: Listener
 	public:
 		Listener()
 			:m_fn{}
 		{
 			id = total;
 			total++;
+		}
+
+		void StopListening()
+		{
+			m_pMyEvent->RemoveListener(id);
 		}
 		void Notify() { m_fn(); }
 
@@ -26,28 +44,15 @@ namespace dae
 		{
 			return id == other.id;
 		}
-	private:
 
+		size_t getId() { return id; }
+	private:
+		friend class Event;
 		std::function<void()> m_fn;
+		Event* m_pMyEvent;
 		int id;
 		static int total;
 	};
 
-	class Event
-	{
-	public:
-		//TODO: Event
-		void AddListener(Listener listener) { m_vpListeners.push_back(listener); }
-		void RemoveListener(Listener listener) { m_vpListeners.erase(std::remove(m_vpListeners.begin(), m_vpListeners.end(), listener), m_vpListeners.end()); }
-		void Invoke()
-		{
-			for (Listener l : m_vpListeners)
-			{
-				l.Notify();
-			}
-		}
-
-	private:
-		std::vector<Listener> m_vpListeners;
-	};
+	
 }
