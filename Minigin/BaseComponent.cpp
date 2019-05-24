@@ -28,21 +28,41 @@ std::string dae::BaseComponent::GetType() const
 
 void dae::BaseComponent::AddChild(std::shared_ptr<GameObject> gObj)
 {
-	m_wpMyObj.lock()->AddChild(gObj);
+	auto obj = m_wpMyObj.lock();
+	if (!obj)
+		throw std::exception("Bad gameobject pointer");
+
+	obj->AddChild(gObj);
 }
 std::shared_ptr<dae::TransformComponent> dae::BaseComponent::GetTransform()
 {
-	return m_wpMyObj.lock()->GetTransform();
+	auto obj = m_wpMyObj.lock();
+	if (!obj)
+		throw std::exception("Bad gameobject pointer");
+
+	return obj->GetTransform();
 }
 void dae::BaseComponent::AddComponent(std::shared_ptr<BaseComponent> comp)
 {
-	m_wpMyObj.lock()->AddComponent(comp);
+	auto obj = m_wpMyObj.lock();
+	if (!obj)
+		throw std::exception("Bad gameobject pointer");
+
+	obj->AddComponent(comp);
 }
 void dae::BaseComponent::AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp)
 {
-	m_wpMyObj.lock()->AddComponentNeedRendering(comp);
+	auto obj = m_wpMyObj.lock();
+	if (!obj)
+		throw std::exception("Bad gameobject pointer");
+
+	obj->AddComponentNeedRendering(comp);
 }
-void dae::BaseComponent::Destroy()
+void dae::BaseComponent::DestroyObject()
 {
-	m_wpMyObj.lock()->Destroy();
+	auto obj = m_wpMyObj.lock();
+	if (!obj)
+		throw std::exception("Bad gameobject pointer");
+
+	obj->DestroyObject();
 }

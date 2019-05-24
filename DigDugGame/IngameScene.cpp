@@ -10,6 +10,7 @@
 #include "TextureComponents.h"
 #include "ResourceManager.h"
 #include "CharacterPooka.h"
+#include "FPSComponent.h"
 
 
 dae::IngameScene::IngameScene()
@@ -31,7 +32,7 @@ void dae::IngameScene::Init()
 	auto terrainComp = std::make_shared<EditableTerrainGridComponent>(rows, cols, Float2{280, 320}, "background.png");
 	go->AddComponentNeedRendering(terrainComp);
 	AddToScene(go);
-	
+
 	// Setup terrain
 	{
 		// Open up the first two rows
@@ -138,14 +139,14 @@ void dae::IngameScene::Init()
 	// Player character	
 	go = std::make_shared<GameObject>();
 	m_InitialPlayerPos = cols * 2 + 9;
-	m_spPlayer = std::make_shared<CharacterDigDug>(terrainComp, m_InitialPlayerPos, this);
-	go->AddComponent(m_spPlayer);
+	m_spPlayer1 = std::make_shared<CharacterDigDug>(terrainComp, m_InitialPlayerPos, this);
+	go->AddComponent(m_spPlayer1);
 	AddToScene(go);
 
 
 	// Place rocks on terrain
 	go = std::make_shared<GameObject>();
-	go->AddComponent(std::make_shared<Rock>(terrainComp, cols * 2 + 3));
+	go->AddComponent(std::make_shared<Rock>(terrainComp, cols * 2 + 1));
 	AddToScene(go);
 
 	// Place enemies on terrain
@@ -225,7 +226,11 @@ void dae::IngameScene::Init()
 		AddToScene(go);
 	}
 	
-
+	// FPS Counter
+	// go = std::make_shared<GameObject>();
+	// go->AddComponent(std::make_shared<FPSComponent>(ServiceLocator::GetResourceManager()->GetDefaultFont(), Float4{0, 0, 0, 1}));
+	// go->GetTransform()->SetLocalPos(0, 30);
+	// AddToScene(go);
 
 	
 	m_IsInitialized = true;
@@ -242,5 +247,14 @@ void dae::IngameScene::Update()
 }
 void dae::IngameScene::RespawnPlayer()
 {
-	m_spPlayer->RespawnAtCellIdx(m_InitialPlayerPos);
+	m_spPlayer1->RespawnAtCellIdx(m_InitialPlayerPos);
+}
+size_t dae::IngameScene::GetClosestPlayerTo(size_t idx)
+{
+	if (!m_spPlayer2)
+		return m_spPlayer1->GetCurrGridIdx();
+
+	float p1Dist{};
+
+	return 0;
 }

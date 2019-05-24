@@ -19,7 +19,7 @@ namespace dae
 		virtual void OnDestroy() {}
 
 		std::shared_ptr<dae::GameObject> GameObj() const;
-		virtual void SetGameObj(std::shared_ptr<GameObject> newObj);
+		void SetGameObj(std::shared_ptr<GameObject> newObj);
 		std::string GetType() const;
 
 		BaseComponent(const BaseComponent&) = delete;
@@ -33,7 +33,7 @@ namespace dae
 		std::shared_ptr<TransformComponent> GetTransform();
 		void AddComponent(std::shared_ptr<BaseComponent> comp);
 		void AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp);
-		void Destroy();
+		void DestroyObject();
 
 	protected:
 		std::weak_ptr<GameObject> m_wpMyObj;

@@ -42,7 +42,7 @@ void dae::Rock::StateWiggling::Update()
 	if (m_AccuSec >= m_TotalSec)
 	{
 		// Add agent component
-		pRock->m_spAgentComp = std::make_shared<TerrainGridMovementComponent>(pRock->m_spTerrain, pRock->m_Idx, 30.0f);
+		pRock->m_spAgentComp = std::make_shared<TerrainGridMovementComponent>(pRock->m_spTerrain, pRock->m_Idx, 60.0f);
 		pRock->AddComponent(pRock->m_spAgentComp);
 		pRock->m_spAgentComp->AddIdxToIgnoreList(pRock->m_Idx);
 		// Change state
@@ -64,14 +64,15 @@ void dae::Rock::StateCrumbling::Update()
 	m_AccuSec += ServiceLocator::GetGameTime()->GetDeltaT();
 	if (m_AccuSec >= m_MaxCrumbleTime)
 	{
-		pRock->Destroy();
+		pRock->DestroyObject();
 	}
 }
 
 #pragma endregion
 
 dae::Rock::Rock(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t terrainIdx)
-	:m_spTerrain{spTerrain}
+	:BaseComponent{"Rock"}
+	,m_spTerrain{spTerrain}
 	,m_Idx{terrainIdx}
 {}
 

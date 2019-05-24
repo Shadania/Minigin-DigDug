@@ -16,6 +16,8 @@ namespace dae
 		void SetLocalPos(float x, float y) { m_Pos.x = x; m_Pos.y = y; }
 		void SetLocalRot(float newRot) { m_Rot = newRot; }
 		void SetLocalScale(Float2 newScale) { m_Scale = newScale; }
+		void SetWorldPos(float x, float y) { SetWorldPos(Float2(x, y)); }
+		void SetWorldPos(Float2 pos);
 
 		Float2 GetLocalPos() const { return m_Pos; }
 		float GetLocalRot() const { return m_Rot; }

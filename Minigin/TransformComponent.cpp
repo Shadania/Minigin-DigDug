@@ -48,6 +48,15 @@ dae::Float2 dae::TransformComponent::GetWorldPos() const
 
 	return result;
 }
+
+void dae::TransformComponent::SetWorldPos(Float2 pos)
+{
+	Float2 worldpos{ GetWorldPos() };
+	Translate(pos - worldpos);
+}
+
+
+
 float dae::TransformComponent::GetWorldRot() const
 {
 	float result{ m_Rot };

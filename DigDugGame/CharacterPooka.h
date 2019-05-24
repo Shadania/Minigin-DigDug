@@ -13,37 +13,72 @@ namespace dae
 	{
 
 #pragma region FSM
+		enum class PookaStateEnum
+		{
+			Moving,
+			Chasing,
+			Fleeing,
+			Pumped,
+			Rock,
+			Dying,
+			Ghost
+		};
 		struct PookaState
 		{
+			PookaState(PookaStateEnum state)
+				:stateEnum{ state }
+			{}
 			virtual void Update() = 0;
 			CharacterPooka* pPooka;
-		};
-		struct StateStill : public PookaState
-		{
-			virtual void Update() override;
+			PookaStateEnum stateEnum;
 		};
 		struct StateMoving : public PookaState
 		{
+			StateMoving()
+				:PookaState{ PookaStateEnum::Moving }
+			{}
 			virtual void Update() override;
 		};
 		struct StateChasing : public PookaState
 		{
+			StateChasing()
+				:PookaState{ PookaStateEnum::Chasing }
+			{}
 			virtual void Update() override;
 		};
 		struct StateFleeing : public PookaState
 		{
+			StateFleeing()
+				:PookaState{ PookaStateEnum::Fleeing }
+			{}
 			virtual void Update() override;
 		};
 		struct StateGettingPumped : public PookaState
 		{
+			StateGettingPumped()
+				:PookaState{ PookaStateEnum::Pumped }
+			{}
+			virtual void Update() override;
+		};
+		struct StateFlattenedByRock : public PookaState
+		{
+			StateFlattenedByRock()
+				:PookaState{ PookaStateEnum::Rock }
+			{}
 			virtual void Update() override;
 		};
 		struct StateDying : public PookaState
 		{
+			StateDying()
+				:PookaState{ PookaStateEnum::Dying }
+			{}
 			virtual void Update() override;
 		};
 		struct StateGhost : public PookaState
 		{
+			StateGhost()
+				:PookaState{ PookaStateEnum::Ghost }
+			{}
 			virtual void Update() override;
 		};
 #pragma endregion FSM
@@ -73,6 +108,7 @@ namespace dae
 		size_t m_StartIdx;
 
 		std::shared_ptr<PookaState> m_spState;
+		std::weak_ptr<GameObject> m_wpRockToFallWith;
 
 		void SetState(std::shared_ptr<PookaState> newState)
 		{

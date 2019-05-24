@@ -8,96 +8,76 @@
 #include "Audio.h"
 #include "CollisionManager.h"
 
-dae::GameTime* dae::ServiceLocator::m_pGameTime{nullptr};
-dae::InputManager* dae::ServiceLocator::m_pInputManager{ nullptr };
-dae::Renderer* dae::ServiceLocator::m_pRenderer{ nullptr };
-dae::ResourceManager* dae::ServiceLocator::m_pResourceManager{ nullptr };
-dae::SceneManager* dae::ServiceLocator::m_pSceneManager{ nullptr };
-dae::Audio* dae::ServiceLocator::m_pAudio{ nullptr };
-dae::BasicGameInfo* dae::ServiceLocator::m_pGameInfo{ nullptr };
-dae::CollisionManager* dae::ServiceLocator::m_pCollisionManager{ nullptr };
+std::shared_ptr<dae::GameTime> dae::ServiceLocator::m_pGameTime{  };
+std::shared_ptr<dae::InputManager> dae::ServiceLocator::m_pInputManager{  };
+std::shared_ptr<dae::Renderer> dae::ServiceLocator::m_pRenderer{  };
+std::shared_ptr<dae::ResourceManager> dae::ServiceLocator::m_pResourceManager{  };
+std::shared_ptr<dae::SceneManager> dae::ServiceLocator::m_pSceneManager{  };
+std::shared_ptr<dae::Audio> dae::ServiceLocator::m_pAudio{  };
+std::shared_ptr<dae::BasicGameInfo> dae::ServiceLocator::m_pGameInfo{  };
+std::shared_ptr<dae::CollisionManager> dae::ServiceLocator::m_pCollisionManager{  };
 
 
 void dae::ServiceLocator::InitResources(float wWidth, float wHeight)
 {
-	SetGameTime(new GameTime());
-	SetInputManager(new InputManager());
-	SetRenderer(new Renderer());
-	SetResourceManager(new ResourceManager());
-	SetSceneManager(new SceneManager());
-	SetAudio(new RegularAudio());
-	SetCollisionManager(new CollisionManager());
+	SetGameTime(std::make_shared<GameTime>());
+	SetInputManager(std::make_shared<InputManager>());
+	SetRenderer(std::make_shared<Renderer>());
+	SetResourceManager(std::make_shared<ResourceManager>());
+	SetSceneManager(std::make_shared<SceneManager>());
+	SetAudio(std::make_shared<RegularAudio>());
+	SetCollisionManager(std::make_shared<CollisionManager>());
 
-	m_pGameInfo = new BasicGameInfo{};
+	m_pGameInfo = std::make_shared<BasicGameInfo>();
 	m_pGameInfo->m_WindowWidth = wWidth;
 	m_pGameInfo->m_WindowHeight = wHeight;
 }
 void dae::ServiceLocator::CleanupResources()
 {
-	if (m_pGameTime)
-		delete m_pGameTime;
-	if (m_pInputManager)
-		delete m_pInputManager;
-	if (m_pRenderer)
-		delete m_pRenderer;
-	if (m_pResourceManager)
-		delete m_pResourceManager;
-	if (m_pSceneManager)
-		delete m_pSceneManager;
-	if (m_pAudio)
-		delete m_pAudio;
-	if (m_pGameInfo)
-		delete m_pGameInfo;
-	if (m_pCollisionManager)
-		delete m_pCollisionManager;
+	// smart pointers! :) (24/05/2019 3:42)
+	// if (m_pGameTime)
+	// 	delete m_pGameTime;
+	// if (m_pInputManager)
+	// 	delete m_pInputManager;
+	// if (m_pRenderer)
+	// 	delete m_pRenderer;
+	// if (m_pResourceManager)
+	// 	delete m_pResourceManager;
+	// if (m_pSceneManager)
+	// 	delete m_pSceneManager;
+	// if (m_pAudio)
+	// 	delete m_pAudio;
+	// if (m_pGameInfo)
+	// 	delete m_pGameInfo;
+	// if (m_pCollisionManager)
+	// 	delete m_pCollisionManager;
 }
 
-void dae::ServiceLocator::SetGameTime(GameTime* gameTime)
+void dae::ServiceLocator::SetGameTime(std::shared_ptr<GameTime> gameTime)
 {
-	if (m_pGameTime)
-		delete m_pGameTime;
-
 	m_pGameTime = gameTime;
 }
-void dae::ServiceLocator::SetInputManager(InputManager* inputManager)
+void dae::ServiceLocator::SetInputManager(std::shared_ptr<InputManager> inputManager)
 {
-	if (m_pInputManager)
-		delete m_pInputManager;
-
 	m_pInputManager = inputManager;
 }
-void dae::ServiceLocator::SetRenderer(Renderer* renderer)
+void dae::ServiceLocator::SetRenderer(std::shared_ptr<Renderer> renderer)
 {
-	if (m_pRenderer)
-		delete m_pRenderer;
-
 	m_pRenderer = renderer;
 }
-void dae::ServiceLocator::SetResourceManager(ResourceManager* resourceManager)
+void dae::ServiceLocator::SetResourceManager(std::shared_ptr<ResourceManager> resourceManager)
 {
-	if (m_pResourceManager)
-		delete m_pResourceManager;
-
 	m_pResourceManager = resourceManager;
 }
-void dae::ServiceLocator::SetSceneManager(SceneManager* sceneManager)
+void dae::ServiceLocator::SetSceneManager(std::shared_ptr<SceneManager> sceneManager)
 {
-	if (m_pSceneManager)
-		delete m_pSceneManager;
-
 	m_pSceneManager = sceneManager;
 }
-void dae::ServiceLocator::SetAudio(Audio* audio)
+void dae::ServiceLocator::SetAudio(std::shared_ptr<Audio> audio)
 {
-	if (m_pAudio)
-		delete m_pAudio;
-
 	m_pAudio = audio;
 }
-void dae::ServiceLocator::SetCollisionManager(CollisionManager* coll)
+void dae::ServiceLocator::SetCollisionManager(std::shared_ptr<CollisionManager> coll)
 {
-	if (m_pCollisionManager)
-		delete m_pCollisionManager;
-	
 	m_pCollisionManager = coll;
 }

@@ -19,7 +19,7 @@ namespace dae
 		virtual void Init() {};
 		virtual std::string GetName() const;
 
-		void RemoveGameObject(std::shared_ptr<GameObject> obj);
+		void RemoveGameObject(size_t objID);
 
 		virtual ~Scene() = default;
 		Scene(const Scene& other) = delete;
@@ -33,9 +33,10 @@ namespace dae
 
 	private:
 		std::string m_Name{};
-		std::vector<std::shared_ptr<GameObject>> m_Objects{};
+		std::vector<std::shared_ptr<GameObject>> m_vspObjects{};
+		std::vector<size_t> m_vObjIdsToDelete{};
 
-		static unsigned int idCounter; 
+		static unsigned int m_IdCounter; 
 	};
 
 }

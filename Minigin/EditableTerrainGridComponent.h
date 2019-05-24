@@ -135,8 +135,8 @@ namespace dae
 
 		// Pathfinding
 		bool GenerateNoCarvePath(std::deque<Direction>& path, size_t src, size_t dest);
-		std::deque<std::shared_ptr<PathfindNode> > GetPossibleConnections(std::shared_ptr<PathfindNode> from);
 
+		bool CanGoFrom(size_t pos, Direction dir);
 
 		// For setup
 		void DirectCarve(size_t idx, EditableTerrainGridCell::DugState which);
@@ -165,5 +165,8 @@ namespace dae
 
 		std::vector<EditableTerrainGridCell> m_vCells = {};
 		std::shared_ptr<Texture2D> m_spBackground = {};
+
+		// Pathfinding
+		std::deque<std::shared_ptr<PathfindNode>> GetPossibleConnections(std::shared_ptr<PathfindNode> from);
 	};
 }

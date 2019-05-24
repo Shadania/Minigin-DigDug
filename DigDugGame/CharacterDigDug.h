@@ -20,7 +20,7 @@ namespace dae
 		
 		void RespawnAtCellIdx(size_t idx);
 
-
+		size_t GetCurrGridIdx() { return m_spGridAgentComponent->GetCurrCellIdx(); };
 
 	protected:
 		virtual void Update() override;

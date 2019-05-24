@@ -9,19 +9,38 @@
 #include "TerrainGridMovementComponent.h"
 #include "GameObject.h"
 #include "CollisionComponent.h"
+#include "IngameScene.h"
 
 
 
 #pragma region FSM
-void dae::CharacterPooka::StateStill::Update()
-{
-	// Start moving
-	pPooka->SetState(std::make_shared<StateMoving>());
-}
 void dae::CharacterPooka::StateMoving::Update()
 {
 	// Check if player is in range, if he is start chasing
 	// If not, wander
+	// if (pPooka->m_spAgent->FindPathTo(pPooka->m_pScene->GetClosestPlayerTo(pPooka->m_spAgent->GetCurrCellIdx())))
+	// {
+	// 	// start chase
+	// 	pPooka->SetState(std::make_shared<StateChasing>());
+	// }
+	// else
+	{
+		// we hit a wall or something -> change direction
+		if (pPooka->m_spAgent->GiveDirection(pPooka->m_CurrDir) == TerrainGridMoveResult::Blocked)
+		{
+			// Find new dir
+			auto newDirs = pPooka->m_spAgent->GetPossibleDirections();
+			if (newDirs.size() == 0)
+				return; // how did you even get here?!
+			if (newDirs.size() == 1)
+				pPooka->m_CurrDir = newDirs[0]; // only one way out
+			else // we can choose!
+			{
+				size_t newDirIdx{ rand() % newDirs.size() };
+				pPooka->m_CurrDir = newDirs[newDirIdx];
+			}
+		}
+	}
 }
 void dae::CharacterPooka::StateChasing::Update()
 {
@@ -36,6 +55,18 @@ void dae::CharacterPooka::StateGettingPumped::Update()
 	// Every time we receive a pump, reset timer.
 	// If timer full, pump--
 	// If pump == 0, set to moving
+}
+void dae::CharacterPooka::StateFlattenedByRock::Update()
+{
+	// Follow rock until rock stopped moving
+	if (pPooka->m_wpRockToFallWith.expired())
+		pPooka->DestroyObject();
+	else
+	{
+		Float2 targPos{ pPooka->m_wpRockToFallWith.lock()->GetTransform()->GetWorldPos() };
+		targPos.y += 4;
+		pPooka->GetTransform()->SetWorldPos(targPos);
+	}
 }
 void dae::CharacterPooka::StateDying::Update()
 {
@@ -65,7 +96,10 @@ dae::CharacterPooka::CharacterPooka(IngameScene* pScene, const std::shared_ptr<E
 
 void dae::CharacterPooka::Initialize()
 {
-#pragma region Sprite
+	if (m_IsInitialized)
+		return;
+
+#pragma region Sprites
 	m_spSpriteComp = std::make_shared<SpriteComponent>();
 	auto go = std::make_shared<GameObject>();
 	go->AddComponentNeedRendering(m_spSpriteComp);
@@ -94,16 +128,17 @@ void dae::CharacterPooka::Initialize()
 	seq->SetSecPerFrame(framesec);
 	m_spSpriteComp->AddSequence(seq);
 
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Pooka/Flat.png");
+	seq = std::make_shared<Sequence>(tex, "Flat", 1);
+	m_spSpriteComp->AddSequence(seq);
+
 	m_spSpriteComp->SetActiveSprite("Right");
-#pragma endregion Sprite
+#pragma endregion Sprites
 
 	GetTransform()->SetLocalPos(m_spTerrain->GetCenterPosOfCellIdx(m_StartIdx));
 
 	m_spAgent = std::make_shared<TerrainGridMovementComponent>(m_spTerrain, m_StartIdx, 40.0f);
 	AddComponent(m_spAgent);
-
-	// if (!m_spAgent->FindPathTo(m_spTerrain->AmtCols() * 12 + 3))
-	// 	std::cout << "pathfinding failed\n";
 
 	m_spCollComp = std::make_shared<CollisionComponent>(2);
 	m_spCollComp->AddCollTarget(1); // Rock
@@ -112,28 +147,31 @@ void dae::CharacterPooka::Initialize()
 	m_spCollComp->m_HasCollided.AddListener(list);
 	AddComponent(m_spCollComp);
 
-	// SetState(std::make_shared<StateStill>());
+	SetState(std::make_shared<StateMoving>());
+
+	m_IsInitialized = true;
 }
 void dae::CharacterPooka::HandleColl()
 {
-	switch (m_spCollComp->GetCollidedTag())
+	if (!(m_spState->stateEnum == PookaStateEnum::Rock || m_spState->stateEnum == PookaStateEnum::Dying))
 	{
-	case 1: // Rock
-		// be flat & go along with rock
-		break;
+		switch (m_spCollComp->GetCollidedTag())
+		{
+		case 1: // Rock
+			// be flat & go along with rock
+			m_spSpriteComp->SetActiveSprite("Flat");
+			m_spSpriteComp->Freeze();
+			m_wpRockToFallWith = m_spCollComp->GetCollidedObj()->GameObj();
+			m_CurrDir = Direction::None;
+			SetState(std::make_shared<StateFlattenedByRock>());
+			break;
+		}
 	}
 }
 
 void dae::CharacterPooka::Update()
 {
-	// m_spState->Update();
-
-	// just try to go up and if no work go down
-	if (m_spAgent->GiveDirection(m_CurrDir) == TerrainGridMoveResult::Blocked)
-	{
-		m_CurrDir = (m_CurrDir == Direction::Down) ? Direction::Up : Direction::Down;
-	}
-
+	m_spState->Update();
 
 	// m_CurrDir = m_spAgent->GetCurrDir();
 
@@ -161,6 +199,9 @@ void dae::CharacterPooka::Update()
 	}
 
 	m_spCollComp->SetShape(Float4(GetTransform()->GetWorldPos(), 14, 14 ));
+
+	// m_spState->Update(); // When gameobject gets destroyed, it needs to happen at the end of this function, else everything breaks
+	//TODO: Fix the problem that causes above statement
 }
 
 

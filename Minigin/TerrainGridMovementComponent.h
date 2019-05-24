@@ -28,9 +28,12 @@ namespace dae
 
 		bool FindPathTo(size_t targetIdx);
 
+		size_t GetCurrCellIdx() { return m_CurrGridCell; }
 
 		void Reset(size_t newPos);
 		void Stop(); // Stops all movement, can only be undone by a reset
+
+		std::vector<Direction> GetPossibleDirections();
 
 	private:
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;

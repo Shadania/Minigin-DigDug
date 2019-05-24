@@ -23,7 +23,7 @@ void dae::CollisionManager::CalculateCollision()
 			if (dae::utils::DoRectsOverlap(obj1->m_Shape, obj2->m_Shape))
 			{
 				// yes collide
-				obj1->m_CollidedTag = obj2->m_Tag;
+				obj1->m_pCollidedObj = obj2;
 				obj1->m_HasCollided.Invoke();
 			}
 		}
@@ -39,5 +39,6 @@ void dae::CollisionManager::AddObject(CollisionComponent* obj)
 }
 void dae::CollisionManager::RemoveObject(CollisionComponent* obj)
 {
-	m_vpObjs.erase(std::remove(m_vpObjs.begin(), m_vpObjs.end(), obj), m_vpObjs.end());
+	if (!m_vpObjs.empty())
+		m_vpObjs.erase(std::remove(m_vpObjs.begin(), m_vpObjs.end(), obj), m_vpObjs.end());
 }

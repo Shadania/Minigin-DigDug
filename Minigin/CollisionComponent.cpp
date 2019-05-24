@@ -30,6 +30,9 @@ void dae::CollisionComponent::RemoveCollTarget(size_t targ)
 
 void dae::CollisionComponent::Initialize()
 {
+	if (m_IsInitialized)
+		return;
+	m_IsInitialized = true;
 	ServiceLocator::GetCollisionManager()->AddObject(this);
 }
 void dae::CollisionComponent::OnDestroy()

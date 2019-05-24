@@ -1,4 +1,6 @@
 #pragma once
+// Mildly inspired on what I heard from Dylan Millian about his collision system, namely using tags
+
 #include "BaseComponent.h"
 #include "Events.h"
 
@@ -20,7 +22,8 @@ namespace dae
 		void SetShape(const Float4& shape) { m_Shape = shape; }
 
 		Event m_HasCollided;
-		size_t GetCollidedTag() { return m_CollidedTag; }
+		size_t GetCollidedTag() { return m_pCollidedObj->m_Tag; }
+		CollisionComponent* GetCollidedObj() { return m_pCollidedObj; }
 
 		bool operator==(const CollisionComponent& other)
 		{
@@ -38,6 +41,6 @@ namespace dae
 		size_t m_Id = 0;
 		std::vector<size_t> m_CollisionTargets;
 		Float4 m_Shape;
-		size_t m_CollidedTag;
+		CollisionComponent* m_pCollidedObj;
 	};
 }

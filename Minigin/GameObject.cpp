@@ -8,9 +8,14 @@
 #include "Scene.h"
 
 
+size_t dae::GameObject::IDCOUNTER{ 0 };
+
+
+
 dae::GameObject::GameObject(const Float2& pos, float rot, const Float2& scale)
 	:m_spTransformComponent{}
 	,m_pParent{nullptr}
+	,ID{IDCOUNTER++}
 {
 	std::shared_ptr<TransformComponent> transform{ std::make_shared<TransformComponent>(this) };
 	transform->SetLocalPos(pos);
@@ -26,11 +31,7 @@ dae::GameObject::~GameObject()
 {
 	std::cout << "Gameobject got destroyed\n";
 
-	if (!m_IsBeingDestroyed)
-	{
-		m_IsBeingDestroyed = true;
-		RootOnDestroy();
-	}
+	DestroyObject();
 
 	m_spTransformComponent.reset();
 	for (auto sp : m_vspComponents)
@@ -98,6 +99,7 @@ void dae::GameObject::RootInitialize()
 }
 void dae::GameObject::RootOnDestroy()
 {
+	m_IsBeingDestroyed = true;
 	OnDestroy();
 	for (size_t i{}; i < m_vspChildren.size(); ++i)
 	{
@@ -137,6 +139,18 @@ void dae::GameObject::LateUpdate()
 	{
 		m_vspComponentsNeedRendering[i]->LateUpdate();
 	}
+
+	for (size_t i{}; i < m_vObjIdsToDelete.size(); ++i)
+	{	
+		for (size_t j{}; j < m_vspChildren.size(); ++j)
+		{
+			if (m_vspChildren[j]->GetID() == m_vObjIdsToDelete[i])
+			{
+				m_vspChildren.erase(std::remove(m_vspChildren.begin(), m_vspChildren.end(), m_vspChildren[j]), m_vspChildren.end());
+			}
+		}
+	}
+	m_vObjIdsToDelete.clear();
 }
 void dae::GameObject::Render() const
 {
@@ -147,6 +161,10 @@ void dae::GameObject::Render() const
 }
 void dae::GameObject::Initialize()
 {
+	if (m_IsInitialized)
+		return;
+	m_IsInitialized = true;
+
 	for (size_t i{}; i < m_vspComponents.size(); ++i)
 	{
 		m_vspComponents[i]->Initialize();
@@ -183,6 +201,7 @@ dae::GameObject* dae::GameObject::GetParent()
 {
 	return m_pParent;
 }
+
 void dae::GameObject::AddComponent(std::shared_ptr<BaseComponent> comp)
 {
 	m_vspComponents.push_back(comp);
@@ -191,7 +210,6 @@ void dae::GameObject::AddComponent(std::shared_ptr<BaseComponent> comp)
 	if (m_IsInitialized)
 		comp->Initialize();
 }
-
 void dae::GameObject::AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp)
 {
 	m_vspComponentsNeedRendering.push_back(comp);
@@ -223,24 +241,23 @@ std::shared_ptr<dae::TransformComponent> dae::GameObject::GetTransform()
 }
 
 
-void dae::GameObject::Destroy()
+void dae::GameObject::DestroyObject()
 {
 	if (!m_IsBeingDestroyed)
 	{
-		m_IsBeingDestroyed = true;
 		RootOnDestroy();
 	}
 
 	if (m_pParent)
 	{
-		m_pParent->RemoveChild(shared_from_this());
+		m_pParent->RemoveChild(ID);
 	}
 	else
 	{
-		m_pScene->RemoveGameObject(shared_from_this());
+		m_pScene->RemoveGameObject(ID);
 	}
 }
-void dae::GameObject::RemoveChild(std::shared_ptr<GameObject> child)
+void dae::GameObject::RemoveChild(size_t childID)
 {
-	m_vspChildren.erase(std::remove(m_vspChildren.begin(), m_vspChildren.end(), child), m_vspChildren.end());
+	m_vObjIdsToDelete.push_back(childID);
 }

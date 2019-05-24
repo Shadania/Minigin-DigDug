@@ -79,13 +79,13 @@ void dae::TerrainGridMovementComponent::Update()
 	else
 		HandleMoveNoCarve();
 
-	GetTransform()->SetLocalPos(m_CenterPos);
+	GetTransform()->SetWorldPos(m_CenterPos);
 }
 void dae::TerrainGridMovementComponent::Initialize()
 {
 	// set pos correctly
 	m_CenterPos = m_spTerrain->GetCenterPosOfCellIdx(m_CurrGridCell);
-	GetTransform()->SetLocalPos(m_CenterPos);
+	GetTransform()->SetWorldPos(m_CenterPos);
 }
 
 void dae::TerrainGridMovementComponent::HandleMoveCarve()
@@ -239,7 +239,7 @@ void dae::TerrainGridMovementComponent::Reset(size_t newPos)
 	m_Direction = Direction::None;
 	m_CurrGridCell = newPos;
 	m_CenterPos = m_spTerrain->GetCenterPosOfCellIdx(m_CurrGridCell);
-	GetTransform()->SetLocalPos(m_CenterPos);
+	GetTransform()->SetWorldPos(m_CenterPos);
 	m_PastHalfCarved = false;
 
 	m_CurrentPath = {};
@@ -249,4 +249,21 @@ void dae::TerrainGridMovementComponent::Reset(size_t newPos)
 void dae::TerrainGridMovementComponent::Stop()
 {
 	m_IsStopped = true;
+}
+
+
+std::vector<dae::Direction> dae::TerrainGridMovementComponent::GetPossibleDirections()
+{
+	std::vector<Direction> result{};
+	
+	if (m_spTerrain->CanGoFrom(m_CurrGridCell, Direction::Up))
+		result.push_back(Direction::Up);
+	if (m_spTerrain->CanGoFrom(m_CurrGridCell, Direction::Down))
+		result.push_back(Direction::Down);
+	if (m_spTerrain->CanGoFrom(m_CurrGridCell, Direction::Left))
+		result.push_back(Direction::Left);
+	if (m_spTerrain->CanGoFrom(m_CurrGridCell, Direction::Right))
+		result.push_back(Direction::Right);
+
+	return result;
 }

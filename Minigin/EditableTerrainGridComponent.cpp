@@ -509,73 +509,143 @@ bool dae::EditableTerrainGridComponent::GenerateNoCarvePath(std::deque<Direction
 
 	return false;
 }
-std::deque<std::shared_ptr<dae::PathfindNode> > dae::EditableTerrainGridComponent::GetPossibleConnections(std::shared_ptr<PathfindNode> from)
+bool dae::EditableTerrainGridComponent::CanGoFrom(size_t pos, Direction dir)
 {
+	size_t dest{};
+	bool notOnEdge{ false }, entercond1{ false }, entercond2{ false };
+
+	switch (dir)
+	{
+	case Direction::Up:
+		notOnEdge = (pos / m_Cols) > 0;
+		if (!notOnEdge)	return false;
+		dest = pos - m_Cols;
+		entercond1 = m_vCells[pos].GetDugState().m_DugTop;
+		entercond2 = m_vCells[dest].GetDugState().m_DugBottom;
+		break;
+
+	case Direction::Down:
+		notOnEdge = (pos / m_Cols) < (m_Rows - 1);
+		if (!notOnEdge)	return false;
+		dest = pos + m_Cols;
+		entercond1 = m_vCells[pos].GetDugState().m_DugBottom;
+		entercond2 = m_vCells[dest].GetDugState().m_DugTop;
+		break;
+
+	case Direction::Left:
+		notOnEdge = (pos % m_Cols) > 0;
+		if (!notOnEdge)	return false;
+		dest = pos - 1;
+		entercond1 = m_vCells[pos].GetDugState().m_DugLeft;
+		entercond2 = m_vCells[dest].GetDugState().m_DugRight;
+		break;
+
+	case Direction::Right:
+		notOnEdge = (pos % m_Cols) < (m_Cols - 1);
+		if (!notOnEdge)	return false;
+		dest = pos + 1;
+		entercond1 = m_vCells[pos].GetDugState().m_DugRight;
+		entercond2 = m_vCells[dest].GetDugState().m_DugLeft;
+		break;
+	}
+
+
+	if (notOnEdge)
+	{
+		if (entercond1)
+		{
+			if (!m_vCells[dest].IsBlocked())
+			{
+				if (m_vCells[dest].IsCompletelyOpen())
+					return true;
+				else if (entercond2 && m_vCells[dest].GetDugState().m_DugBase)
+					return true;
+			}
+		}
+	}
+
+	return false;
+}
+std::deque<std::shared_ptr<dae::PathfindNode>> dae::EditableTerrainGridComponent::GetPossibleConnections(std::shared_ptr<PathfindNode> from)
+{
+	//TODO: Test new code before deleting old code
+
 	std::deque<std::shared_ptr<PathfindNode>> result{};
 
 	// go over all directions
 	// structure: is not on edge? is able to go that way? is able to enter that cell?
 
 	// up
-	if ((from->idx / m_Cols) > 0)
-	{
-		if (m_vCells[from->idx].GetDugState().m_DugTop)
-		{
-			size_t dest{ from->idx - m_Cols };
-			if (!m_vCells[dest].IsBlocked())
-			{
-				if (m_vCells[dest].IsCompletelyOpen())
-					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Up, from));
-				else if (m_vCells[dest].GetDugState().m_DugBottom && m_vCells[dest].GetDugState().m_DugBase)
-					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Up, from));
-			}
-		}
-	}
+	// if ((from->idx / m_Cols) > 0)
+	// {
+	// 	if (m_vCells[from->idx].GetDugState().m_DugTop)
+	// 	{
+	// 		size_t dest{ from->idx - m_Cols };
+	// 		if (!m_vCells[dest].IsBlocked())
+	// 		{
+	// 			if (m_vCells[dest].IsCompletelyOpen())
+	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Up, from));
+	// 			else if (m_vCells[dest].GetDugState().m_DugBottom && m_vCells[dest].GetDugState().m_DugBase)
+	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Up, from));
+	// 		}
+	// 	}
+	// }
+	if (CanGoFrom(from->idx, Direction::Up))
+		result.push_back(std::make_shared<PathfindNode>(from->idx - m_Cols, Direction::Up, from));
+
 	// down
-	if ((from->idx / m_Cols) < (m_Rows - 1))
-	{
-		if (m_vCells[from->idx].GetDugState().m_DugBottom)
-		{
-			size_t dest{ from->idx + m_Cols };
-			if (!m_vCells[dest].IsBlocked())
-			{
-				if (m_vCells[dest].IsCompletelyOpen())
-					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Down, from));
-				else if (m_vCells[dest].GetDugState().m_DugTop && m_vCells[dest].GetDugState().m_DugBase)
-					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Down, from));
-			}
-		}
-	}
+	// if ((from->idx / m_Cols) < (m_Rows - 1))
+	// {
+	// 	if (m_vCells[from->idx].GetDugState().m_DugBottom)
+	// 	{
+	// 		size_t dest{ from->idx + m_Cols };
+	// 		if (!m_vCells[dest].IsBlocked())
+	// 		{
+	// 			if (m_vCells[dest].IsCompletelyOpen())
+	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Down, from));
+	// 			else if (m_vCells[dest].GetDugState().m_DugTop && m_vCells[dest].GetDugState().m_DugBase)
+	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Down, from));
+	// 		}
+	// 	}
+	// }
+	if (CanGoFrom(from->idx, Direction::Down))
+		result.push_back(std::make_shared<PathfindNode>(from->idx + m_Cols, Direction::Down, from));
+
 	// left
-	if ((from->idx % m_Cols) > 0)
-	{
-		if (m_vCells[from->idx].GetDugState().m_DugLeft)
-		{
-			size_t dest{ from->idx - 1 };
-			if (!m_vCells[dest].IsBlocked())
-			{
-				if (m_vCells[dest].IsCompletelyOpen())
-					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Left, from));
-				else if (m_vCells[dest].GetDugState().m_DugRight && m_vCells[dest].GetDugState().m_DugBase)
-					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Left, from));
-			}
-		}
-	}
+	// if ((from->idx % m_Cols) > 0)
+	// {
+	// 	if (m_vCells[from->idx].GetDugState().m_DugLeft)
+	// 	{
+	// 		size_t dest{ from->idx - 1 };
+	// 		if (!m_vCells[dest].IsBlocked())
+	// 		{
+	// 			if (m_vCells[dest].IsCompletelyOpen())
+	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Left, from));
+	// 			else if (m_vCells[dest].GetDugState().m_DugRight && m_vCells[dest].GetDugState().m_DugBase)
+	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Left, from));
+	// 		}
+	// 	}
+	// }
+	if (CanGoFrom(from->idx, Direction::Left))
+		result.push_back(std::make_shared<PathfindNode>(from->idx - 1, Direction::Left, from));
+
 	// right
-	if ((from->idx % m_Cols) < (m_Cols - 1))
-	{
-		if (m_vCells[from->idx].GetDugState().m_DugRight)
-		{
-			size_t dest{ from->idx + 1 };
-			if (!m_vCells[dest].IsBlocked())
-			{
-				if (m_vCells[dest].IsCompletelyOpen())
-					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Right, from));
-				else if (m_vCells[dest].GetDugState().m_DugLeft && m_vCells[dest].GetDugState().m_DugBase)
-					result.push_back(std::make_shared<PathfindNode>(dest, Direction::Right, from));
-			}
-		}
-	}
+	// if ((from->idx % m_Cols) < (m_Cols - 1))
+	// {
+	// 	if (m_vCells[from->idx].GetDugState().m_DugRight)
+	// 	{
+	// 		size_t dest{ from->idx + 1 };
+	// 		if (!m_vCells[dest].IsBlocked())
+	// 		{
+	// 			if (m_vCells[dest].IsCompletelyOpen())
+	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Right, from));
+	// 			else if (m_vCells[dest].GetDugState().m_DugLeft && m_vCells[dest].GetDugState().m_DugBase)
+	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Right, from));
+	// 		}
+	// 	}
+	// }
+	if (CanGoFrom(from->idx, Direction::Right))
+		result.push_back(std::make_shared<PathfindNode>(from->idx + 1, Direction::Right, from));
 
 	return result;
 }

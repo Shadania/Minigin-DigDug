@@ -16,6 +16,8 @@ namespace dae
 
 
 		void RespawnPlayer();
+		
+		size_t GetClosestPlayerTo(size_t idx);
 
 	private:
 		float m_Scale = 2.0f;
@@ -32,7 +34,8 @@ namespace dae
 		size_t m_RoundNr = 1;
 
 		// Game info
-		std::shared_ptr<CharacterDigDug> m_spPlayer;
+		std::shared_ptr<CharacterDigDug> m_spPlayer1;
+		std::shared_ptr<CharacterDigDug> m_spPlayer2;
 		size_t m_InitialPlayerPos;
 	};
 }
