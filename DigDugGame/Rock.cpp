@@ -55,6 +55,7 @@ void dae::Rock::StateFalling::Update()
 	if (pRock->m_spAgentComp->GiveDirection(Direction::Down) == dae::TerrainGridMoveResult::Blocked)
 	{
 		pRock->m_spSpriteComp->Unfreeze();
+		pRock->m_spCollComp->SetGenerateCollision(false);
 		pRock->SetState(std::make_shared<StateCrumbling>());
 	}
 }

@@ -9,9 +9,13 @@ void dae::CollisionManager::CalculateCollision()
 	for (size_t i{}; i < m_vpObjs.size(); ++i)
 	{
 		auto& obj1 = m_vpObjs[i];
+		if (!obj1->m_GenerateCollision)
+			continue;
 		for (size_t j{}; j < m_vpObjs.size(); ++j)
 		{
 			auto& obj2 = m_vpObjs[j];
+			if (!obj2->m_GenerateCollision)
+				continue;
 			
 			if (*obj1 == *obj2)
 				continue;

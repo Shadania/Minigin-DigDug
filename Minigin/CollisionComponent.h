@@ -34,6 +34,8 @@ namespace dae
 			return m_Id == other.m_Id;
 		}
 
+		void SetGenerateCollision(bool set) { m_GenerateCollision = set; }
+
 	private:
 		friend class CollisionManager;
 
@@ -42,5 +44,6 @@ namespace dae
 		std::vector<size_t> m_CollisionTargets;
 		Float4 m_Shape;
 		CollisionComponent* m_pCollidedObj;
+		bool m_GenerateCollision = true;
 	};
 }
