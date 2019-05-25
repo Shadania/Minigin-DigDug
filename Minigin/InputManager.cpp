@@ -4,7 +4,7 @@
 
 bool dae::InputManager::Update()
 {
-	for (auto cmd : m_Commands)
+	for (auto& cmd : m_Commands)
 	{
 		cmd.second.keyDown = false;
 		cmd.second.keyUp = false;

@@ -11,11 +11,8 @@
 
 #pragma region TextureComponent
 
-dae::TextureComponent::TextureComponent(Float2 pos, float rot, Float2 scale)
+dae::TextureComponent::TextureComponent()
 	:BaseComponent("TextureComponent")
-	, m_Pos{pos}
-	, m_Rot{rot}
-	, m_Scale{scale}
 {}
 
 void dae::TextureComponent::SetTexture(const std::string& fileName)
@@ -25,19 +22,16 @@ void dae::TextureComponent::SetTexture(const std::string& fileName)
 
 void dae::TextureComponent::Render() const
 {
-	Float2 finalPos{ m_wpMyObj.lock()->GetTransform()->GetLocalPos() };
-	finalPos.x += m_Pos.x;
-	finalPos.y += m_Pos.y;
-	ServiceLocator::GetRenderer()->RenderTexture(*m_spTexture, finalPos.x, finalPos.y);
+	Float2 pos{ m_wpMyObj.lock()->GetTransform()->GetWorldPos() };
+	ServiceLocator::GetRenderer()->RenderTexture(*m_spTexture, pos.x, pos.y);
 }
 #pragma endregion TextureComponent
 
 
 
 #pragma region TextComponent
-dae::TextComponent::TextComponent(const std::string& text, const std::shared_ptr<Font> font, 
-		Float4 color, Float2 pos, float rot, Float2 scale)
-	:TextureComponent(pos, rot, scale )
+dae::TextComponent::TextComponent(const std::string& text, const std::shared_ptr<Font> font, const Float4& color)
+	:TextureComponent()
 	,m_Text{text}
 	,m_spFont{font}
 	,m_Color{color}

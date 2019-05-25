@@ -177,6 +177,7 @@
     <ClInclude Include="CharacterFygar.h" />
     <ClInclude Include="CharacterPooka.h" />
     <ClInclude Include="DigDugPump.h" />
+    <ClInclude Include="EnemyCharacter.h" />
     <ClInclude Include="FPSTestScene.h" />
     <ClInclude Include="IngameScene.h" />
     <ClInclude Include="MainGame.h" />
@@ -190,6 +191,7 @@
     <ClCompile Include="CharacterFygar.cpp" />
     <ClCompile Include="CharacterPooka.cpp" />
     <ClCompile Include="DigDugPump.cpp" />
+    <ClCompile Include="EnemyCharacter.cpp" />
     <ClCompile Include="IngameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="FPSTestScene.cpp" />

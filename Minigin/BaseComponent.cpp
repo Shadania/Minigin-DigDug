@@ -34,7 +34,7 @@ void dae::BaseComponent::AddChild(std::shared_ptr<GameObject> gObj)
 {
 	GameObj()->AddChild(gObj);
 }
-std::shared_ptr<dae::TransformComponent> dae::BaseComponent::GetTransform()
+std::shared_ptr<dae::TransformComponent> dae::BaseComponent::GetTransform() const
 {
 	return GameObj()->GetTransform();
 }
@@ -50,7 +50,7 @@ void dae::BaseComponent::DestroyObject()
 {
 	GameObj()->DestroyObject();
 }
-size_t dae::BaseComponent::ObjectID()
+size_t dae::BaseComponent::ObjectID() const
 {
 	return GameObj()->GetID();
 }

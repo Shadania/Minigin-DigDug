@@ -29,9 +29,11 @@ namespace dae
 		bool FindPathTo(size_t targetIdx);
 
 		size_t GetCurrCellIdx() { return m_CurrGridCell; }
+		Float2 GetCurrCenterPos() { return m_CenterPos; }
 
 		void Reset(size_t newPos);
-		void Stop(); // Stops all movement, can only be undone by a reset
+		void Freeze(); // Stops all movement
+		void Unfreeze();
 
 		std::vector<Direction> GetPossibleDirections();
 

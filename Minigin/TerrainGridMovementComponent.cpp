@@ -247,9 +247,13 @@ void dae::TerrainGridMovementComponent::Reset(size_t newPos)
 	m_FollowingPath = false;
 	m_IsStopped = false;
 }
-void dae::TerrainGridMovementComponent::Stop()
+void dae::TerrainGridMovementComponent::Freeze()
 {
 	m_IsStopped = true;
+}
+void dae::TerrainGridMovementComponent::Unfreeze()
+{
+	m_IsStopped = false;
 }
 
 

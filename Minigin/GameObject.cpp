@@ -192,6 +192,8 @@ void dae::GameObject::AddChild(std::shared_ptr<GameObject> child)
 	m_vspChildren.push_back(child);
 	child->SetParent(this);
 	child->m_pScene = m_pScene;
+	if (m_IsInitialized)
+		child->Initialize();
 }
 void dae::GameObject::SetParent(GameObject* parent)
 {
@@ -261,6 +263,17 @@ void dae::GameObject::DestroyObject()
 	else
 	{
 		m_pScene->RemoveGameObject(ID);
+	}
+
+	for (size_t i{}; i < m_vObjIdsToDelete.size(); ++i)
+	{
+		for (size_t j{}; j < m_vspChildren.size(); ++j)
+		{
+			if (m_vspChildren[j]->GetID() == m_vObjIdsToDelete[i])
+			{
+				m_vspChildren.erase(std::remove(m_vspChildren.begin(), m_vspChildren.end(), m_vspChildren[j]), m_vspChildren.end());
+			}
+		}
 	}
 }
 void dae::GameObject::RemoveChild(size_t childID)

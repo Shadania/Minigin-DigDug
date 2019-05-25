@@ -6,7 +6,8 @@
 
 #pragma warning( push )  
 #pragma warning( disable : 4100 )  
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) 
+{
 #pragma warning( pop )
 
 	dae::MainGame game;

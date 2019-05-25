@@ -30,11 +30,11 @@ namespace dae
 		
 		// GameObject functions rerouted through here for ease of access
 		void AddChild(std::shared_ptr<GameObject> gObj);
-		std::shared_ptr<TransformComponent> GetTransform();
+		std::shared_ptr<TransformComponent> GetTransform() const;
 		void AddComponent(std::shared_ptr<BaseComponent> comp);
 		void AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp);
 		void DestroyObject();
-		size_t ObjectID();
+		size_t ObjectID() const;
 
 	protected:
 		std::weak_ptr<GameObject> m_wpMyObj;

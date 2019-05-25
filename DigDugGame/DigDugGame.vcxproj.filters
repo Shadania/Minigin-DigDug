@@ -53,6 +53,9 @@
     <ClInclude Include="DigDugPump.h">
       <Filter>GameFiles\Prefabs</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyCharacter.h">
+      <Filter>GameFiles\Prefabs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -89,6 +92,9 @@
       <Filter>GameFiles\Prefabs</Filter>
     </ClCompile>
     <ClCompile Include="DigDugPump.cpp">
+      <Filter>GameFiles\Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyCharacter.cpp">
       <Filter>GameFiles\Prefabs</Filter>
     </ClCompile>
   </ItemGroup>

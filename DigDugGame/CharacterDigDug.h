@@ -8,7 +8,7 @@ namespace dae
 	class EditableTerrainGridComponent;
 	class CollisionComponent;
 	class IngameScene;
-
+	class DigDugPump;
 
 
 	class CharacterDigDug final : public BaseComponent
@@ -16,11 +16,16 @@ namespace dae
 	public:
 		CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startingPos, IngameScene* pScene);
 
+
 		void HandleCollision();
 		
 		void RespawnAtCellIdx(size_t idx);
 
-		size_t GetCurrGridIdx() { return m_spGridAgentComponent->GetCurrCellIdx(); };
+		size_t GetCurrGridIdx() { return m_spAgent->GetCurrCellIdx(); };
+		
+
+		void PumpHitSomething();
+		void PumpHitNothing();
 
 	protected:
 		virtual void Update() override;
@@ -31,19 +36,24 @@ namespace dae
 		bool m_IsInitialized = false;
 
 		std::shared_ptr<GameObject> m_spSpriteObject;
-		std::shared_ptr<SpriteComponent> m_spSpriteObjectComponent;
-		std::shared_ptr<TerrainGridMovementComponent> m_spGridAgentComponent;
+		std::shared_ptr<SpriteComponent> m_spSpriteComp;
+		std::shared_ptr<TerrainGridMovementComponent> m_spAgent;
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		std::shared_ptr<CollisionComponent> m_spCollComp;
-		std::string m_CurrSequence;
-		TerrainGridMoveState m_CurrState = TerrainGridMoveState::Still;\
+		std::weak_ptr<DigDugPump> m_wpPump;
+		std::string m_CurrSequence = "Right";
+		TerrainGridMoveState m_CurrState = TerrainGridMoveState::Still;
 
 		size_t m_StartingPos;
 		IngameScene* m_pScene;
 		bool m_Dying = false;
 		float m_AccuDyingTime = 0.0f;
 		const float m_MaxDyingTime = 1.2f;
+		Direction m_Direction = Direction::Right;
+		bool m_Shooting = false;
+		bool m_GotEnemy = false;
 
 		void HandleMovement();
+		void HandleShooting();
 	};
 }

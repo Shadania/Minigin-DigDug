@@ -24,6 +24,13 @@ namespace dae
 			y *= other.y;
 			return *this;
 		}
+		Float2& operator/=(float other)
+		{
+			x /= other;
+			y /= other;
+			return *this;
+		}
+
 		Float2 operator*(float other) const
 		{
 			Float2 obj{*this};
@@ -38,6 +45,14 @@ namespace dae
 			obj.y -= other.y;
 			return obj;
 		}
+		Float2 operator+(const Float2& other) const
+		{
+			Float2 obj{ *this };
+			obj.x += other.x;
+			obj.y += other.y;
+			return obj;
+		}
+
 		float Length(const Float2& vec) const
 		{
 			return (sqrt(vec.x * vec.x + vec.y * vec.y));

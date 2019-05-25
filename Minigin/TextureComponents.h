@@ -9,12 +9,11 @@ namespace dae
 	class TextureComponent : public BaseComponent
 	{
 	public:
-		TextureComponent(Float2 pos = { 0, 0 }, float rot = 0.0f, Float2 m_Scale = { 1, 1 });
-		
-		void SetTexture(const std::string& fileName);
-		virtual void Render() const override;
+		TextureComponent();
 
-		virtual void Update() override {}
+		void SetTexture(const std::string& fileName);
+		void SetTexture(const std::shared_ptr<Texture2D> newTex) { m_spTexture = newTex; }
+		virtual void Render() const override;
 
 		TextureComponent(const TextureComponent&) = delete;
 		TextureComponent(TextureComponent&&) noexcept = delete;
@@ -24,19 +23,13 @@ namespace dae
 
 
 	protected:
-
 		std::shared_ptr<Texture2D> m_spTexture;
-		// Local transform
-		Float2 m_Pos;
-		float m_Rot;
-		Float2 m_Scale;
 	};
 
 	class TextComponent final : public TextureComponent
 	{
 	public:
-		TextComponent(const std::string& text, const std::shared_ptr<Font> font, 
-			Float4 color = { 1, 1, 1, 1 }, Float2 pos = { 0, 0 }, float rot = 0.0f, Float2 m_Scale = { 1, 1 });
+		TextComponent(const std::string& text, const std::shared_ptr<Font> font, const Float4& color = { 1, 1, 1, 1 });
 
 		void SetText(const std::string& newText);
 		void SetFont(const std::shared_ptr<Font>& newFont);
