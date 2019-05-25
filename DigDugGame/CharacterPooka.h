@@ -1,84 +1,58 @@
 #pragma once
-#include "BaseComponent.h"
-#include "EditableTerrainGridComponent.h"
+#include "EnemyCharacter.h"
 
 namespace dae
 {
-	class SpriteComponent;
-	class TerrainGridMovementComponent;
-	class IngameScene;
-	class Listener;
-	class CollisionComponent;
-
-	class CharacterPooka final : public BaseComponent
+	class CharacterPooka final : public EnemyCharacter
 	{
-
 #pragma region FSM
-		enum class PookaStateEnum
-		{
-			Moving,
-			Chasing,
-			Fleeing,
-			Pumped,
-			Rock,
-			Dying,
-			Ghost
-		};
-		struct PookaState
-		{
-			PookaState(PookaStateEnum state)
-				:stateEnum{ state }
-			{}
-			virtual void Update() = 0;
-			CharacterPooka* pPooka;
-			PookaStateEnum stateEnum;
-		};
-		struct StateMoving : public PookaState
+
+		struct StateMoving : public EnemyState
 		{
 			StateMoving()
-				:PookaState{ PookaStateEnum::Moving }
+				:EnemyState{ EnemyStateEnum::Moving }
 			{}
 			virtual void Update() override;
 		};
-		struct StateChasing : public PookaState
+		struct StateChasing : public EnemyState
 		{
 			StateChasing()
-				:PookaState{ PookaStateEnum::Chasing }
+				:EnemyState{ EnemyStateEnum::Chasing }
 			{}
 			virtual void Update() override;
 		};
-		struct StateFleeing : public PookaState
+		struct StateFleeing : public EnemyState
 		{
 			StateFleeing()
-				:PookaState{ PookaStateEnum::Fleeing }
+				:EnemyState{ EnemyStateEnum::Fleeing }
 			{}
 			virtual void Update() override;
 		};
-		struct StateGettingPumped : public PookaState
+		struct StateGettingPumped : public EnemyState
 		{
 			StateGettingPumped()
-				:PookaState{ PookaStateEnum::Pumped }
+				:EnemyState{ EnemyStateEnum::Pumped }
 			{}
 			virtual void Update() override;
 		};
-		struct StateFlattenedByRock : public PookaState
+		struct StateFlattenedByRock : public EnemyState
 		{
 			StateFlattenedByRock()
-				:PookaState{ PookaStateEnum::Rock }
+				:EnemyState{ EnemyStateEnum::Rock }
 			{}
 			virtual void Update() override;
 		};
-		struct StateDying : public PookaState
+		struct StateDying : public EnemyState
 		{
 			StateDying()
-				:PookaState{ PookaStateEnum::Dying }
+				:EnemyState{ EnemyStateEnum::Dying }
 			{}
 			virtual void Update() override;
 		};
-		struct StateGhost : public PookaState
+		struct StateGhost : public EnemyState
 		{
 			StateGhost()
-				:PookaState{ PookaStateEnum::Ghost }
+				:EnemyState{ EnemyStateEnum::Ghost }
 			{}
 			virtual void Update() override;
 		};
@@ -91,31 +65,6 @@ namespace dae
 		virtual void Initialize() override;
 		virtual void Update() override;
 
-		void StartFleeing();
-
-
 		void HandleColl();
-
-	private:
-		friend struct PookaState;
-		std::shared_ptr<SpriteComponent> m_spSpriteComp;
-		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
-		std::shared_ptr<TerrainGridMovementComponent> m_spAgent;
-		std::shared_ptr<CollisionComponent> m_spCollComp;
-		std::shared_ptr<Listener> m_spListener;
-		Direction m_CurrDir = Direction::Down;
-		IngameScene* m_pScene;
-
-
-		size_t m_StartIdx;
-
-		std::shared_ptr<PookaState> m_spState;
-		std::weak_ptr<GameObject> m_wpRockToFallWith;
-
-		void SetState(std::shared_ptr<PookaState> newState)
-		{
-			m_spState = newState;
-			m_spState->pPooka = this;
-		}
 	};
 }

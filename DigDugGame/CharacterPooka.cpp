@@ -26,18 +26,18 @@ void dae::CharacterPooka::StateMoving::Update()
 	// else
 	{
 		// we hit a wall or something -> change direction
-		if (pPooka->m_spAgent->GiveDirection(pPooka->m_CurrDir) == TerrainGridMoveResult::Blocked)
+		if (Agent()->GiveDirection(Dir()) == TerrainGridMoveResult::Blocked)
 		{
 			// Find new dir
-			auto newDirs = pPooka->m_spAgent->GetPossibleDirections();
+			auto newDirs = Agent()->GetPossibleDirections();
 			if (newDirs.size() == 0)
 				return; // how did you even get here?!
 			if (newDirs.size() == 1)
-				pPooka->m_CurrDir = newDirs[0]; // only one way out
+				SetDir(newDirs[0]); // only one way out
 			else // we can choose!
 			{
 				size_t newDirIdx{ rand() % newDirs.size() };
-				pPooka->m_CurrDir = newDirs[newDirIdx];
+				SetDir(newDirs[newDirIdx]);
 			}
 		}
 	}
@@ -59,13 +59,13 @@ void dae::CharacterPooka::StateGettingPumped::Update()
 void dae::CharacterPooka::StateFlattenedByRock::Update()
 {
 	// Follow rock until rock stopped moving
-	if (pPooka->m_wpRockToFallWith.expired())
-		pPooka->DestroyObject();
+	if (CollidedRock().expired())
+		pEnemy->DestroyObject();
 	else
 	{
-		Float2 targPos{ pPooka->m_wpRockToFallWith.lock()->GetTransform()->GetWorldPos() };
+		Float2 targPos{ CollidedRock().lock()->GetTransform()->GetWorldPos() };
 		targPos.y += 4;
-		pPooka->GetTransform()->SetWorldPos(targPos);
+		pEnemy->GetTransform()->SetWorldPos(targPos);
 	}
 }
 void dae::CharacterPooka::StateDying::Update()
@@ -83,10 +83,8 @@ void dae::CharacterPooka::StateGhost::Update()
 
 
 dae::CharacterPooka::CharacterPooka(IngameScene* pScene, const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startIdx)
-	:BaseComponent{"CharacterPooka"}
-	,m_spTerrain{spTerrain}
-	,m_StartIdx{startIdx}
-	,m_pScene{pScene}
+	:EnemyCharacter{"CharacterPooka", pScene, spTerrain, startIdx}
+
 {
 
 }
@@ -153,7 +151,7 @@ void dae::CharacterPooka::Initialize()
 }
 void dae::CharacterPooka::HandleColl()
 {
-	if (!(m_spState->stateEnum == PookaStateEnum::Rock || m_spState->stateEnum == PookaStateEnum::Dying))
+	if (!(m_spState->stateEnum == EnemyStateEnum::Rock || m_spState->stateEnum == EnemyStateEnum::Dying))
 	{
 		switch (m_spCollComp->GetCollidedTag())
 		{
@@ -173,8 +171,6 @@ void dae::CharacterPooka::HandleColl()
 void dae::CharacterPooka::Update()
 {
 	m_spState->Update();
-
-	// m_CurrDir = m_spAgent->GetCurrDir();
 
 	switch (m_CurrDir)
 	{
@@ -200,13 +196,4 @@ void dae::CharacterPooka::Update()
 	}
 
 	m_spCollComp->SetShape(Float4(GetTransform()->GetWorldPos(), 14, 14 ));
-
-	// m_spState->Update(); // When gameobject gets destroyed, it needs to happen at the end of this function, else everything breaks
-	//TODO: Fix the problem that causes above statement
-}
-
-
-void dae::CharacterPooka::StartFleeing()
-{
-	SetState(std::make_shared<StateFleeing>());
 }
