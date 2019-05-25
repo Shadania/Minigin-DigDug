@@ -14,7 +14,7 @@ namespace dae
 	{
 	public:
 		TerrainGridMovementComponent(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t initPos, float speed,
-			bool canCarve = false, float carveSpeed = 0.0f);
+			bool canCarve = false, float carveSpeed = 0.0f, bool passThroughThinWalls = false);
 
 		// Only reacts to things when standing still
 		TerrainGridMoveResult GiveDirection(Direction newDir);
@@ -48,6 +48,7 @@ namespace dae
 		bool m_PastHalfCarved = false;
 		Float2 m_CenterPos;
 		bool m_IsStopped = false;
+		bool m_CanGoThroughThinWalls;
 
 		bool m_FollowingPath = false;
 		std::deque<Direction> m_CurrentPath = {};

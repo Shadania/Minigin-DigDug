@@ -37,11 +37,7 @@ namespace dae
 			Top,
 			Bottom,
 			Left,
-			Right,
-			TopLeft,
-			TopRight,
-			BottomLeft,
-			BottomRight
+			Right
 		};
 		struct DugState
 		{
@@ -51,11 +47,6 @@ namespace dae
 			bool m_DugBottom = false;
 			bool m_DugLeft = false;
 			bool m_DugRight = false;
-
-			bool m_DugTopLeft = false;
-			bool m_DugTopRight = false;
-			bool m_DugBottomLeft = false;
-			bool m_DugBottomRight = false;
 		};
 
 		EditableTerrainGridCell() = default;
@@ -86,11 +77,6 @@ namespace dae
 		static std::shared_ptr<Texture2D> m_GroundBottom;
 		static std::shared_ptr<Texture2D> m_GroundLeft;
 		static std::shared_ptr<Texture2D> m_GroundRight;
-
-		static std::shared_ptr<Texture2D> m_GroundTopLeft;
-		static std::shared_ptr<Texture2D> m_GroundTopRight;
-		static std::shared_ptr<Texture2D> m_GroundBottomLeft;
-		static std::shared_ptr<Texture2D> m_GroundBottomRight;
 
 		// STATIC PRIVATE METHODS
 		static void InitResources();
@@ -130,7 +116,7 @@ namespace dae
 
 
 
-		TerrainGridMoveResult TryGo(Direction dir, size_t from, bool canCarve, const std::vector<size_t>& ignoredCells);
+		TerrainGridMoveResult TryGo(Direction dir, size_t from, bool canCarve, const std::vector<size_t>& ignoredCells, bool canGoThroughThinWalls = false);
 		bool ContinueCarve(Direction srcDir, size_t target);
 
 		// Pathfinding

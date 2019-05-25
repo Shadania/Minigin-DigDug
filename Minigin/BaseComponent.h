@@ -34,6 +34,7 @@ namespace dae
 		void AddComponent(std::shared_ptr<BaseComponent> comp);
 		void AddComponentNeedRendering(std::shared_ptr<BaseComponent> comp);
 		void DestroyObject();
+		size_t ObjectID();
 
 	protected:
 		std::weak_ptr<GameObject> m_wpMyObj;

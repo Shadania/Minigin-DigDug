@@ -6,13 +6,14 @@
 
 
 dae::TerrainGridMovementComponent::TerrainGridMovementComponent(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain,
-	size_t initPos, float speed, bool canCarve, float carveSpeed)
+	size_t initPos, float speed, bool canCarve, float carveSpeed, bool passThroughThinWalls)
 	:BaseComponent("TerrainGridMovementComponent")
 	,m_spTerrain{spTerrain}
 	,m_CanCarve{canCarve}
 	,m_CurrGridCell{ initPos }
 	,m_CarveSpeed{carveSpeed}
 	,m_Speed{speed}
+	,m_CanGoThroughThinWalls{passThroughThinWalls}
 {}
 
 
@@ -36,7 +37,7 @@ dae::TerrainGridMoveResult dae::TerrainGridMovementComponent::GiveDirection(Dire
 	if (newDir == Direction::None)
 		return TerrainGridMoveResult::Blocked;
 
-	auto res = m_spTerrain->TryGo(newDir, m_CurrGridCell, m_CanCarve, m_IgnoredCellIdxs);
+	auto res = m_spTerrain->TryGo(newDir, m_CurrGridCell, m_CanCarve, m_IgnoredCellIdxs, m_CanGoThroughThinWalls);
 
 	switch (res)
 	{

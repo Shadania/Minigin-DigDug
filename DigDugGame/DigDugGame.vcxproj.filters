@@ -50,6 +50,9 @@
     <ClInclude Include="Rock.h">
       <Filter>GameFiles\Prefabs</Filter>
     </ClInclude>
+    <ClInclude Include="DigDugPump.h">
+      <Filter>GameFiles\Prefabs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -83,6 +86,9 @@
       <Filter>GameFiles\GameScenes</Filter>
     </ClCompile>
     <ClCompile Include="Rock.cpp">
+      <Filter>GameFiles\Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugPump.cpp">
       <Filter>GameFiles\Prefabs</Filter>
     </ClCompile>
   </ItemGroup>
