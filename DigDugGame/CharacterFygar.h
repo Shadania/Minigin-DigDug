@@ -12,30 +12,36 @@ namespace dae
 
 #pragma region FSM
 
-		struct StateMoving : public EnemyState
+		struct StateMoving final : public EnemyState
 		{
-			StateMoving()
+			StateMoving(float timeUntilGhostRemaining = 5.0f)
 				:EnemyState{ EnemyStateEnum::Moving }
+				,m_TimeUntilGhost{timeUntilGhostRemaining}
 			{}
 			virtual void Update() override;
 		private:
-			float m_TimeUntilGhost = 5.0f;
+			float m_TimeUntilGhost;
+			float m_TimeUntilFire = 3.0f;
+			float m_MaxTimeUntilFire = 3.0f;
 		};
-		struct StateChasing : public EnemyState
+		struct StateChasing final : public EnemyState
 		{
 			StateChasing()
 				:EnemyState{ EnemyStateEnum::Chasing }
 			{}
 			virtual void Update() override;
+		private:
+			float m_TimeUntilFire = 2.0f;
+			float m_MaxTimeUntilFire = 2.0f;
 		};
-		struct StateFleeing : public EnemyState
+		struct StateFleeing final : public EnemyState
 		{
 			StateFleeing()
 				:EnemyState{ EnemyStateEnum::Fleeing }
 			{}
 			virtual void Update() override;
 		};
-		struct StateGettingPumped : public EnemyState
+		struct StateGettingPumped final : public EnemyState
 		{
 			StateGettingPumped(std::shared_ptr<Event> eventToListenTo)
 				:EnemyState{ EnemyStateEnum::Pumped }
@@ -57,14 +63,14 @@ namespace dae
 			bool m_CanBePumped = true;
 			std::shared_ptr<dae::Listener> m_spListener;
 		};
-		struct StateFlattenedByRock : public EnemyState
+		struct StateFlattenedByRock final : public EnemyState
 		{
 			StateFlattenedByRock()
 				:EnemyState{ EnemyStateEnum::Rock }
 			{}
 			virtual void Update() override;
 		};
-		struct StateDying : public EnemyState
+		struct StateDying final : public EnemyState
 		{
 			StateDying()
 				:EnemyState{ EnemyStateEnum::Dying }
@@ -74,7 +80,7 @@ namespace dae
 			const float m_MaxDeathTime = 0.5f;
 			float m_AccuDeathTime = 0.0f;
 		};
-		struct StateGhost : public EnemyState
+		struct StateGhost final : public EnemyState
 		{
 			StateGhost()
 				:EnemyState{ EnemyStateEnum::Ghost }
@@ -85,6 +91,25 @@ namespace dae
 		private:
 			const float m_MaxTimeTillPlayerPosUpdate = 5.0f;
 			float m_RemainingPlayerPosUpdateTime;
+		};
+		struct StateBreathingFire final : public EnemyState
+		{
+			StateBreathingFire(EnemyStateEnum stateToReturnTo)
+				:EnemyState(EnemyStateEnum::BreathingFire)
+				, m_ToReturnTo{stateToReturnTo}
+			{
+				m_RemainingFireSec = m_MaxFireSec;
+			}
+			~StateBreathingFire();
+			virtual void Update() override;
+		private:
+			EnemyStateEnum m_ToReturnTo;
+			const float m_MaxFireSec = 0.6f;
+			float m_RemainingFireSec;
+			std::shared_ptr<GameObject> m_spFireObj;
+			bool m_IsInit = false;
+			void Init();
+			bool m_DestroyingFire = false;
 		};
 #pragma endregion FSM
 
@@ -98,5 +123,12 @@ namespace dae
 		void HandleColl();
 		
 		virtual void StartGettingPumped() override;
+
+	private:
+		friend struct StateBreathingFire;
+		static std::shared_ptr<Texture2D> m_spFireUp;
+		static std::shared_ptr<Texture2D> m_spFireDown;
+		static std::shared_ptr<Texture2D> m_spFireLeft;
+		static std::shared_ptr<Texture2D> m_spFireRight;
 	};
 }

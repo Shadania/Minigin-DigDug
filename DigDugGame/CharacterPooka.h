@@ -8,7 +8,7 @@ namespace dae
 	{
 #pragma region FSM
 
-		struct StateMoving : public EnemyState
+		struct StateMoving final : public EnemyState
 		{
 			StateMoving()
 				:EnemyState{ EnemyStateEnum::Moving }
@@ -17,21 +17,21 @@ namespace dae
 		private:
 			float m_TimeUntilGhost = 5.0f;
 		};
-		struct StateChasing : public EnemyState
+		struct StateChasing final : public EnemyState
 		{
 			StateChasing()
 				:EnemyState{ EnemyStateEnum::Chasing }
 			{}
 			virtual void Update() override;
 		};
-		struct StateFleeing : public EnemyState
+		struct StateFleeing final : public EnemyState
 		{
 			StateFleeing()
 				:EnemyState{ EnemyStateEnum::Fleeing }
 			{}
 			virtual void Update() override;
 		};
-		struct StateGettingPumped : public EnemyState
+		struct StateGettingPumped final : public EnemyState
 		{
 			StateGettingPumped(std::shared_ptr<Event> eventToListenTo)
 				:EnemyState{ EnemyStateEnum::Pumped }
@@ -53,14 +53,14 @@ namespace dae
 			bool m_CanBePumped = true;
 			std::shared_ptr<dae::Listener> m_spListener;
 		};
-		struct StateFlattenedByRock : public EnemyState
+		struct StateFlattenedByRock final : public EnemyState
 		{
 			StateFlattenedByRock()
 				:EnemyState{ EnemyStateEnum::Rock }
 			{}
 			virtual void Update() override;
 		};
-		struct StateDying : public EnemyState
+		struct StateDying final : public EnemyState
 		{
 			StateDying()
 				:EnemyState{ EnemyStateEnum::Dying }
@@ -70,7 +70,7 @@ namespace dae
 			const float m_MaxDeathTime = 0.5f;
 			float m_AccuDeathTime = 0.0f;
 		};
-		struct StateGhost : public EnemyState
+		struct StateGhost final : public EnemyState
 		{
 			StateGhost()
 				:EnemyState{ EnemyStateEnum::Ghost }

@@ -29,9 +29,6 @@
     <ClInclude Include="SpriteTestScene.h">
       <Filter>GameFiles\TestScenes</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainTestScene.h">
-      <Filter>GameFiles\TestScenes</Filter>
-    </ClInclude>
     <ClInclude Include="CharacterDigDug.h">
       <Filter>GameFiles\Prefabs</Filter>
     </ClInclude>
@@ -65,9 +62,6 @@
       <Filter>GameFiles\TestScenes</Filter>
     </ClCompile>
     <ClCompile Include="SpriteTestScene.cpp">
-      <Filter>GameFiles\TestScenes</Filter>
-    </ClCompile>
-    <ClCompile Include="TerrainTestScene.cpp">
       <Filter>GameFiles\TestScenes</Filter>
     </ClCompile>
     <ClCompile Include="CharacterDigDug.cpp">

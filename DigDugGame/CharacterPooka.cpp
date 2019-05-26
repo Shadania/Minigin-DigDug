@@ -152,6 +152,7 @@ void dae::CharacterPooka::StateGettingPumped::Update()
 			Coll()->ResumeSendingCollisionFor(0); // dig dug
 			m_spListener->StopListening();
 			Agent()->Unfreeze();
+			Sprite()->Unfreeze();
 			SetState(std::make_shared<StateChasing>());
 		}
 	}

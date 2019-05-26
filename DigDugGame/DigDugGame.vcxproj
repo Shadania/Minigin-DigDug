@@ -184,7 +184,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Rock.h" />
     <ClInclude Include="SpriteTestScene.h" />
-    <ClInclude Include="TerrainTestScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterDigDug.cpp" />
@@ -204,7 +203,6 @@
     </ClCompile>
     <ClCompile Include="Rock.cpp" />
     <ClCompile Include="SpriteTestScene.cpp" />
-    <ClCompile Include="TerrainTestScene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

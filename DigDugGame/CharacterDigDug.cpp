@@ -78,25 +78,6 @@ void dae::CharacterDigDug::Initialize()
 	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/ShootRight.png");
 	sequence = std::make_shared<Sequence>(tex, "RightShoot", 1);
 	m_spSpriteComp->AddSequence(sequence);
-	
-	// Pumping
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/PumpUp.png");
-	sequence = std::make_shared<Sequence>(tex, "UpPump", 2);
-	m_spSpriteComp->AddSequence(sequence);
-
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/PumpDown.png");
-	sequence = std::make_shared<Sequence>(tex, "DownPump", 2);
-	m_spSpriteComp->AddSequence(sequence);
-
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/PumpLeft.png");
-	sequence = std::make_shared<Sequence>(tex, "LeftPump", 2);
-	m_spSpriteComp->AddSequence(sequence);
-
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug/PumpRight.png");
-	sequence = std::make_shared<Sequence>(tex, "RightPump", 2);
-	m_spSpriteComp->AddSequence(sequence);
-	
-
 
 
 
@@ -131,10 +112,10 @@ void dae::CharacterDigDug::Initialize()
 
 	// Collision
 	m_spCollComp = std::make_shared<CollisionComponent>(0);
-	m_spCollComp->AddCollTarget(1);
-	m_spCollComp->AddCollTarget(2);
-	m_spCollComp->AddCollTarget(3);
-
+	m_spCollComp->AddCollTarget(1); // Rock
+	m_spCollComp->AddCollTarget(2); // Pooka
+	m_spCollComp->AddCollTarget(3); // Fygar
+	m_spCollComp->AddCollTarget(5); // Fygar fire
 
 	auto list = std::make_shared<Listener>();
 	list->SetFunction([this]() { this->HandleCollision(); });
@@ -172,6 +153,7 @@ void dae::CharacterDigDug::HandleCollision()
 		case 1: // Rock
 		case 2: // Pooka
 		case 3: // Fygar
+		case 5: // Fygar fire
 			m_spAgent->Freeze();
 			m_spSpriteComp->SetActiveSprite("Death");
 			m_spSpriteComp->SetFrame(0);

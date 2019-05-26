@@ -14,11 +14,18 @@
 #include "DigDugPump.h"
 #include "Rock.h"
 
+std::shared_ptr<dae::Texture2D> dae::CharacterFygar::m_spFireUp{};
+std::shared_ptr<dae::Texture2D> dae::CharacterFygar::m_spFireDown{};
+std::shared_ptr<dae::Texture2D> dae::CharacterFygar::m_spFireLeft{};
+std::shared_ptr<dae::Texture2D> dae::CharacterFygar::m_spFireRight{};
+
 #pragma region FSM
 void dae::CharacterFygar::StateMoving::Update()
 {
 	// Check if player is in range, if he is start chasing
 	// If not, wander
+
+	auto deltaT = ServiceLocator::GetGameTime()->GetDeltaT();
 	if (Agent()->FindPathTo(Scene()->GetClosestPlayerTo(Agent()->GetCurrCellIdx())))
 	{
 		// start chase
@@ -43,7 +50,8 @@ void dae::CharacterFygar::StateMoving::Update()
 			}
 		}
 
-		m_TimeUntilGhost -= ServiceLocator::GetGameTime()->GetDeltaT();
+		// handle chost
+		m_TimeUntilGhost -= deltaT;
 		if (m_TimeUntilGhost <= 0.0f)
 		{
 			// start ghost!
@@ -51,47 +59,68 @@ void dae::CharacterFygar::StateMoving::Update()
 			Agent()->SetGhostSpeed(Agent()->GetSpeed());
 			Agent()->SetGhost(true, Scene()->GetClosestPlayerTo(Agent()->GetCurrCellIdx()));
 			SetState(std::make_shared<StateGhost>());
+			return;
 		}
-		else
+
+		m_TimeUntilFire -= deltaT;
+		if (m_TimeUntilFire <= 0.0f)
 		{
-			switch (Agent()->GetCurrDir())
-			{
-			case Direction::Down:
-				Sprite()->SetActiveSprite("Down");
-				break;
-			case Direction::Up:
-				Sprite()->SetActiveSprite("Up");
-				break;
-			case Direction::Right:
-				Sprite()->SetActiveSprite("Right");
-				break;
-			case Direction::Left:
-				Sprite()->SetActiveSprite("Left");
-				break;
-			}
+			SetState(std::make_shared<StateBreathingFire>(EnemyStateEnum::Moving));
+			return;
+		}
+		
+
+		// handle dir
+		switch (Agent()->GetCurrDir())
+		{
+		case Direction::Down:
+			Sprite()->SetActiveSprite("Down");
+			break;
+		case Direction::Up:
+			Sprite()->SetActiveSprite("Up");
+			break;
+		case Direction::Right:
+			Sprite()->SetActiveSprite("Right");
+			break;
+		case Direction::Left:
+			Sprite()->SetActiveSprite("Left");
+			break;
 		}
 	}
 }
 void dae::CharacterFygar::StateChasing::Update()
 {
 	// Don't ghost in this state since we can just reach the player like this
-	// if (!Agent()->FindPathTo(Scene()->GetClosestPlayerTo(Agent()->GetCurrCellIdx()))) // Keep updating path
-	// 	SetState(std::make_shared<StateMoving>());
-	Agent()->FindPathTo(Scene()->GetClosestPlayerTo(Agent()->GetCurrCellIdx()));
-	switch (Agent()->GetCurrDir())
+	if (!Agent()->FindPathTo(Scene()->GetClosestPlayerTo(Agent()->GetCurrCellIdx()))) // Keep updating path
 	{
-	case Direction::Down:
-		Sprite()->SetActiveSprite("Down");
-		break;
-	case Direction::Up:
-		Sprite()->SetActiveSprite("Up");
-		break;
-	case Direction::Right:
-		Sprite()->SetActiveSprite("Right");
-		break;
-	case Direction::Left:
-		Sprite()->SetActiveSprite("Left");
-		break;
+		SetState(std::make_shared<StateMoving>());
+		return;
+	}
+
+	// Check if should fire
+	m_TimeUntilFire -= ServiceLocator::GetGameTime()->GetDeltaT();
+	if (m_TimeUntilFire <= 0.0f)
+	{
+		m_TimeUntilFire = 2.0f;
+		SetState(std::make_shared<StateBreathingFire>(EnemyStateEnum::Moving));
+	}
+	else
+	{
+		switch (Agent()->GetCurrDir())
+		{
+		case Direction::Down:
+			Sprite()->SetActiveSprite("Down");
+			break;
+		case Direction::Up:
+			Sprite()->SetActiveSprite("Up");
+			break;
+		case Direction::Right:
+			Sprite()->SetActiveSprite("Right");
+			break;
+		case Direction::Left:
+			Sprite()->SetActiveSprite("Left");
+			break;
+		}
 	}
 }
 void dae::CharacterFygar::StateFleeing::Update()
@@ -151,7 +180,12 @@ void dae::CharacterFygar::StateGettingPumped::Update()
 			Coll()->ResumeSendingCollisionFor(0); // dig dug
 			m_spListener->StopListening();
 			Agent()->Unfreeze();
+			Sprite()->Unfreeze();
 			SetState(std::make_shared<StateChasing>());
+		}
+		else
+		{
+			Sprite()->SetFrame(m_AmtTimesPumped - 1);
 		}
 	}
 	else if (m_TimeTillNextPump <= 0.0f)
@@ -235,11 +269,109 @@ void dae::CharacterFygar::StateGhost::Update()
 		}
 	}
 }
+void dae::CharacterFygar::StateBreathingFire::Update()
+{
+	if (!m_IsInit)
+		Init();
+
+	m_RemainingFireSec -= ServiceLocator::GetGameTime()->GetDeltaT();
+	if (m_RemainingFireSec <= 0.0f)
+	{
+		// Stop breathing fire and go back to what we were doing
+		m_DestroyingFire = true;
+
+		if (m_spFireObj)
+			m_spFireObj->DestroyObject();
+		Agent()->Unfreeze();
+		Sprite()->Unfreeze();
+
+
+		switch (m_ToReturnTo) // Add stuff to the switch when you add more states to switch back to
+		{
+		case EnemyStateEnum::Chasing:
+			SetState(std::make_shared<StateChasing>());
+			break;
+		case EnemyStateEnum::Moving:
+			SetState(std::make_shared<StateMoving>(2.0f)); // Time until ghost remaining
+			break;
+		}
+	}
+}
+void dae::CharacterFygar::StateBreathingFire::Init()
+{
+	Agent()->Freeze();
+	Sprite()->Freeze();
+	Sprite()->SetFrame(0); // Mouth opened sprite
+	
+	Float2 offset{8.0f, 8.0f};
+	float addOffset{ 28.0f };
+	Float2 dims{};
+	std::shared_ptr<Sequence> seq{};
+	
+	switch (Agent()->GetCurrDir())
+	{
+	case Direction::Up:
+		offset.y -= addOffset;
+		seq = std::make_shared<Sequence>(CharacterFygar::m_spFireUp, "Fire", 3, false);
+		dims = { 16.0f, 48.0f };
+		break;
+	case Direction::Left:
+		offset.x -= addOffset;
+		seq = std::make_shared<Sequence>(CharacterFygar::m_spFireLeft, "Fire", 3, false);
+		dims = { 48.0f, 16.0f };
+		break;
+	case Direction::Right:
+		offset.x += addOffset;
+		seq = std::make_shared<Sequence>(CharacterFygar::m_spFireRight, "Fire", 3, false);
+		dims = { 48.0f, 16.0f };
+		break;
+	case Direction::Down:
+		offset.y += addOffset;
+		seq = std::make_shared<Sequence>(CharacterFygar::m_spFireDown, "Fire", 3, false);
+		dims = { 16.0f, 48.0f };
+		break;
+	case Direction::None:
+		return;
+	}
+	m_spFireObj = std::make_shared<GameObject>();
+	auto sprite = std::make_shared<SpriteComponent>();
+	sprite->AddSequence(seq);
+	sprite->SetActiveSprite("Fire");
+	m_spFireObj->AddComponentNeedRendering(sprite);
+	m_spFireObj->GetTransform()->SetLocalPos(offset);
+	pEnemy->AddChild(m_spFireObj);
+	auto coll = std::make_shared<CollisionComponent>(5);
+	m_spFireObj->AddComponent(coll);
+
+	Float2 pos{ m_spFireObj->GetTransform()->GetWorldPos() };
+	pos.x -= dims.x / 2;
+	pos.y -= dims.y / 2;
+	coll->SetShape({ pos, dims });
+
+
+	m_IsInit = true;
+}
+dae::CharacterFygar::StateBreathingFire::~StateBreathingFire()
+{
+	if (!m_DestroyingFire)
+	{
+		m_spFireObj->DestroyObject();
+		m_DestroyingFire = true;
+	}
+}
 #pragma endregion FSM
 
 dae::CharacterFygar::CharacterFygar(IngameScene* pScene, const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startIdx)
 	:EnemyCharacter{ "CharacterFygar", pScene, spTerrain, startIdx }
-{}
+{
+	if (!m_spFireUp)
+	{
+		m_spFireUp = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/FireUp.png");
+		m_spFireDown = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/FireDown.png");
+		m_spFireLeft = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/FireLeft.png");
+		m_spFireRight = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/FireRight.png");
+	}
+}
 
 void dae::CharacterFygar::Initialize()
 {
@@ -253,39 +385,34 @@ void dae::CharacterFygar::Initialize()
 	AddChild(go);
 	go->GetTransform()->SetLocalPos(10, 10);
 
-	std::vector<float> framesec{ 0.2f, 0.4f };
 
-	auto tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Pooka/RunDown.png");
+	auto tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/RunDown.png");
 	auto seq = std::make_shared<Sequence>(tex, "Down", 2);
-	seq->SetSecPerFrame(framesec);
 	m_spSpriteComp->AddSequence(seq);
 
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Pooka/RunUp.png");
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/RunUp.png");
 	seq = std::make_shared<Sequence>(tex, "Up", 2);
-	seq->SetSecPerFrame(framesec);
 	m_spSpriteComp->AddSequence(seq);
 
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Pooka/RunLeft.png");
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/RunLeft.png");
 	seq = std::make_shared<Sequence>(tex, "Left", 2);
-	seq->SetSecPerFrame(framesec);
 	m_spSpriteComp->AddSequence(seq);
 
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Pooka/RunRight.png");
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/RunRight.png");
 	seq = std::make_shared<Sequence>(tex, "Right", 2);
-	seq->SetSecPerFrame(framesec);
 	m_spSpriteComp->AddSequence(seq);
 
 	// Death
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Pooka/Flat.png");
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/Flat.png");
 	seq = std::make_shared<Sequence>(tex, "Flat", 1);
 	m_spSpriteComp->AddSequence(seq);
 
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Pooka/Inflate.png");
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/Inflate.png");
 	seq = std::make_shared<Sequence>(tex, "Inflate", 4);
 	m_spSpriteComp->AddSequence(seq);
 
 	// Ghost
-	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Pooka/Ghost.png");
+	tex = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/Fygar/Ghost.png");
 	seq = std::make_shared<Sequence>(tex, "Ghost", 2);
 	m_spSpriteComp->AddSequence(seq);
 

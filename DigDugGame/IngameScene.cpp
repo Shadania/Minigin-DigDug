@@ -12,6 +12,7 @@
 #include "CharacterPooka.h"
 #include "FPSComponent.h"
 #include "Texture2D.h"
+#include "CharacterFygar.h"
 
 
 dae::IngameScene::IngameScene()
@@ -157,7 +158,9 @@ void dae::IngameScene::Init()
 	go = std::make_shared<GameObject>();
 	go->AddComponent(std::make_shared<CharacterPooka>(this, terrainComp, (cols * 4 + 1)));
 	AddToScene(go);
-
+	go = std::make_shared<GameObject>();
+	go->AddComponent(std::make_shared<CharacterFygar>(this, terrainComp, (cols * 12 + 7)));
+	AddToScene(go);
 
 
 	// Init text on scene

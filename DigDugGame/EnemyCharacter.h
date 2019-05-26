@@ -58,12 +58,7 @@ namespace dae
 			void SetGhostGoalIdx(size_t idx) { pEnemy->m_GhostGoalIdx = idx; }
 		};
 
-		void SetState(std::shared_ptr<EnemyState> newState)
-		{
-			m_spState = newState;
-			m_spState->pEnemy = this;
-		}
-		std::shared_ptr<EnemyState> m_spState;
+		
 
 		std::shared_ptr<SpriteComponent> m_spSpriteComp;
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
@@ -76,7 +71,13 @@ namespace dae
 		Direction m_CurrDir = Direction::Down;
 		IngameScene* m_pScene;
 		size_t m_StartIdx;
-		size_t m_GhostGoalIdx;
+		size_t m_GhostGoalIdx; 
+		void SetState(std::shared_ptr<EnemyState> newState)
+		{
+			m_spState = newState;
+			newState->pEnemy = this;
+		}
+		std::shared_ptr<EnemyState> m_spState;
 
 	private:
 		const std::string m_Subtype;
