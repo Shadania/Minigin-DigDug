@@ -3,6 +3,8 @@
 #pragma comment(lib, "XInput.lib")
 #include <unordered_map>
 
+#include "Events.h"
+
 typedef int32_t SDL_Keycode;
 
 namespace dae
@@ -56,6 +58,7 @@ namespace dae
 	class InputManager
 	{
 	public:
+		InputManager();
 
 		bool Update();
 
@@ -70,6 +73,15 @@ namespace dae
 
 		bool GetControllerKey(size_t playerIdx, ControllerButton btn);
 
+		std::shared_ptr<Event> m_spMouseDown;
+		std::shared_ptr<Event> m_spMouseMoved;
+		std::shared_ptr<Event> m_spMouseUp;
+
+		Float2 GetMousePos() { return m_MousePos; }
+
+
+		void StopGame() { m_StopGame = true; };
+
 	private:
 
 		std::unordered_map<std::string, Command> m_Commands;
@@ -83,6 +95,12 @@ namespace dae
 
 		bool m_Controller1Valid = true;
 		bool m_Controller2Valid = true;
+		
+		bool m_StopGame = false;
+
+		Float2 m_MousePos;
+
+		void UpdateMousePos();
 	};
 
 }

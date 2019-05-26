@@ -15,6 +15,8 @@ namespace dae
 		void SetTexture(const std::shared_ptr<Texture2D> newTex) { m_spTexture = newTex; }
 		virtual void Render() const override;
 
+		std::shared_ptr<Texture2D> GetTexture() const { return m_spTexture; }
+
 		TextureComponent(const TextureComponent&) = delete;
 		TextureComponent(TextureComponent&&) noexcept = delete;
 		TextureComponent& operator=(const TextureComponent&) = delete;

@@ -53,6 +53,9 @@
     <ClInclude Include="EnemyCharacter.h">
       <Filter>GameFiles\Prefabs</Filter>
     </ClInclude>
+    <ClInclude Include="MenuScene.h">
+      <Filter>GameFiles\GameScenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -90,6 +93,9 @@
     </ClCompile>
     <ClCompile Include="EnemyCharacter.cpp">
       <Filter>GameFiles\Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuScene.cpp">
+      <Filter>GameFiles\GameScenes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

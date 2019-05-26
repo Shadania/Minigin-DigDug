@@ -10,7 +10,7 @@ namespace dae
 	public:
 		SpriteTestScene();
 
-		virtual void Init() override;
+		virtual void Initialize() override;
 		virtual void Update() override;
 
 	private:

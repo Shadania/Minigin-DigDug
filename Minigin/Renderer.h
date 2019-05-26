@@ -17,6 +17,7 @@ namespace dae
 		void Init(SDL_Window* window);
 		void Render();
 		void SetScale(float scale);
+		float GetScale() { return m_Scale; }
 
 		void RenderTextureFullScreen(const Texture2D& texture) const;
 		void RenderTexture(const Texture2D& texture, float x, float y) const;

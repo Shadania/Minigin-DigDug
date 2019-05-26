@@ -7,7 +7,6 @@ namespace dae
 
 	class Scene
 	{
-		friend Scene& SceneManager::CreateScene(const std::string& name);
 	public:
 		void AddToScene(const std::shared_ptr<GameObject>& object);
 
@@ -16,7 +15,7 @@ namespace dae
 		virtual void LateUpdate();
 		virtual void Render() const;
 
-		virtual void Init() {};
+		virtual void Initialize() = 0;
 		virtual std::string GetName() const;
 
 		void RemoveGameObject(size_t objID);

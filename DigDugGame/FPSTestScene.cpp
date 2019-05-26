@@ -12,11 +12,11 @@
 dae::FPSTestScene::FPSTestScene()
 	:Scene("FPS Test Scene")
 {
-	Init();
+	Initialize();
 }
 
 
-void dae::FPSTestScene::Init()
+void dae::FPSTestScene::Initialize()
 {
 	// background
 	std::shared_ptr<GameObject> go{ std::make_shared<GameObject>() };

@@ -12,10 +12,10 @@ dae::SpriteTestScene::SpriteTestScene()
 	:Scene{"SpriteTestScene"}
 	, m_SpriteObject{}
 {
-	Init();
+	Initialize();
 }
 
-void dae::SpriteTestScene::Init()
+void dae::SpriteTestScene::Initialize()
 {
 	if (m_IsInitialized)
 		return;

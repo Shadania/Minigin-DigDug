@@ -2,8 +2,20 @@
 #include "InputManager.h"
 #include <SDL.h>
 
+
+
+dae::InputManager::InputManager()
+{
+	m_spMouseDown = std::make_shared<Event>();
+	m_spMouseUp = std::make_shared<Event>();
+	m_spMouseMoved = std::make_shared<Event>();
+}
+
 bool dae::InputManager::Update()
 {
+	if (m_StopGame)
+		return false;
+
 	if (!HandleKeyboardInput())
 		return false;
 	if (!HandleControllerInput())
@@ -96,6 +108,18 @@ bool dae::InputManager::HandleKeyboardInput()
 					axis.second.val = 0;
 			}
 			break;
+		case SDL_MOUSEBUTTONDOWN:
+			UpdateMousePos();
+			m_spMouseDown->Invoke();
+			break;
+		case SDL_MOUSEMOTION:
+			UpdateMousePos();
+			m_spMouseMoved->Invoke();
+			break;
+		case SDL_MOUSEBUTTONUP:
+			UpdateMousePos();
+			m_spMouseUp->Invoke();
+			break;
 		}
 	}
 	return true;
@@ -140,4 +164,11 @@ bool dae::InputManager::GetControllerKey(size_t playerIdx, ControllerButton btn)
 	}
 
 	return false;
+}
+void dae::InputManager::UpdateMousePos()
+{
+	int x{}, y{};
+	SDL_GetMouseState(&x, &y);
+	m_MousePos.x = float(x);
+	m_MousePos.y = float(y);
 }

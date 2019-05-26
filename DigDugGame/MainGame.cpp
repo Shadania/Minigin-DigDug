@@ -22,6 +22,7 @@
 
 #ifdef MAIN
 #include "IngameScene.h"
+#include "MenuScene.h"
 #endif
 
 
@@ -41,7 +42,7 @@ void MainGame::LoadScenes()
 	startScene = std::make_shared<TerrainTestScene>();
 #endif
 #ifdef MAIN
-	startScene = std::make_shared<IngameScene>();
+	startScene = std::make_shared<MenuScene>();
 #endif
 
 

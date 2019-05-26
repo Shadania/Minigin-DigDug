@@ -16,20 +16,19 @@
 
 
 dae::IngameScene::IngameScene(GameMode gameMode)
-	:Scene("TerrainTestScene")
+	:Scene("IngameScene")
 	,m_GameMode{gameMode}
 {
-	Init();
+	Initialize();
 }
 
-void dae::IngameScene::Init()
+void dae::IngameScene::Initialize()
 {
 	if (m_IsInitialized)
 		return;
 
 	// Make terrain
 	int cellSize{ 20 }; // the resources i made are 20 pixels by 20
-	// -> 24 rows, 36 cols ( - 2 )
 	size_t rows{ 16 }, cols{ 14 }; // 2 highest rows are empty
 	auto go = std::make_shared<GameObject>();
 	m_spTerrain = std::make_shared<EditableTerrainGridComponent>(rows, cols, Float2{280, 320}, "background.png");

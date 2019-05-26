@@ -87,9 +87,6 @@
     <ClInclude Include="SpriteComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="InputControllerComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="EditableTerrainGridComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -110,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="utils.h">
       <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +170,6 @@
     <ClCompile Include="SpriteComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="InputControllerComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="EditableTerrainGridComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -189,6 +186,12 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Events.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
       <Filter>Base</Filter>
     </ClCompile>
   </ItemGroup>

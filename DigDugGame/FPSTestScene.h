@@ -8,6 +8,6 @@ namespace dae
 	public:
 		FPSTestScene();
 
-		virtual void Init() override;
+		virtual void Initialize() override;
 	};
 }

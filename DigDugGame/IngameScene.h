@@ -19,7 +19,7 @@ namespace dae
 	public:
 		IngameScene(GameMode gameMode = GameMode::CoOp);
 
-		virtual void Init() override;
+		virtual void Initialize() override;
 		virtual void Update() override;
 		virtual void LateUpdate() override;
 		virtual void Render() const override;
