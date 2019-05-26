@@ -27,6 +27,15 @@ void dae::CollisionComponent::RemoveCollTarget(size_t targ)
 	m_CollisionTargets.erase(std::remove(m_CollisionTargets.begin(), m_CollisionTargets.end(), targ), m_CollisionTargets.end());
 }
 
+void dae::CollisionComponent::StopSendingCollisionFor(size_t tag)
+{
+	if (std::find(m_DontGenerateFor.begin(), m_DontGenerateFor.end(), tag) == m_DontGenerateFor.end())
+		m_DontGenerateFor.push_back(tag);
+}
+void dae::CollisionComponent::ResumeSendingCollisionFor(size_t tag)
+{
+	m_DontGenerateFor.erase(std::remove(m_DontGenerateFor.begin(), m_DontGenerateFor.end(), tag), m_DontGenerateFor.end());
+}
 
 void dae::CollisionComponent::Initialize()
 {

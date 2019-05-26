@@ -1,13 +1,13 @@
 #pragma once
 #include "BaseComponent.h"
 #include "EditableTerrainGridComponent.h"
+#include "Events.h"
 
 namespace dae
 {
 	class SpriteComponent;
 	class TerrainGridMovementComponent;
 	class IngameScene;
-	class Listener;
 	class CollisionComponent;
 
 
@@ -16,6 +16,10 @@ namespace dae
 	public:
 		EnemyCharacter(const std::string& which, IngameScene* pScene, 
 			const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startIdx);
+
+		void Pump();
+		virtual void StartGettingPumped() = 0;
+
 
 	protected:
 		friend struct EnemyState;
@@ -45,9 +49,13 @@ namespace dae
 			std::shared_ptr<TerrainGridMovementComponent>& Agent() { return pEnemy->m_spAgent; }
 			std::shared_ptr<CollisionComponent>& Coll() { return pEnemy->m_spCollComp; }
 			std::shared_ptr<Listener>& Listener() { return pEnemy->m_spListener; }
-			Direction Dir() { return pEnemy->m_CurrDir; }
+			Direction& Dir() { return pEnemy->m_CurrDir; }
 			void SetDir(Direction dir) { pEnemy->m_CurrDir = dir; }
-			std::weak_ptr<GameObject> CollidedRock() { return pEnemy->m_wpRockToFallWith; }
+			std::weak_ptr<GameObject>& CollidedRock() { return pEnemy->m_wpRockToFallWith; }
+			IngameScene*& Scene() { return pEnemy->m_pScene; }
+			void SetState(const std::shared_ptr<EnemyState>& state) { pEnemy->SetState(state); }
+			std::shared_ptr<Event>& GotPumped() { return pEnemy->m_spGotPumped; }
+			void SetGhostGoalIdx(size_t idx) { pEnemy->m_GhostGoalIdx = idx; }
 		};
 
 		void SetState(std::shared_ptr<EnemyState> newState)
@@ -63,12 +71,12 @@ namespace dae
 		std::shared_ptr<CollisionComponent> m_spCollComp;
 		std::shared_ptr<Listener> m_spListener;
 		std::weak_ptr<GameObject> m_wpRockToFallWith;
+		std::shared_ptr<Event> m_spGotPumped;
 
 		Direction m_CurrDir = Direction::Down;
 		IngameScene* m_pScene;
-
-
 		size_t m_StartIdx;
+		size_t m_GhostGoalIdx;
 
 	private:
 		const std::string m_Subtype;

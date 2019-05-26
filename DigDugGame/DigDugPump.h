@@ -12,7 +12,7 @@ namespace dae
 	class DigDugPump final : public BaseComponent
 	{
 	public:
-		DigDugPump(std::shared_ptr<EditableTerrainGridComponent> spTerrain, Direction dir, size_t initPos, const Float2& startOffset);
+		DigDugPump(std::shared_ptr<EditableTerrainGridComponent> spTerrain, Direction dir, size_t initPos, const Float2& startOffset, size_t myplayeridx);
 
 		virtual void Initialize() override;
 		virtual void Update() override;
@@ -23,6 +23,10 @@ namespace dae
 		static void InitRes();
 
 		void HandleCollision();
+
+
+
+		size_t GetPlayerIdx() { return m_MyPlayerIdx; }
 
 	private:
 		friend class CharacterDigDug;
@@ -47,6 +51,7 @@ namespace dae
 		const float m_ImgSize{ 16.0f }; // the images used for the pump are 16 pixels
 		size_t m_AmtLinks{ 0 };
 		Float2 m_StartOffset;
+		size_t m_MyPlayerIdx = 0;
 
 		void AddLink();
 	};

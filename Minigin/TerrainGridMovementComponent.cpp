@@ -64,10 +64,20 @@ void dae::TerrainGridMovementComponent::Update()
 	if (m_IsStopped)
 		return;
 
+	if (m_IsGhost)
+	{
+		HandleMoveGhost();
+		return;
+	}
+
 	if (m_FollowingPath)
 	{
-		if (GiveDirection(m_CurrentPath.front()) == TerrainGridMoveResult::Blocked)
+		m_Direction = m_CurrentPath.front();
+		if (GiveDirection(m_Direction) == TerrainGridMoveResult::Blocked)
+		{
 			m_CurrentPath.pop_front();
+			m_Direction = m_CurrentPath.front();
+		}
 		if (m_CurrentPath.empty())
 			m_FollowingPath = false;
 	}
@@ -271,4 +281,53 @@ std::vector<dae::Direction> dae::TerrainGridMovementComponent::GetPossibleDirect
 		result.push_back(Direction::Right);
 
 	return result;
+}
+
+
+void dae::TerrainGridMovementComponent::HandleMoveGhost()
+{
+	// Get row and col difference
+	m_CurrGridCell = m_spTerrain->GetCellAtPos(m_CenterPos);
+	size_t amtCols{ m_spTerrain->AmtCols() };
+	int rowDiff{ int(m_GhostTarget / amtCols) - int(m_CurrGridCell / amtCols) };
+	int colDiff{ int(m_GhostTarget % amtCols) - int(m_CurrGridCell % amtCols) };
+	
+	// Check if we reached destination
+	if (rowDiff == 0 && colDiff == 0)
+	{
+		// Apply regular velocity
+		Float2 dir{ m_spTerrain->GetCenterPosOfCellIdx(m_GhostTarget) - m_CenterPos };
+		dir.Normalize();
+		auto displacement = dir * m_GhostSpeed * ServiceLocator::GetGameTime()->GetDeltaT();
+		m_CenterPos += displacement;
+		GetTransform()->SetWorldPos(m_CenterPos);
+
+		float diff = Float2(m_CenterPos - m_spTerrain->GetCenterPosOfCellIdx(m_GhostTarget)).Length();
+		if (diff < 0.5f)
+		{
+			// Stop ghost
+			m_IsGhost = false;
+		}
+		
+		return; // No use doing weird things with a zero vector
+	}
+
+	// Calculate direction
+	Float2 dirNorm{0, 0};
+	if (rowDiff > 0)
+		dirNorm.y = 1;
+	else if (rowDiff < 0)
+		dirNorm.y = -1;
+
+	if (colDiff > 0)
+		dirNorm.x = 1;
+	else if (colDiff < 0)
+		dirNorm.x = -1;
+
+	dirNorm.Normalize();
+
+	// Apply direction
+	auto displacement = dirNorm * m_GhostSpeed * ServiceLocator::GetGameTime()->GetDeltaT();
+	m_CenterPos += displacement;
+	GetTransform()->SetWorldPos(m_CenterPos);
 }

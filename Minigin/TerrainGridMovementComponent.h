@@ -37,6 +37,11 @@ namespace dae
 
 		std::vector<Direction> GetPossibleDirections();
 
+		void SetGhostSpeed(float speed) { m_GhostSpeed = speed; }
+		void SetGhost(bool ghost, size_t target) { m_IsGhost = ghost; m_GhostTarget = target; }
+		bool GetGhost() { return m_IsGhost; }
+		float GetSpeed() { return m_Speed; }
+
 	private:
 		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 		TerrainGridMoveState m_MoveState = TerrainGridMoveState::Still;
@@ -51,6 +56,9 @@ namespace dae
 		Float2 m_CenterPos;
 		bool m_IsStopped = false;
 		bool m_CanGoThroughThinWalls;
+		bool m_IsGhost = false;
+		float m_GhostSpeed = 0.0f;
+		size_t m_GhostTarget = 0; 
 
 		bool m_FollowingPath = false;
 		std::deque<Direction> m_CurrentPath = {};
@@ -58,5 +66,6 @@ namespace dae
 		// Private methods
 		void HandleMoveCarve();
 		void HandleMoveNoCarve();
+		void HandleMoveGhost();
 	};
 }

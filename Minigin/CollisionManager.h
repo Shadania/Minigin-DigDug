@@ -9,6 +9,7 @@ namespace dae
 	public:
 
 		void CalculateCollision();
+		CollisionComponent* ImmediateCollision(const Float4& shape, const std::vector<size_t>& targets); // do collision once
 
 		void AddObject(CollisionComponent* obj);
 		void RemoveObject(CollisionComponent* obj);

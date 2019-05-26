@@ -12,5 +12,14 @@ dae::EnemyCharacter::EnemyCharacter(const std::string& which, IngameScene* pScen
 	, m_StartIdx{ startIdx }
 	, m_pScene{ pScene }
 {
+	m_spGotPumped = std::make_shared<Event>();
+}
 
+
+void dae::EnemyCharacter::Pump()
+{
+	if (m_spState->stateEnum == EnemyStateEnum::Pumped)
+		m_spGotPumped->Invoke();
+	else
+		StartGettingPumped();
 }

@@ -31,12 +31,13 @@ void dae::EditableTerrainGridCell::InitResources()
 
 
 
-dae::EditableTerrainGridCell::EditableTerrainGridCell(const Float2& centerPos, bool completelyOpen, 
+dae::EditableTerrainGridCell::EditableTerrainGridCell(const Float2& centerPos, EditableTerrainGridComponent* pTerrain, bool completelyOpen,
 	bool blocked, DugState dugState)
 	:m_CenterPos{centerPos}
 	,m_CompletelyOpen{completelyOpen}
 	,m_Blocked{blocked}
 	,m_DugState{dugState}
+	,m_pTerrain{pTerrain}
 {
 	if (!m_ResourcesInitialized)
 		InitResources();
@@ -88,6 +89,16 @@ void dae::EditableTerrainGridCell::SetAllDug(DugState state)
 {
 	m_DugState = state;
 }
+bool dae::EditableTerrainGridCell::IsPosInCell(const Float2& pos)
+{
+	if (pos.x > (m_CenterPos.x - m_pTerrain->CellWidth() / 2))
+		if (pos.x < (m_CenterPos.x + m_pTerrain->CellWidth() / 2))
+			if (pos.y > (m_CenterPos.y - m_pTerrain->CellHeight() / 2))
+				if (pos.y < (m_CenterPos.y + m_pTerrain->CellHeight() / 2))
+					return true;
+
+	return false;
+}
 
 #pragma endregion
 
@@ -107,11 +118,10 @@ dae::EditableTerrainGridComponent::EditableTerrainGridComponent(size_t rows, siz
 void dae::EditableTerrainGridComponent::Initialize()
 {
 	size_t amtCells{ m_Rows * m_Cols };
-	// m_vCells.resize(amtCells);
 	for (size_t i{}; i < amtCells; ++i)
 	{
 		Float2 centerPos{m_CellDims.x * (i % m_Cols), m_CellDims.y * (i / m_Cols) };
-		m_vCells.push_back(EditableTerrainGridCell(centerPos));
+		m_vCells.push_back(EditableTerrainGridCell(centerPos, this));
 	}
 }
 void dae::EditableTerrainGridComponent::Render() const
@@ -459,7 +469,7 @@ bool dae::EditableTerrainGridComponent::GenerateNoCarvePath(std::deque<Direction
 	// Find out if targetnode is enterable
 	if (m_vCells[dest].IsBlocked())
 		return false;
-	if (!m_vCells[dest].GetDugState().m_DugBase)
+	if (!m_vCells[dest].GetDugState().m_DugBase && !m_vCells[dest].IsCompletelyOpen())
 		return false;
 
 
@@ -493,7 +503,7 @@ bool dae::EditableTerrainGridComponent::GenerateNoCarvePath(std::deque<Direction
 						// Setup new path
 						path.clear();
 						std::shared_ptr<PathfindNode> currNode{ conns[i] };
-						while (currNode)
+						while (currNode->prev)
 						{
 							path.push_front(currNode->from);
 							currNode = currNode->prev;
@@ -553,7 +563,7 @@ bool dae::EditableTerrainGridComponent::CanGoFrom(size_t pos, Direction dir)
 
 	if (notOnEdge)
 	{
-		if (entercond1)
+		if (entercond1 || m_vCells[pos].IsCompletelyOpen())
 		{
 			if (!m_vCells[dest].IsBlocked())
 			{
@@ -569,85 +579,51 @@ bool dae::EditableTerrainGridComponent::CanGoFrom(size_t pos, Direction dir)
 }
 std::deque<std::shared_ptr<dae::PathfindNode>> dae::EditableTerrainGridComponent::GetPossibleConnections(std::shared_ptr<PathfindNode> from)
 {
-	//TODO: Test new code before deleting old code
-
 	std::deque<std::shared_ptr<PathfindNode>> result{};
 
-	// go over all directions
-	// structure: is not on edge? is able to go that way? is able to enter that cell?
-
-	// up
-	// if ((from->idx / m_Cols) > 0)
-	// {
-	// 	if (m_vCells[from->idx].GetDugState().m_DugTop)
-	// 	{
-	// 		size_t dest{ from->idx - m_Cols };
-	// 		if (!m_vCells[dest].IsBlocked())
-	// 		{
-	// 			if (m_vCells[dest].IsCompletelyOpen())
-	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Up, from));
-	// 			else if (m_vCells[dest].GetDugState().m_DugBottom && m_vCells[dest].GetDugState().m_DugBase)
-	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Up, from));
-	// 		}
-	// 	}
-	// }
 	if (CanGoFrom(from->idx, Direction::Up))
 		result.push_back(std::make_shared<PathfindNode>(from->idx - m_Cols, Direction::Up, from));
 
-	// down
-	// if ((from->idx / m_Cols) < (m_Rows - 1))
-	// {
-	// 	if (m_vCells[from->idx].GetDugState().m_DugBottom)
-	// 	{
-	// 		size_t dest{ from->idx + m_Cols };
-	// 		if (!m_vCells[dest].IsBlocked())
-	// 		{
-	// 			if (m_vCells[dest].IsCompletelyOpen())
-	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Down, from));
-	// 			else if (m_vCells[dest].GetDugState().m_DugTop && m_vCells[dest].GetDugState().m_DugBase)
-	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Down, from));
-	// 		}
-	// 	}
-	// }
 	if (CanGoFrom(from->idx, Direction::Down))
 		result.push_back(std::make_shared<PathfindNode>(from->idx + m_Cols, Direction::Down, from));
 
-	// left
-	// if ((from->idx % m_Cols) > 0)
-	// {
-	// 	if (m_vCells[from->idx].GetDugState().m_DugLeft)
-	// 	{
-	// 		size_t dest{ from->idx - 1 };
-	// 		if (!m_vCells[dest].IsBlocked())
-	// 		{
-	// 			if (m_vCells[dest].IsCompletelyOpen())
-	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Left, from));
-	// 			else if (m_vCells[dest].GetDugState().m_DugRight && m_vCells[dest].GetDugState().m_DugBase)
-	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Left, from));
-	// 		}
-	// 	}
-	// }
 	if (CanGoFrom(from->idx, Direction::Left))
 		result.push_back(std::make_shared<PathfindNode>(from->idx - 1, Direction::Left, from));
 
-	// right
-	// if ((from->idx % m_Cols) < (m_Cols - 1))
-	// {
-	// 	if (m_vCells[from->idx].GetDugState().m_DugRight)
-	// 	{
-	// 		size_t dest{ from->idx + 1 };
-	// 		if (!m_vCells[dest].IsBlocked())
-	// 		{
-	// 			if (m_vCells[dest].IsCompletelyOpen())
-	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Right, from));
-	// 			else if (m_vCells[dest].GetDugState().m_DugLeft && m_vCells[dest].GetDugState().m_DugBase)
-	// 				result.push_back(std::make_shared<PathfindNode>(dest, Direction::Right, from));
-	// 		}
-	// 	}
-	// }
 	if (CanGoFrom(from->idx, Direction::Right))
 		result.push_back(std::make_shared<PathfindNode>(from->idx + 1, Direction::Right, from));
 
+	return result;
+}
+size_t dae::EditableTerrainGridComponent::GetCellAtPos(const Float2& pos)
+{
+	for (size_t i{}; i < m_vCells.size(); ++i)
+	{
+		if (m_vCells[i].IsPosInCell(pos))
+			return i;
+	}
+	return 0;
+}
+void dae::EditableTerrainGridComponent::SetUseLayers(bool set, size_t amt)
+{
+	m_UseLayers = set;
+	m_LayerSize = amt;
+}
+size_t dae::EditableTerrainGridComponent::GetLayerIdxFromCellIdx(size_t cellIdx)
+{
+	if (!m_UseLayers)
+	{
+		std::cout << "Tried to get layer idx from a terrain that didnt use layers\n";
+		return 0;
+	}
+	size_t rownr{ cellIdx / m_Cols };
+	return rownr / m_LayerSize;
+}
+dae::Float4 dae::EditableTerrainGridComponent::GetCellShapeAtIdx(size_t idx)
+{
+	Float4 result{m_vCells[idx].GetCenterPos(), m_CellDims};
+	result.x -= m_CellDims.x / 2;
+	result.y -= m_CellDims.y / 2;
 	return result;
 }
 #pragma endregion

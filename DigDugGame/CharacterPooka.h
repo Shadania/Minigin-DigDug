@@ -1,5 +1,6 @@
 #pragma once
 #include "EnemyCharacter.h"
+#include "Events.h"
 
 namespace dae
 {
@@ -13,6 +14,8 @@ namespace dae
 				:EnemyState{ EnemyStateEnum::Moving }
 			{}
 			virtual void Update() override;
+		private:
+			float m_TimeUntilGhost = 5.0f;
 		};
 		struct StateChasing : public EnemyState
 		{
@@ -30,10 +33,25 @@ namespace dae
 		};
 		struct StateGettingPumped : public EnemyState
 		{
-			StateGettingPumped()
+			StateGettingPumped(std::shared_ptr<Event> eventToListenTo)
 				:EnemyState{ EnemyStateEnum::Pumped }
-			{}
+			{
+				m_spListener = std::make_shared<dae::Listener>();
+				m_spListener->SetFunction([this]() {this->GotPumped(); });
+				eventToListenTo->AddListener(m_spListener);
+				
+			}
 			virtual void Update() override;
+			void GotPumped();
+		private:
+			size_t m_AmtTimesPumped = 0;
+			float m_RemainingSec = 1.0f;
+			const float m_MaxSameStateSec = 1.0f;
+			const size_t m_MaxAmtPumps = 4;
+			const float m_TimeBetweenPumps = 0.1f;
+			float m_TimeTillNextPump = 0.0f;
+			bool m_CanBePumped = true;
+			std::shared_ptr<dae::Listener> m_spListener;
 		};
 		struct StateFlattenedByRock : public EnemyState
 		{
@@ -48,16 +66,23 @@ namespace dae
 				:EnemyState{ EnemyStateEnum::Dying }
 			{}
 			virtual void Update() override;
+		private:
+			const float m_MaxDeathTime = 0.5f;
+			float m_AccuDeathTime = 0.0f;
 		};
 		struct StateGhost : public EnemyState
 		{
 			StateGhost()
 				:EnemyState{ EnemyStateEnum::Ghost }
-			{}
+			{
+				m_RemainingPlayerPosUpdateTime = m_MaxTimeTillPlayerPosUpdate;
+			}
 			virtual void Update() override;
+		private:
+			const float m_MaxTimeTillPlayerPosUpdate = 5.0f;
+			float m_RemainingPlayerPosUpdateTime;
 		};
 #pragma endregion FSM
-
 
 	public:
 		CharacterPooka(IngameScene* pScene, const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startIdx);
@@ -66,5 +91,7 @@ namespace dae
 		virtual void Update() override;
 
 		void HandleColl();
+
+		virtual void StartGettingPumped() override;
 	};
 }

@@ -34,7 +34,10 @@ namespace dae
 			return m_Id == other.m_Id;
 		}
 
-		void SetGenerateCollision(bool set) { m_GenerateCollision = set; }
+		void SetSendCollision(bool set) { m_SendCollision = set; }
+		void SetReceiveCollision(bool set) { m_ReceiveCollision = set; }
+		void StopSendingCollisionFor(size_t tag);
+		void ResumeSendingCollisionFor(size_t tag);
 
 	private:
 		friend class CollisionManager;
@@ -42,8 +45,10 @@ namespace dae
 		size_t m_Tag;
 		size_t m_Id = 0;
 		std::vector<size_t> m_CollisionTargets;
+		std::vector<size_t> m_DontGenerateFor;
 		Float4 m_Shape;
 		CollisionComponent* m_pCollidedObj;
-		bool m_GenerateCollision = true;
+		bool m_SendCollision = true;
+		bool m_ReceiveCollision = true;
 	};
 }

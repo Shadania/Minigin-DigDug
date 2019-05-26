@@ -54,3 +54,7 @@ size_t dae::BaseComponent::ObjectID() const
 {
 	return GameObj()->GetID();
 }
+std::shared_ptr<dae::BaseComponent> dae::BaseComponent::GetComponent(const std::string& comp)
+{
+	return GameObj()->GetComponent(comp);
+}

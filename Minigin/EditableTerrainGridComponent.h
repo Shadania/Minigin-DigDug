@@ -5,6 +5,7 @@
 namespace dae
 {
 	class Texture2D;
+	class EditableTerrainGridComponent;
 
 
 	enum class Direction
@@ -50,7 +51,7 @@ namespace dae
 		};
 
 		EditableTerrainGridCell() = default;
-		EditableTerrainGridCell(const Float2& centerPos, bool completelyOpen = false, bool blocked = false, DugState dugState = DugState());
+		EditableTerrainGridCell(const Float2& centerPos, EditableTerrainGridComponent* pTerrain, bool completelyOpen = false, bool blocked = false, DugState dugState = DugState());
 
 		
 
@@ -65,6 +66,7 @@ namespace dae
 		bool IsCompletelyOpen() const { return m_CompletelyOpen; }
 		void SetBlocked(bool blocked) { m_Blocked = blocked; }
 		bool IsBlocked() const { return m_Blocked; }
+		bool IsPosInCell(const Float2& pos);
 
 	private:
 
@@ -77,6 +79,9 @@ namespace dae
 		static std::shared_ptr<Texture2D> m_GroundBottom;
 		static std::shared_ptr<Texture2D> m_GroundLeft;
 		static std::shared_ptr<Texture2D> m_GroundRight;
+
+		EditableTerrainGridComponent* m_pTerrain;
+
 
 		// STATIC PRIVATE METHODS
 		static void InitResources();
@@ -131,6 +136,11 @@ namespace dae
 		void SetCellBlocked(size_t idx);
 		void SetCellUnblocked(size_t idx);
 
+
+		
+
+		void SetUseLayers(bool set, size_t layerSize);
+
 		bool IsCellFree(size_t idx);
 
 		const Float2& GetCenterPosOfCellIdx(size_t idx) const;
@@ -140,6 +150,12 @@ namespace dae
 
 		float CellWidth() const { return m_CellDims.x; }
 		float CellHeight() const { return m_CellDims.y; };
+
+		size_t GetCellAtPos(const Float2& pos);
+
+		size_t GetLayerIdxFromCellIdx(size_t cellIdx);
+
+		Float4 GetCellShapeAtIdx(size_t idx);
 
 	private:
 		size_t m_Rows = 0;
@@ -151,6 +167,9 @@ namespace dae
 
 		std::vector<EditableTerrainGridCell> m_vCells = {};
 		std::shared_ptr<Texture2D> m_spBackground = {};
+
+		bool m_UseLayers = false;
+		size_t m_LayerSize = 0;
 
 		// Pathfinding
 		std::deque<std::shared_ptr<PathfindNode>> GetPossibleConnections(std::shared_ptr<PathfindNode> from);

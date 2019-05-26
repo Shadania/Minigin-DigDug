@@ -34,12 +34,13 @@ void dae::DigDugPump::InitRes()
 #pragma endregion Statics
 
 // DO NOT INIT WITH DIRECTION::NONE
-dae::DigDugPump::DigDugPump(std::shared_ptr<EditableTerrainGridComponent> spTerrain, Direction dir, size_t initPos, const Float2& startOffset)
+dae::DigDugPump::DigDugPump(std::shared_ptr<EditableTerrainGridComponent> spTerrain, Direction dir, size_t initPos, const Float2& startOffset, size_t myplayeridx)
 	:BaseComponent("DigDugPump")
 	,m_Dir{dir}
 	,m_spTerrain{spTerrain}
 	, m_StartingPos{initPos}
 	,m_StartOffset(startOffset)
+	, m_MyPlayerIdx{myplayeridx}
 {
 	if (!m_ResourcesInitialized)
 	{

@@ -8,6 +8,8 @@ namespace dae
 	class TerrainGridObstacleComponent;
 	class SpriteComponent;
 	class CollisionComponent;
+	class IngameScene;
+	class CharacterDigDug;
 
 	class Rock final : public BaseComponent
 	{
@@ -44,11 +46,14 @@ namespace dae
 
 
 	public:
-		Rock(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t terrainIdx);
+		Rock(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t terrainIdx, IngameScene* pScene);
 		
 
 		virtual void Initialize() override;
 		virtual void Update() override;
+		virtual void OnDestroy() override;
+
+		void AddVictim(); // Called by enemies falling to their death under the rock
 
 
 	private:
@@ -59,8 +64,11 @@ namespace dae
 		std::shared_ptr<SpriteComponent> m_spSpriteComp;
 
 		size_t m_Idx;
+		size_t m_AmtVictims = 0;
+		IngameScene* m_pScene;
 
 		std::shared_ptr<RockState> m_CurrState;
+		std::weak_ptr<CharacterDigDug> m_wpPlayerWhoReleasedMe;
 
 		void SetState(std::shared_ptr<RockState> newState)
 		{

@@ -12,11 +12,13 @@
 #include "DigDugPump.h"
 
 
-dae::CharacterDigDug::CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startingPos, IngameScene* pScene)
-	:m_Speed{50.0f}
+dae::CharacterDigDug::CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startingPos, IngameScene* pScene, size_t idx)
+	:BaseComponent("CharacterDigDug")
+	,m_Speed{50.0f}
 	,m_spTerrain{spTerrain}
 	, m_StartingPos{startingPos}
 	,m_pScene{pScene}
+	, m_PlayerIdx{idx}
 {}
 
 
@@ -148,7 +150,7 @@ void dae::CharacterDigDug::Update()
 		if (m_AccuDyingTime >= m_MaxDyingTime)
 		{
 			m_AccuDyingTime = 0.0f;
-			m_pScene->RespawnPlayer();
+			m_pScene->RespawnPlayer(m_PlayerIdx);
 		}
 	}
 	else if (!m_Shooting)
@@ -268,7 +270,7 @@ void dae::CharacterDigDug::HandleShooting()
 		m_Shooting = true;
 
 		Float2 startOffsetForPump{m_spAgent->GetCurrCenterPos() - m_spTerrain->GetCenterPosOfCellIdx(m_spAgent->GetCurrCellIdx())};
-		auto pump = std::make_shared<DigDugPump>(m_spTerrain, m_Direction, m_spAgent->GetCurrCellIdx(), startOffsetForPump);
+		auto pump = std::make_shared<DigDugPump>(m_spTerrain, m_Direction, m_spAgent->GetCurrCellIdx(), startOffsetForPump, m_PlayerIdx);
 		
 		auto go = std::make_shared<GameObject>();
 		go->AddComponent(pump);
@@ -285,7 +287,6 @@ void dae::CharacterDigDug::HandleShooting()
 }
 void dae::CharacterDigDug::PumpHitSomething()
 {
-	std::cout << "Pump hit something that was not the wall";
 	m_spAgent->Unfreeze();
 	m_spSpriteComp->SetActiveSprite(m_CurrSequence);
 	m_spSpriteComp->Unfreeze();
@@ -309,7 +310,6 @@ void dae::CharacterDigDug::PumpHitSomething()
 }
 void dae::CharacterDigDug::PumpHitNothing()
 {
-	std::cout << "Pump hit the wall";
 	m_spAgent->Unfreeze();
 	m_spSpriteComp->SetActiveSprite(m_CurrSequence);
 	m_spSpriteComp->Unfreeze();

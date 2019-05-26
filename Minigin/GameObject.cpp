@@ -29,7 +29,7 @@ dae::GameObject::GameObject(const Float2& pos, float rot, const Float2& scale)
 
 dae::GameObject::~GameObject()
 {
-	std::cout << "Gameobject " << ID << " got destroyed\n";
+	// std::cout << "Gameobject " << ID << " got destroyed\n";
 
 	DestroyObject();
 
@@ -265,6 +265,7 @@ void dae::GameObject::DestroyObject()
 		m_pScene->RemoveGameObject(ID);
 	}
 
+	// There is no more chance for a lateupdate to remove these. Remove them now.
 	for (size_t i{}; i < m_vObjIdsToDelete.size(); ++i)
 	{
 		for (size_t j{}; j < m_vspChildren.size(); ++j)

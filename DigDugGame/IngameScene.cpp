@@ -11,6 +11,7 @@
 #include "ResourceManager.h"
 #include "CharacterPooka.h"
 #include "FPSComponent.h"
+#include "Texture2D.h"
 
 
 dae::IngameScene::IngameScene()
@@ -35,6 +36,9 @@ void dae::IngameScene::Init()
 
 	// Setup terrain
 	{
+		// Set layers
+		terrainComp->SetUseLayers(true, 4);
+
 		// Open up the first two rows
 		for (size_t i{}; i < cols * 2; ++i)
 		{
@@ -136,17 +140,17 @@ void dae::IngameScene::Init()
 	}
 	
 
-	// Player character	
+	// Player character	1
 	go = std::make_shared<GameObject>();
-	m_InitialPlayerPos = cols * 2 + 9;
-	m_spPlayer1 = std::make_shared<CharacterDigDug>(terrainComp, m_InitialPlayerPos, this);
+	m_InitialPlayer1Pos = cols * 2 + 9;
+	m_spPlayer1 = std::make_shared<CharacterDigDug>(terrainComp, m_InitialPlayer1Pos, this, 0);
 	go->AddComponent(m_spPlayer1);
 	AddToScene(go);
 
 
 	// Place rocks on terrain
 	go = std::make_shared<GameObject>();
-	go->AddComponent(std::make_shared<Rock>(terrainComp, cols * 2 + 1));
+	go->AddComponent(std::make_shared<Rock>(terrainComp, cols * 2 + 1, this));
 	AddToScene(go);
 
 	// Place enemies on terrain
@@ -219,7 +223,7 @@ void dae::IngameScene::Init()
 		AddToScene(go);
 
 		go = std::make_shared<GameObject>();
-		m_spRoundNR = std::make_shared<TextComponent>("ROUNDNR", font);
+		m_spRoundNR = std::make_shared<TextComponent>("1", font);
 		go->AddComponentNeedRendering(m_spRoundNR);
 		m_spRoundNR->GenerateTexture();
 		go->GetTransform()->SetLocalPos(Float2{ midX, botY + spacing });
@@ -232,22 +236,115 @@ void dae::IngameScene::Init()
 	go->GetTransform()->SetLocalPos(0, 30);
 	AddToScene(go);
 
-	
+	// For live displaying
+	m_spDigDugImage = ServiceLocator::GetResourceManager()->LoadTexture("Sprites/DigDug.png");
+
+
 	m_IsInitialized = true;
 	ServiceLocator::GetRenderer()->SetScale(m_Scale);
 }
 void dae::IngameScene::Update()
 {
-	//TODO: Character interaction with terrain
+	if (m_RespawningPlayer1)
+	{
+		m_Player1TimeTillRespawn -= ServiceLocator::GetGameTime()->GetDeltaT();
+		if (m_Player1TimeTillRespawn <= 0.0f)
+		{
+			m_Player1Lives = 4;
+			m_Player1TimeTillRespawn = 0;
+			m_RespawningPlayer1 = false;
+			RespawnPlayer(0);
+		}
+	}
 
-
-
+	if (m_RespawningPlayer2)
+	{
+		m_Player2TimeTillRespawn -= ServiceLocator::GetGameTime()->GetDeltaT();
+		if (m_Player2TimeTillRespawn <= 0.0f)
+		{
+			m_Player2Lives = 4;
+			m_Player2TimeTillRespawn = 0;
+			m_RespawningPlayer2 = false;
+			RespawnPlayer(1);
+		}
+	}
 
 	Scene::Update();
 }
-void dae::IngameScene::RespawnPlayer()
+void dae::IngameScene::LateUpdate()
 {
-	m_spPlayer1->RespawnAtCellIdx(m_InitialPlayerPos);
+	// Display score
+	m_spPlayer1ScoreText->SetText(std::to_string(m_Player1Score));
+	m_spPlayer1ScoreText->GenerateTexture();
+	m_spPlayer2ScoreText->SetText(std::to_string(m_Player2Score));
+	m_spPlayer2ScoreText->GenerateTexture();
+	m_spTotalScoreText->SetText(std::to_string(m_Player1Score + m_Player2Score));
+	m_spTotalScoreText->GenerateTexture();
+
+	Scene::LateUpdate();
+}
+void dae::IngameScene::Render() const
+{
+	// left lives
+	auto wWidth = ServiceLocator::m_pGameInfo->GetWindowWidth();
+	auto wHeight = ServiceLocator::m_pGameInfo->GetWindowHeight();
+	float leftX{ 20 / m_Scale }, rightX{ (wWidth / 6 * 5 - 40) / m_Scale };
+	float spacing{ 17 }; // image is 14 wide + 3 for spacing
+	float yVal{ (wHeight - 60) / m_Scale };
+
+
+	float thisX{ leftX };
+	for (size_t i{}; i < m_Player1Lives; ++i)
+	{
+		ServiceLocator::GetRenderer()->RenderTexture(*m_spDigDugImage, thisX, yVal);
+		thisX += spacing;
+	}
+
+	thisX = rightX;
+	for (size_t i{}; i < m_Player2Lives; ++i)
+	{
+		ServiceLocator::GetRenderer()->RenderTexture(*m_spDigDugImage, thisX, yVal);
+		thisX -= spacing;
+	}
+
+	Scene::Render();
+}
+
+
+void dae::IngameScene::RespawnPlayer(size_t idx)
+{
+	if (idx == 0)
+	{
+		if (m_RespawningPlayer1)
+			return;
+
+		if (m_Player1Lives == 0)
+		{
+			m_Player1TimeTillRespawn = m_PlayerRegainLivesTime;
+			m_RespawningPlayer1 = true;
+		}
+		else
+		{
+			m_Player1Lives--;
+			m_spPlayer1->RespawnAtCellIdx(m_InitialPlayer1Pos);
+		}
+	}
+	else if (idx == 1)
+	{
+		if (m_RespawningPlayer2)
+			return;
+
+		if (m_Player2Lives == 0)
+		{
+			m_Player2TimeTillRespawn = m_PlayerRegainLivesTime;
+			m_RespawningPlayer2 = true;
+		}
+		else
+		{
+			m_Player2Lives--;
+			m_spPlayer2->RespawnAtCellIdx(m_InitialPlayer2Pos);
+		}
+	}
 }
 size_t dae::IngameScene::GetClosestPlayerTo(size_t idx)
 {
@@ -257,4 +354,11 @@ size_t dae::IngameScene::GetClosestPlayerTo(size_t idx)
 	float p1Dist{};
 
 	return 0;
+}
+void dae::IngameScene::AddScoreFor(size_t score, size_t playerIdx)
+{
+	if (playerIdx == 0)
+		m_Player1Score += score;
+	else if (playerIdx == 1)
+		m_Player2Score += score;
 }

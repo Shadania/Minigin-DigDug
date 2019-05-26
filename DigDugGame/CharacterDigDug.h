@@ -14,14 +14,15 @@ namespace dae
 	class CharacterDigDug final : public BaseComponent
 	{
 	public:
-		CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startingPos, IngameScene* pScene);
+		CharacterDigDug(const std::shared_ptr<EditableTerrainGridComponent>& spTerrain, size_t startingPos, IngameScene* pScene, size_t idx);
 
 
 		void HandleCollision();
 		
 		void RespawnAtCellIdx(size_t idx);
 
-		size_t GetCurrGridIdx() { return m_spAgent->GetCurrCellIdx(); };
+		size_t GetCurrGridIdx() const { return m_spAgent->GetCurrCellIdx(); };
+		size_t GetCurrPlayerIdx() const { return m_PlayerIdx; }
 		
 
 		void PumpHitSomething();
@@ -52,6 +53,7 @@ namespace dae
 		Direction m_Direction = Direction::Right;
 		bool m_Shooting = false;
 		bool m_GotEnemy = false;
+		size_t m_PlayerIdx;
 
 		void HandleMovement();
 		void HandleShooting();

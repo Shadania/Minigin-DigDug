@@ -53,10 +53,15 @@ namespace dae
 			return obj;
 		}
 
-		float Length(const Float2& vec) const
+		static float Length(const Float2& vec)
 		{
 			return (sqrt(vec.x * vec.x + vec.y * vec.y));
 		}
+		float Length()
+		{
+			return (sqrt(x * x + y * y));
+		}
+
 		float LengthSqr(const Float2& vec) const
 		{
 			return (vec.x * vec.x + vec.y * vec.y);
@@ -64,6 +69,12 @@ namespace dae
 		bool IsWithinDistFromPos(float dist, const Float2& pos) const
 		{
 			return (LengthSqr(pos - *this) <= (dist*dist));
+		}
+		void Normalize()
+		{
+			float l = Length();
+			x /= l;
+			y /= l;
 		}
 		Float2() = default;
 		Float2(float x, float y)
