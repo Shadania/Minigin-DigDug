@@ -427,6 +427,7 @@ void dae::CharacterFygar::Initialize()
 	m_spCollComp = std::make_shared<CollisionComponent>(2);
 	m_spCollComp->AddCollTarget(1); // Rock
 	m_spCollComp->AddCollTarget(4); // DigDug's pump
+	m_spCollComp->AddCollTarget(7); // DigDug 2's pump
 	m_spListener = std::make_shared<Listener>();
 	m_spListener->SetFunction([this]() {this->HandleColl(); });
 	m_spCollComp->m_HasCollided.AddListener(m_spListener);
@@ -464,6 +465,7 @@ void dae::CharacterFygar::HandleColl()
 
 			break;
 		case 4: // DigDug's pump
+		case 7: // DigDug 2's pump
 			Pump();
 			break;
 		}

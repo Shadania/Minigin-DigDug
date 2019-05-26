@@ -52,7 +52,10 @@ void dae::DigDugPump::Initialize()
 {
 	m_spAgent = std::make_shared<TerrainGridMovementComponent>(m_spTerrain, m_StartingPos, m_Speed, false, 0.0f, true);
 	AddComponent(m_spAgent);
-	m_spCollComp = std::make_shared<CollisionComponent>(4);
+	size_t pumpId{4};
+	if (m_MyPlayerIdx == 1)
+		pumpId = 7;
+	m_spCollComp = std::make_shared<CollisionComponent>(pumpId);
 	AddComponent(m_spCollComp);
 	std::vector<size_t> colltargets{ 1, 2, 3 };
 	m_spCollComp->SetCollTargets(colltargets); // Player, rock, pooka, fygar

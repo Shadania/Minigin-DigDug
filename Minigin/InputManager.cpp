@@ -4,6 +4,41 @@
 
 bool dae::InputManager::Update()
 {
+	if (!HandleKeyboardInput())
+		return false;
+	if (!HandleControllerInput())
+		return false;
+
+	return true;
+}
+bool dae::InputManager::Key(std::string&& action)
+{
+	return m_Commands[std::move(action)].key;
+}
+bool dae::InputManager::KeyDown(std::string&& action)
+{
+	return m_Commands[std::move(action)].keyDown;
+}
+bool dae::InputManager::KeyUp(std::string&& action)
+{
+	return m_Commands[std::move(action)].keyUp;
+}
+
+void dae::InputManager::AddCommand(const std::string& cmdName, SDL_Keycode cmdKey)
+{
+	m_Commands[cmdName] = Command(cmdKey);
+}
+void dae::InputManager::AddAxis(const std::string& axisName, SDL_Keycode posButton, SDL_Keycode negButton)
+{
+	m_Axes[axisName] = Axis(posButton, negButton);
+}
+float dae::InputManager::GetAxis(std::string&& axis)
+{
+	return m_Axes[std::move(axis)].val;
+}
+
+bool dae::InputManager::HandleKeyboardInput()
+{
 	for (auto& cmd : m_Commands)
 	{
 		cmd.second.keyDown = false;
@@ -11,7 +46,7 @@ bool dae::InputManager::Update()
 	}
 
 	SDL_Event e;
-	while (SDL_PollEvent(&e)) 
+	while (SDL_PollEvent(&e))
 	{
 		auto key = e.key.keysym.sym;
 
@@ -43,6 +78,9 @@ bool dae::InputManager::Update()
 			}
 			break;
 		case SDL_KEYUP:
+			if (key == SDLK_ESCAPE)
+				return false;
+			
 			for (std::pair<const std::string, Command>& cmd : m_Commands)
 			{
 				if (cmd.second.cmdKeycode == key)
@@ -62,28 +100,44 @@ bool dae::InputManager::Update()
 	}
 	return true;
 }
-bool dae::InputManager::Key(std::string&& action)
+bool dae::InputManager::HandleControllerInput()
 {
-	return m_Commands[std::move(action)].key;
-}
-bool dae::InputManager::KeyDown(std::string&& action)
-{
-	return m_Commands[std::move(action)].keyDown;
-}
-bool dae::InputManager::KeyUp(std::string&& action)
-{
-	return m_Commands[std::move(action)].keyUp;
+	m_Controller1Valid = XInputGetState(0, &m_Controllers[0]) == ERROR_SUCCESS;
+	m_Controller2Valid = XInputGetState(1, &m_Controllers[1]) == ERROR_SUCCESS;
+	return true;
 }
 
-void dae::InputManager::AddCommand(const std::string& cmdName, SDL_Keycode cmdKey)
+bool dae::InputManager::GetControllerKey(size_t playerIdx, ControllerButton btn)
 {
-	m_Commands[cmdName] = Command(cmdKey);
-}
-void dae::InputManager::AddAxis(const std::string& axisName, SDL_Keycode posButton, SDL_Keycode negButton)
-{
-	m_Axes[axisName] = Axis(posButton, negButton);
-}
-float dae::InputManager::GetAxis(std::string&& axis)
-{
-	return m_Axes[std::move(axis)].val;
+	if (playerIdx == 0)
+		if (!m_Controller1Valid)
+			return false;
+	if (playerIdx == 1)
+		if (!m_Controller2Valid)
+			return false;
+
+	switch (btn)
+	{
+	case ControllerButton::ButtonA:
+		return m_Controllers[playerIdx].Gamepad.wButtons & XINPUT_GAMEPAD_A;
+		break;
+
+	case ControllerButton::DPDown:
+		return m_Controllers[playerIdx].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN;
+		break;
+
+	case ControllerButton::DPLeft:
+		return m_Controllers[playerIdx].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT;
+		break;
+
+	case ControllerButton::DPRight:
+		return m_Controllers[playerIdx].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT;
+		break;
+
+	case ControllerButton::DPUp:
+		return m_Controllers[playerIdx].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP;
+		break;
+	}
+
+	return false;
 }

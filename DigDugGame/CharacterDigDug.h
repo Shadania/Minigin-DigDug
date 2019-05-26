@@ -57,5 +57,8 @@ namespace dae
 
 		void HandleMovement();
 		void HandleShooting();
+
+		Float2 GetMovementFromKeyboard();
+		Float2 GetMovementFromController();
 	};
 }

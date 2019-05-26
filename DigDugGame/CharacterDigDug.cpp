@@ -98,12 +98,6 @@ void dae::CharacterDigDug::Initialize()
 	m_spSpriteObject->GetTransform()->Translate(10, 10);
 
 
-	// Input
-	auto input = ServiceLocator::GetInputManager();
-	input->AddAxis("MoveHorizontal", 'd', 'a');
-	input->AddAxis("MoveVertical", 's', 'w');
-	input->AddCommand("Shoot", ' ');
-
 	// Grid agent
 	m_spAgent = std::make_shared<TerrainGridMovementComponent>(m_spTerrain, m_StartingPos, 60.0f, true, 40.0f);
 	AddComponent(m_spAgent);
@@ -111,7 +105,7 @@ void dae::CharacterDigDug::Initialize()
 	m_IsInitialized = true;
 
 	// Collision
-	m_spCollComp = std::make_shared<CollisionComponent>(0);
+	m_spCollComp = std::make_shared<CollisionComponent>(6 * m_PlayerIdx);
 	m_spCollComp->AddCollTarget(1); // Rock
 	m_spCollComp->AddCollTarget(2); // Pooka
 	m_spCollComp->AddCollTarget(3); // Fygar
@@ -179,28 +173,31 @@ void dae::CharacterDigDug::HandleMovement()
 	auto input = ServiceLocator::GetInputManager();
 	auto delta = ServiceLocator::GetGameTime()->GetDeltaT();
 
-	float horizontalMovement{ input->GetAxis("MoveHorizontal") };
-	float verticalMovement{ input->GetAxis("MoveVertical") };
+	Float2 mov{};
+	if (m_pScene->GetGameMode() == GameMode::Solo)
+		mov = GetMovementFromKeyboard();
+	else
+		mov = GetMovementFromController();
 
 	Direction newDir{ Direction::None };
 
-	if ((abs(horizontalMovement) + abs(verticalMovement)) > 0.001f)
+	if ((abs(mov.x) + abs(mov.y)) > 0.001f)
 	{
 		// There IS movement
 
 		m_spSpriteComp->Unfreeze();
 
-		if (horizontalMovement > 0.001f)
+		if (mov.x > 0.001f)
 		{
 			m_CurrSequence = "Right";
 			newDir = Direction::Right;
 		}
-		else if (horizontalMovement < -0.001f)
+		else if (mov.x < -0.001f)
 		{
 			m_CurrSequence = "Left";
 			newDir = Direction::Left;
 		}
-		else if (verticalMovement > 0.001f)
+		else if (mov.y > 0.001f)
 		{
 			m_CurrSequence = "Down";
 			newDir = Direction::Down;
@@ -243,7 +240,13 @@ void dae::CharacterDigDug::HandleMovement()
 void dae::CharacterDigDug::HandleShooting()
 {
 	auto input = ServiceLocator::GetInputManager();
-	if (input->KeyDown("Shoot"))
+	bool shouldShoot{};
+	if (m_pScene->GetGameMode() == GameMode::Solo)
+		shouldShoot = input->KeyDown("Shoot");
+	else
+		shouldShoot = input->GetControllerKey(m_PlayerIdx, ControllerButton::ButtonA);
+
+	if (shouldShoot)
 	{
 		// Start shooting!
 		m_spAgent->Freeze();
@@ -296,4 +299,29 @@ void dae::CharacterDigDug::PumpHitNothing()
 	m_spSpriteComp->SetActiveSprite(m_CurrSequence);
 	m_spSpriteComp->Unfreeze();
 	m_Shooting = false;
+}
+
+dae::Float2 dae::CharacterDigDug::GetMovementFromKeyboard()
+{
+	auto input = ServiceLocator::GetInputManager();
+	Float2 result{};
+	result.x = input->GetAxis("MoveHorizontal");
+	result.y = input->GetAxis("MoveVertical");
+	return result;
+}
+dae::Float2 dae::CharacterDigDug::GetMovementFromController()
+{
+	auto input = ServiceLocator::GetInputManager();
+	Float2 result{};
+
+	if (input->GetControllerKey(m_PlayerIdx, ControllerButton::DPRight))
+		result.x += 1.0f;
+	if (input->GetControllerKey(m_PlayerIdx, ControllerButton::DPLeft))
+		result.x -= 1.0f;
+	if (input->GetControllerKey(m_PlayerIdx, ControllerButton::DPUp))
+		result.y -= 1.0f;
+	if (input->GetControllerKey(m_PlayerIdx, ControllerButton::DPDown))
+		result.y += 1.0f;
+
+	return result;
 }

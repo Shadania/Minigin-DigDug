@@ -6,11 +6,18 @@ namespace dae
 	class CharacterDigDug;
 	class TextComponent;
 	class Texture2D;
+	class EditableTerrainGridComponent;
+
+	enum class GameMode
+	{
+		Solo,
+		CoOp
+	};
 
 	class IngameScene final : public Scene
 	{
 	public:
-		IngameScene();
+		IngameScene(GameMode gameMode = GameMode::CoOp);
 
 		virtual void Init() override;
 		virtual void Update() override;
@@ -21,11 +28,14 @@ namespace dae
 		void RespawnPlayer(size_t idx);
 		void AddScoreFor(size_t score, size_t playerIdx);
 
+		GameMode GetGameMode() { return m_GameMode; }
 		
 		size_t GetClosestPlayerTo(size_t idx);
 
 	private:
 		float m_Scale = 2.0f;
+		GameMode m_GameMode;
+		std::shared_ptr<EditableTerrainGridComponent> m_spTerrain;
 
 		// Dynamic text
 		std::shared_ptr<TextComponent> m_spPlayer1ScoreText;

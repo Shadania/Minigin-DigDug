@@ -1,12 +1,13 @@
 #pragma once
 #include <XInput.h>
+#pragma comment(lib, "XInput.lib")
 #include <unordered_map>
 
 typedef int32_t SDL_Keycode;
 
 namespace dae
 {
-	
+	// Keyboard
 	struct Command
 	{
 		Command()
@@ -39,6 +40,19 @@ namespace dae
 		float val;
 	};
 
+	// Controller
+	enum class ControllerButton
+	{
+		ButtonA,
+		DPLeft,
+		DPRight,
+		DPUp,
+		DPDown
+	};
+
+
+
+
 	class InputManager
 	{
 	public:
@@ -54,11 +68,21 @@ namespace dae
 
 		float GetAxis(std::string&& axis);
 
+		bool GetControllerKey(size_t playerIdx, ControllerButton btn);
 
 	private:
 
 		std::unordered_map<std::string, Command> m_Commands;
 		std::unordered_map<std::string, Axis> m_Axes;
+
+		XINPUT_STATE m_Controllers[2]{};
+
+
+		bool HandleKeyboardInput();
+		bool HandleControllerInput();
+
+		bool m_Controller1Valid = true;
+		bool m_Controller2Valid = true;
 	};
 
 }

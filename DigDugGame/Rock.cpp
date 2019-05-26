@@ -30,7 +30,7 @@ void dae::Rock::StateStill::Update()
 		shape.y -= 4.0f;
 		shape.z += 8.0f;
 		shape.w += 8.0f;
-		std::vector<size_t> targets{0};
+		std::vector<size_t> targets{0, 6};
 		auto comp = ServiceLocator::GetCollisionManager()->ImmediateCollision(shape, targets);
 		if (comp)
 		{
