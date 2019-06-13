@@ -478,10 +478,12 @@ bool dae::EditableTerrainGridComponent::GenerateNoCarvePath(std::deque<Direction
 	std::deque<std::shared_ptr<PathfindNode>> openList{};
 	std::deque<std::shared_ptr<PathfindNode>> closedList{};
 
+	// We came from nowhere -> detect in set up new path to stop there
 	std::shared_ptr<PathfindNode> startNode{ std::make_shared<PathfindNode>(src, Direction::None, nullptr) };
 
 	openList.push_back(startNode);
 
+	// Keep going as long as we have nodes to explore
 	while (!openList.empty())
 	{
 		// Get next node from openlist and put it in closedlist
@@ -501,9 +503,9 @@ bool dae::EditableTerrainGridComponent::GenerateNoCarvePath(std::deque<Direction
 					if (conns[i]->idx == dest)
 					{
 						// Setup new path
-						path.clear();
+						path.clear(); // Clear previous path
 						std::shared_ptr<PathfindNode> currNode{ conns[i] };
-						while (currNode->prev)
+						while (currNode->prev) // We don't want to add the first node's "None" direction
 						{
 							path.push_front(currNode->from);
 							currNode = currNode->prev;
